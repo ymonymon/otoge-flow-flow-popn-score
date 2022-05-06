@@ -1,0 +1,22 @@
+﻿@page
+@model PopnScoreTool2.Pages.StoreLSModel
+@{
+}
+@section Scripts {
+    <script type="module">
+        (() => {
+            const value = '@(ViewData.ContainsKey("value") ? ViewData["value"] : "")';
+            if (value !== '') {
+                const value2 = value.replace(/&#x27;/g, "'");
+                const json = JSON.parse(decodeURIComponent(value2));
+
+                try {
+                    localStorage.setItem('datalist', JSON.stringify(json));
+                } catch (e) {
+                }
+            }
+
+            location.href = 'https://otoge-flow-flow.com/Upload';
+        })();
+    </script>
+}

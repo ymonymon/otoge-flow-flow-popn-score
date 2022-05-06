@@ -1,0 +1,39 @@
+﻿@page
+@model PopnScoreTool2.Pages.HelpModel
+@{
+    ViewData["Title"] = "HELP";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    現在α-8版テスト中です。
+</p>
+<p>ヘルプ</p>
+<p>α版登録/ログイン方法：</p>
+<ol>
+    <li>このサイトの右上あたりの「Register」か「Login」メニューから「Twitter」ボタンを押下する。</li>
+    <li>Twitterの画面に遷移。「popnscoretool2にアカウントへのアクセスを許可しますか？」の画面で権限確認。問題なければ「連携アプリを認証」を押下する。</li>
+    <li>本サイトの画面に遷移。Twitterのメールアドレスが表示されますがこのサイト上では使用していないので適当に書き換えてください。（気にしなければそのまま。メールアドレスを求めてしまうのは認証周りのライブラリの標準仕様のため）</li>
+    <li>「Register」ボタンを押下で登録完了。</li>
+</ol>
+<p>α版アップロード方法：</p>
+<ol>
+    <li>ブックマークレットを公式サイトで実行。</li>
+    <li>本サイトログイン後、Upload Pageで「Upload」ボタンを押下。アップロード。</li>
+    <li>うまくいけばスコア・メダル情報が閲覧できます。</li>
+</ol>
+<p>ブックマークレット：</p>
+<blockquote>javascript:(()=>{const d=new Date();const s=document.createElement('script');s.src='https://otoge-flow-flow.com/popnscoretool2/loadScore.js?'+[d.getFullYear(),d.getMonth()+1,d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds()].map((x,i)=>(''+x).padStart(i?2:4,'0')).join('');document.head.appendChild(s);})();</blockquote>
+
+<p>Android(Chrome)でのブックマークレットの使用方法：</p>
+<ol>
+    <li>ちょっと特殊です。<a href="https://www.google.com/search?q=Android+chrome+%E3%83%96%E3%83%83%E3%82%AF%E3%83%9E%E3%83%BC%E3%82%AF%E3%83%AC%E3%83%83%E3%83%88+%E4%BD%BF%E3%81%84%E6%96%B9">Android chrome ブックマークレット 使い方</a>で検索した方法で使用してください。</li>
+</ol>
+<p>α版登録解除方法：</p>
+<ol>
+    <li>現在登録解除方法はありません。運営にご連絡ください。β版ぐらいで作成予定。</li>
+</ol>
+<p>Twitterアプリ連携解除方法：</p>
+<ol>
+    <li><a href="https://www.google.com/search?q=Twitter%E3%82%A2%E3%83%97%E3%83%AA%E9%80%A3%E6%90%BA%E8%A7%A3%E9%99%A4">Twitterアプリ連携解除</a>で検索した方法で解除してください。再度認証すれば使えます。</li>
+</ol>

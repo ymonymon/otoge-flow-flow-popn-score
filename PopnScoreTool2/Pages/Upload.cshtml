@@ -1,0 +1,52 @@
+﻿@page
+@model PopnScoreTool2.Pages.UploadModel
+@{
+    ViewData["Title"] = "Upload Page";
+}
+<h1>@ViewData["Title"]</h1>
+<div>
+    @if (User.Identity.IsAuthenticated)
+    {
+    <h1>スコア・メダル情報を含むJSONデータをlocalstorageからアップロード。</h1>
+
+    <ul>
+        <li>情報取得日時：<span id="get-date"></span></li>
+        <li>カードネーム：<span id="card-name"></span></li>
+        <li>取得曲数：<span id="music-num"></span></li>
+    </ul>
+    <form enctype="multipart/form-data" method="post">
+        <input id="datalist" type="hidden" name="datalist" />
+        <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" style="background-color: #3e68ff; color: #fff" />
+    </form>
+
+    <p class="result">
+        @Model.Result
+    </p>
+    }
+    else
+    {
+    <h1 class="display-4">Please Login →↑</h1>
+    }
+</div>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+        <script type="module">
+            (() => {
+                try {
+                    const datalist = localStorage.getItem('datalist');
+                    const inputtag = document.querySelector('#datalist');
+                    const value = encodeURIComponent(datalist);
+                    inputtag.setAttribute('value', value);
+
+                    const json = JSON.parse(datalist);
+
+                    document.getElementById('get-date').textContent = json['info'][0];
+                    document.getElementById('card-name').textContent = json['profile'][0];
+                    document.getElementById('music-num').textContent = json["scores"].length + "曲";
+                } catch (e) {
+                }
+            })();
+        </script>
+
+    }

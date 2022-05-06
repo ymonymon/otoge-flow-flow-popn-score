@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db.ym.local
+    environment:
+        ACCEPT_EULA: "Y"
+        SA_PASSWORD: ${SA_PASSWORD:-<YourStrong!Passw0rd>}
+        USER_PST2_PASSWORD: ${USER_PST2_PASSWORD:-<MyStrong!Passw0rd1>}
+        USER_TEST_PASSWORD: ${USER_TEST_PASSWORD:-<MyStrong!Passw0rd2>}
+        MSSQL_PID: "Express"
+        MSSQL_COLLATION: "Japanese_CI_AS"
+        MSSQL_LCID: "1041"
+        MSSQL_BACKUP_DIR: "/data2"
+        MSSQL_DATA_DIR: "/data2"
+        MSSQL_LOG_DIR: "/data2/"
+    volumes:
+      - c:\data1:/data2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "1433"
+#      - "1431"
+    ports:
+      - "1433:1433"
+#      - "1431:1431"
+
+networks:
+  default:
+    external: true
+    name: app_net

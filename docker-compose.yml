@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  proxy.pst2:
+    container_name: proxy.pst2.ym.local
+    build:
+      context: ./PopnScoreTool2/Proxy1/
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+
+  web.pst2:
+    container_name: web.pst2.ym.local
+    build:
+      context: .
+      dockerfile: PopnScoreTool2/Dockerfile
+    expose:
+      - "5101"
+
+volumes:
+  temp-keys:
+    driver: local
+
+networks:
+  default:
+    external: true
+    name: app_net
