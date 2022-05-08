@@ -20,4 +20,4 @@
 
 ## コミュニティ
 
-Discord でやってます。[@otoge-flow-flow](https://twitter.com/otoge_flow_flow/) にDMください。
+Discord でやってます。[@otoge_flow_flow](https://twitter.com/otoge_flow_flow/) にDMください。
