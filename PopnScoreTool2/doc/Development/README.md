@@ -1,50 +1,67 @@
-# 開発用ドキュメント
+# Web サーバー用ドキュメント
 
-## 構成
+## Twitter 認証用環境設定
 
-- nginx reverse proxy(SSL) - kestrel(on linux) - db(sql server on linux)
+### 開発環境用の Key / Secret をもらう場合
 
-## 開発環境
+（お手軽）Discordで聞いてください。
 
-方針：なるべく最新。日本語版があれば利用している。
+### 1から設定して生成する場合
 
-- Windows 10 (21H1)
-- Microsoft Visual Studio Community 2022 Version 17.1.3
-  - .NET 5.0 -> .NET 6.0
-- Microsoft Visual Studio Code 1.67.0
-  - markdown書き。
-  - js書き。
-- Docker Desktop 4.7.1 (77678)
-- SQL Server Management Studio 18.11.1
-- WSL2(Ubuntu)
-- Google Chrome
-- Hosts File Manager 2.0.327.0
-- Git for Windows 2.36.0 64bit
-- TortoiseGit 2.13.0.1
+（たいへん）Twitter Developer Portal で設定をする必要があります。
 
-### 開発環境用自己証明書の作成
+#### 専用アカウント作成
 
-see Proxy1/README.md
+#### Twitter開発アプリポータルで色々する。たぶんElevated accessを申し込む必要があり。日数がかかる
 
-## DEBUG構成
+ドメインとかも新しくする必要あるかも。
 
-- Windows 上の Docker Desktop で確認。一部デバッグは他の構成を使用する事があり。（現在他の構成のプロファイルは全削除）
+#### User authentication settings
 
-### DB
+- OAuth 1.0a - ON
+- Request email from users - ON
 
-- サーバーの照合順序 - Japanese_CI_AS
-- 製品 - Microsoft SQL Server Express (64-bit)
-- オペレーティング システム - Ubuntu (20.04)
-- プラットフォーム - Linux
-- バージョン - 15.0.4123.1 -> 15.0.4153.1
-- 言語 - 日本語
+  今後オフにする予定。
 
-## 運用環境
+- App permissions - Read
 
-- WinSCP
+  認証にしか使用していない。
 
-### SQL Server Management Studio 18.11.1 日本語版
+- Callback URI / Redirect URL
 
-<https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15>
-<https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411>
+  <https://otoge-flow-flow.com/signin-twitter>
 
+- Website URL
+
+  <https://otoge-flow-flow.com/>
+
+- Organization name (optional)
+
+  pop'n score tool 2
+
+- Organization URL (optional)
+
+  <https://otoge-flow-flow.com/>
+
+- Terms of service
+
+  <https://otoge-flow-flow.com/tos>
+
+- Privacy policy
+
+  <https://otoge-flow-flow.com/privacy>
+
+### もらった or 生成した ConsumerAPIKey / ConsumerSecret を UserSecrets で設定
+
+UserSecret の設定方法は検索。JSON形式であることに注意。
+
+- "Authentication:Twitter:ConsumerSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+- "Authentication:Twitter:ConsumerAPIKey": "xxxxxxxxxxxxxxxxxxxxxxxxx"
+
+## DB への接続パスワード設定
+
+同じく UserSecrets での設定：
+
+- "Authentication:MSSQL:UserPST2Password": "<MyStrong!Passw0rd1>"
+
+環境変数を設定していなければ docker-compose.yml ファイルに指定してあるデフォルトの値が使用されます。
