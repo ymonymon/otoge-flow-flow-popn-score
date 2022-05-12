@@ -1,4 +1,4 @@
-# proxy container-pst2
+# 証明書手動更新手順
 
 ## ログイン
 
@@ -9,7 +9,7 @@
     docker exec -it --user root {CONTAINER ID} /bin/sh
 
     apk add certbot
-    certbot certonly --webroot -w /usr/share/nginx/html/ssl-proof -d otoge-flow-flow.com -m ymonymon@gmail.com
+    certbot certonly --webroot -w /usr/share/nginx/html/ssl-proof -d otoge-flow-flow.com -m {mail_address}
     *2
 
 manual copy from /etc/letsencrypt/live/.com/
