@@ -14,13 +14,14 @@
 - Microsoft Visual Studio Code 1.67.0
   - markdown書き。
   - js書き。
-- Docker Desktop 4.7.1 (77678)
+- Docker Desktop 4.8.1 (78998)
 - SQL Server Management Studio 18.11.1
 - WSL2(Ubuntu)
 - Google Chrome
 - Hosts File Manager 2.0.327.0
 - Git for Windows 2.36.0 64bit
 - TortoiseGit 2.13.0.1
+- PowerShell 17.1.6
 
 ### 開発環境用自己証明書の作成
 
