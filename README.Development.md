@@ -4,6 +4,8 @@
 
 - nginx reverse proxy(SSL) - kestrel(on linux) - db(sql server on linux)
 
+今回は不要ではあるが、アクセス増を考慮した構成にしている。
+
 ## 開発環境
 
 方針：なるべく最新。日本語版があれば利用しているが言語の設定は問わない。
@@ -22,10 +24,6 @@
 - Git for Windows 2.36.0 64bit
 - TortoiseGit 2.13.0.1
 - PowerShell 17.1.6
-
-### 開発環境用自己証明書の作成
-
-see Proxy1/README.md
 
 ## DEBUG構成
 
