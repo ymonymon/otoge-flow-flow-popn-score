@@ -29,24 +29,34 @@
 
 ### clone
 
-https://github.com/ymonymon/otoge-flow-flow-popn-score.git
-をC:\Users\\{user_name}\source\repos\otoge-flow-flow-popn-score などに clone.
+<https://github.com/ymonymon/otoge-flow-flow-popn-score.git> をC:\Users\\{user_name}\source\repos\otoge-flow-flow-popn-score などに clone.
 
 ### *.sln を開く
 
 ### Docker Network 設定
 
-  docker network create app_net
+    PS> docker network create app_net
 
 ### Database セットアップ
 
-  todo : link
+- backup の復元が必要。
+- [開発用テスト用DB設定](./Database/doc/Development/README.md)
 
 ### Proxy セットアップ
 
+- 自己証明書の作成が必要。
+- [自己証明書の作り方](./PopnScoreTool2/Proxy1/doc/Development/README.md)
+
 ### Web セットアップ
 
+- TwitterAPI Key の設定が必要。
+- [Web サーバー用ドキュメント](./PopnScoreTool2/doc/Development/README.md)
+
+- TODO : APIKeyなくても動く方法
+
 ### hosts いじる
+
+- Hosts File Manager などで otoge-flow-flow.com を 127.0.0.1 にする。
 
 ## DEBUG構成
 
