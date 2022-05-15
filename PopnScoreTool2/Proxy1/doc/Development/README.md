@@ -20,7 +20,3 @@ SAN（サブジェクトの別名）もきちんと入力
 
 信頼されたルート証明機関に登録する。
 
-## 自己証明書自動更新
-
-- [Let’s EncryptによるSSLサーバー証明書の取得、自動更新設定（2021年3月版） | 稲葉サーバーデザイン](https://inaba-serverdesign.jp/blog/20210331/snap-lets-encrypt-ssl-certificate-update.html)
-
