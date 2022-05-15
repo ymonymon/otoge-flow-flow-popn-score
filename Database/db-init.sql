@@ -10,19 +10,29 @@ DECLARE @param1 int
 SELECT @param1 = COUNT(*) FROM sys.databases WHERE [name] = 'Sandbox'
 IF @param1 = 0
 BEGIN
-    CREATE DATABASE [Sandbox] ON 
-    ( FILENAME = N'/data2/Sandbox.mdf' ),
-    ( FILENAME = N'/data2/Sandbox_log.ldf' )
-    FOR ATTACH;
+    BEGIN TRY
+        CREATE DATABASE [Sandbox] ON
+        ( FILENAME = N'/data2/Sandbox.mdf' ),
+        ( FILENAME = N'/data2/Sandbox_log.ldf' )
+        FOR ATTACH;
+    END TRY
+    BEGIN CATCH
+        CREATE DATABASE [Sandbox]
+    END CATCH
 END;
 
 SELECT @param1 = COUNT(*) FROM sys.databases WHERE [name] = 'PopnScoreTool2'
 IF @param1 = 0
 BEGIN
-    CREATE DATABASE [PopnScoreTool2] ON 
-    ( FILENAME = N'/data2/PopnScoreTool2.mdf' ),
-    ( FILENAME = N'/data2/PopnScoreTool2_log.ldf' )
-    FOR ATTACH;
+    BEGIN TRY
+        CREATE DATABASE [PopnScoreTool2] ON 
+        ( FILENAME = N'/data2/PopnScoreTool2.mdf' ),
+        ( FILENAME = N'/data2/PopnScoreTool2_log.ldf' )
+        FOR ATTACH;
+    END TRY
+    BEGIN CATCH
+        CREATE DATABASE [PopnScoreTool2]
+    END CATCH
 END;
 
 

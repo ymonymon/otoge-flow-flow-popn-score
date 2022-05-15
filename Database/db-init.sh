@@ -3,8 +3,10 @@
 # env
 # echo "テスト"
 
+
 # start SQL Server, start the script to create/setup the DB
 # wait for the SQL Server to come up
+echo "wait set up script"
 sleep 60s
 
 echo "running set up script"
