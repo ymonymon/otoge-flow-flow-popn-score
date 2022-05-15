@@ -13,6 +13,7 @@ WSL2(Ubuntu)上で作成する。
 2. Ubuntu 22.04 LTS を選択
 
 ## cmd
+
     $ sudo apt-get update
     $ sudo apt-get install openssl
     $ mkdir temp
@@ -37,7 +38,7 @@ WSL2(Ubuntu)上で作成する。
 - \\wsl$\Ubuntu-22.04\home\{user_name}\temp から fullchain.crt, privkey.pem を取り出す。
 - \PopnScoreTool2\Proxy1\nginx\certs\ に配置する。
 
-## 信頼されたルート証明機関に登録する。
+## 信頼されたルート証明機関に登録する
 
 1. nginx-certificate.crt をダブルクリック
 2. 証明書のインストール→ローカルコンピューター→次へ
