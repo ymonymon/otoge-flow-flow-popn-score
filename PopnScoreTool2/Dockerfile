@@ -9,9 +9,9 @@ EXPOSE 5101
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["PopnScoreTool2/PopnScoreTool2.csproj", "PopnScoreTool2/"]
+COPY ["PopnScoreTool2.csproj", "PopnScoreTool2/"]
 RUN dotnet restore "PopnScoreTool2/PopnScoreTool2.csproj"
-COPY . .
+COPY . PopnScoreTool2/
 WORKDIR "/src/PopnScoreTool2"
 RUN dotnet build "PopnScoreTool2.csproj" -c Release -o /app/build
 

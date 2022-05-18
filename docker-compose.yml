@@ -13,8 +13,8 @@ services:
   web.pst2:
     container_name: web.pst2.ym.local
     build:
-      context: .
-      dockerfile: PopnScoreTool2/Dockerfile
+      context: ./PopnScoreTool2/
+      dockerfile: Dockerfile
     expose:
       - "5101"
 
