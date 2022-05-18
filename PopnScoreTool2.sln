@@ -22,14 +22,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{04
 		Database\docker-compose.yml = Database\docker-compose.yml
 		Database\Dockerfile = Database\Dockerfile
 		Database\entrypoint.sh = Database\entrypoint.sh
-		Database\README-makeCluster.md = Database\README-makeCluster.md
-		Database\README-start-session.md = Database\README-start-session.md
-		Database\README.md = Database\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{55964116-4777-4467-A107-3E27515B461D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{F6334C6A-67AF-4737-A3E1-A57860BCA090}"
 	ProjectSection(SolutionItems) = preProject
-		Database\doc\release.md = Database\doc\release.md
+		Database\doc\Development\README.md = Database\doc\Development\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ops", "Ops", "{5B8AA52C-CAC5-4FC9-8559-494D39126A31}"
+	ProjectSection(SolutionItems) = preProject
+		Database\doc\Ops\GenerateTestDB.md = Database\doc\Ops\GenerateTestDB.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Production", "Production", "{D8717440-D444-46E9-80D1-023392BEAB8D}"
+	ProjectSection(SolutionItems) = preProject
+		Database\doc\Production\README-makeCluster.md = Database\doc\Production\README-makeCluster.md
+		Database\doc\Production\README-start-session.md = Database\doc\Production\README-start-session.md
+		Database\doc\Production\release.md = Database\doc\Production\release.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1Shot", "1Shot", "{CE9D1A1D-FCFB-4254-88BA-E2353C3D6780}"
+	ProjectSection(SolutionItems) = preProject
+		Database\doc\Ops\1shot\auto_exit_off.md = Database\doc\Ops\1shot\auto_exit_off.md
+		Database\doc\Ops\1shot\collate.md = Database\doc\Ops\1shot\collate.md
 	EndProjectSection
 EndProject
 Global
@@ -52,6 +69,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{55964116-4777-4467-A107-3E27515B461D} = {04A09C22-DFF4-4D6F-96EB-87D9C966E695}
+		{F6334C6A-67AF-4737-A3E1-A57860BCA090} = {55964116-4777-4467-A107-3E27515B461D}
+		{5B8AA52C-CAC5-4FC9-8559-494D39126A31} = {55964116-4777-4467-A107-3E27515B461D}
+		{D8717440-D444-46E9-80D1-023392BEAB8D} = {55964116-4777-4467-A107-3E27515B461D}
+		{CE9D1A1D-FCFB-4254-88BA-E2353C3D6780} = {5B8AA52C-CAC5-4FC9-8559-494D39126A31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {04349F41-8618-4165-9044-C1A1B2A398AA}
