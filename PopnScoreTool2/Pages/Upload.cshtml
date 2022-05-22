@@ -25,28 +25,32 @@
     }
     else
     {
-    <h1 class="display-4">Please Login →↑</h1>
+    <h1 class="display-4 nologin">Please Login →↑</h1>
     }
 </div>
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
         <script type="module">
-            (() => {
-                try {
-                    const datalist = localStorage.getItem('datalist');
-                    const inputtag = document.querySelector('#datalist');
-                    const value = encodeURIComponent(datalist);
-                    inputtag.setAttribute('value', value);
+            const PAGE_NAME = 'upload';
+            if (document.querySelector('h1.nologin') !== null) {
+            } else {
+                (() => {
+                    try {
+                        const datalist = localStorage.getItem('datalist');
+                        const inputtag = document.querySelector('#datalist');
+                        const value = encodeURIComponent(datalist);
+                        inputtag.setAttribute('value', value);
 
-                    const json = JSON.parse(datalist);
+                        const json = JSON.parse(datalist);
 
-                    document.getElementById('get-date').textContent = json['info'][0];
-                    document.getElementById('card-name').textContent = json['profile'][0];
-                    document.getElementById('music-num').textContent = json["scores"].length + "曲";
-                } catch (e) {
-                }
-            })();
+                        document.getElementById('get-date').textContent = json['info'][0];
+                        document.getElementById('card-name').textContent = json['profile'][0];
+                        document.getElementById('music-num').textContent = json["scores"].length + "曲";
+                    } catch (e) {
+                    }
+                })();
+            }
         </script>
 
     }
