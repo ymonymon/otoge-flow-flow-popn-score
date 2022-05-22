@@ -11,8 +11,8 @@
 ## build
 
     cd Proxy1
-    docker build -t proxy1 .
+    docker image build -t proxy1 .
 
 ## run
 
-    docker run -dt -p 80:80 -p 443:443 --name Proxy1 Proxy1:latest
+    docker container run -dt -p 80:80 -p 443:443 --name Proxy1 Proxy1:latest

@@ -121,5 +121,5 @@ ecs-db-user-pst2-password
 セッションマネージャーなどで
 
     sudo su - ec2-user
-    docker ps -a
-    docker logs <CONTAINER_ID>
+    docker container ls -a
+    docker container logs <CONTAINER_ID>

@@ -300,8 +300,8 @@ Wait Run Task
 ## Chown
 
 $ sudo su - ec2-user
-$ docker ps
-$ docker exec -it --user root {CONTAINER ID} /bin/bash
+$ docker container ls
+$ docker container exec -it --user root {CONTAINER ID} /bin/bash
 $ chown mssql:root /data2
 
 TODO : ユーザーデータ化 || dockerfile化
