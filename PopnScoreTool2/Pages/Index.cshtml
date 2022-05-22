@@ -166,7 +166,8 @@
 </div>
 @section scripts{
     <script src="~/js/const.js?20200925"></script>
-    <script type="module">
+    <script type="module">        
+        const PAGE_NAME = 'index';
         let mainGrid;
         let stats1Grid;
         let stats2Grid;
@@ -660,16 +661,24 @@ ELSE '-2' END`, [targetData]);
             }
         });
 
-        const nodelist = document.querySelectorAll(".item");
+        @* item の 表示非表示処理 *@
+        const nodelist = document.querySelectorAll('.item');
         const btns = Array.prototype.slice.call(nodelist, 0);
         btns.forEach(btn => {
-            btn.addEventListener("click", element => {
+            btn.addEventListener('click', element => {
+                const ITEM_ID = element.currentTarget.parentNode.id
                 const elm = element.currentTarget.parentNode.querySelectorAll('.content')[0];
-                if (elm.style.display !== "none") {
-                    elm.style.display = "none";
+                const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`)) ?? {};
+
+                if (elm.style.display !== 'none') {
+                    elm.style.display = 'none';
+                    showStatus[ITEM_ID] = '0';
                 } else {
-                    elm.style.display = "";
+                    elm.style.display = '';
+                    showStatus[ITEM_ID] = '1';
                 }
+
+                window.localStorage.setItem(`${PAGE_NAME}.show`, JSON.stringify(showStatus));
             });
         });
 
@@ -1172,6 +1181,19 @@ ELSE '-2' END`, [targetData]);
             });
         }
 
+        @* local storage からの読み込み処理 *@
+        {
+            const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`));
+            if (showStatus !== null) {
+                const nodelist = document.querySelectorAll('.item');
 
+                Array.from(nodelist).map(a => {
+                    const id = a.parentNode.id;
+                    @* ls の結果から表示非表示初期対応 *@
+                    document.querySelector(`#${id} .content`).style.display = (showStatus[id] === '1') ? '' : 'none';
+
+                });
+            }
+        }
     </script>
 }
