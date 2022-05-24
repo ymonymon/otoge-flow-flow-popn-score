@@ -1,5 +1,7 @@
-const PAGE_NAME = 'targetScore';
+/* eslint-disable no-undef */
+// const PAGE_NAME = 'targetScore';
 if (document.querySelector('h1.nologin') !== null) {
+    // no login
 } else {
     let mainGrid;
     let fumens_data_raw;
@@ -49,7 +51,7 @@ if (document.querySelector('h1.nologin') !== null) {
                     return target_score_data[Math.round(key)];
                 },
                 from: value => {
-                    ; return Object.keys(target_score_data).filter((key) => {
+                    return Object.keys(target_score_data).filter((key) => {
                         return target_score_data[key] === value;
                     })[0];
                 }
@@ -64,11 +66,11 @@ if (document.querySelector('h1.nologin') !== null) {
             skipValues[handle].innerHTML = values[handle];
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -133,11 +135,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -202,11 +204,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -271,11 +273,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -343,11 +345,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -370,7 +372,7 @@ if (document.querySelector('h1.nologin') !== null) {
                     return VERSION_DATA[Math.round(key)];
                 },
                 from: value => {
-                    ; return Object.keys(VERSION_DATA).filter((key) => {
+                    return Object.keys(VERSION_DATA).filter((key) => {
                         return VERSION_DATA[key] === value;
                     })[0];
                 }
@@ -385,11 +387,11 @@ if (document.querySelector('h1.nologin') !== null) {
             skipValues[handle].innerHTML = values[handle];
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -452,11 +454,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -519,11 +521,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -696,7 +698,8 @@ FROM ? AS TBL1`, [res2]);
     let sort_click_count;
     let sort_target;
 
-    const storeSort = (...args) => {
+    // const storeSort = (...args) => {
+    const storeSort = () => {
         mainGrid.off('ready', storeSort);
 
         // console.log('row: ' + JSON.stringify(args), args);

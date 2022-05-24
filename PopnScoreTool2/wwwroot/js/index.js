@@ -9,7 +9,7 @@ import {
 
 const PAGE_NAME = 'index';
 if (document.querySelector('h1.nologin') !== null) {
-    // 
+    // no login
 } else {
     let mainGrid;
     let stats1Grid;

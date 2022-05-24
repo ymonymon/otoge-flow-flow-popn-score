@@ -1,10 +1,4 @@
-const C_TITLE = 0;
-const C_GENRE = 1;
-const C_LV_TYPE = 2;
-const C_LV = 3;
-const C_MEDAL = 4;
-const C_RANK = 5;
-
+/* eslint-disable no-undef */
 let mainGrid;
 let fumens_data_raw;
 let old_top_score_data_raw;
@@ -27,7 +21,7 @@ let updateFilterTimer;
                 return VERSION_DATA[Math.round(key)];
             },
             from: value => {
-                ; return Object.keys(VERSION_DATA).filter((key) => {
+                return Object.keys(VERSION_DATA).filter((key) => {
                     return VERSION_DATA[key] === value;
                 })[0];
             }
@@ -42,11 +36,11 @@ let updateFilterTimer;
         skipValues[handle].innerHTML = values[handle];
     });
 
-    skipSlider.noUiSlider.on('start', (values, handle) => {
+    skipSlider.noUiSlider.on('start', () => {
         clearTimeout(updateFilterTimer);
     });
 
-    skipSlider.noUiSlider.on('set', (values, handle) => {
+    skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
             updateFilterTimer = setTimeout(() => {
                 updateGrid2();
@@ -109,11 +103,11 @@ let updateFilterTimer;
         }
     });
 
-    skipSlider.noUiSlider.on('start', (values, handle) => {
+    skipSlider.noUiSlider.on('start', () => {
         clearTimeout(updateFilterTimer);
     });
 
-    skipSlider.noUiSlider.on('set', (values, handle) => {
+    skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
             updateFilterTimer = setTimeout(() => {
                 updateGrid2();
@@ -176,11 +170,11 @@ let updateFilterTimer;
         }
     });
 
-    skipSlider.noUiSlider.on('start', (values, handle) => {
+    skipSlider.noUiSlider.on('start', () => {
         clearTimeout(updateFilterTimer);
     });
 
-    skipSlider.noUiSlider.on('set', (values, handle) => {
+    skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
             updateFilterTimer = setTimeout(() => {
                 updateGrid2();
@@ -237,7 +231,8 @@ INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_
 let sort_click_count;
 let sort_target;
 
-const storeSort = (...args) => {
+// const storeSort = (...args) => {
+const storeSort = () => {
     mainGrid.off('ready', storeSort);
 
     // console.log('row: ' + JSON.stringify(args), args);

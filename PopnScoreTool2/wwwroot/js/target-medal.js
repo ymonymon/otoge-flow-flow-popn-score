@@ -1,13 +1,9 @@
-const PAGE_NAME = 'targetMedal';
-if (document.querySelector('h1.nologin') !== null) {
-} else {
-    const C_TITLE = 0;
-    const C_GENRE = 1;
-    const C_LV_TYPE = 2;
-    const C_LV = 3;
-    const C_MEDAL = 4;
-    const C_RANK = 5;
+/* eslint-disable no-undef */
 
+// const PAGE_NAME = 'targetMedal';
+if (document.querySelector('h1.nologin') !== null) {
+    // no login
+} else {
     let mainGrid;
     let medal_rate_data_raw;
     let fumens_data_raw;
@@ -30,7 +26,7 @@ if (document.querySelector('h1.nologin') !== null) {
                     return VERSION_DATA[Math.round(key)];
                 },
                 from: value => {
-                    ; return Object.keys(VERSION_DATA).filter((key) => {
+                    return Object.keys(VERSION_DATA).filter((key) => {
                         return VERSION_DATA[key] === value;
                     })[0];
                 }
@@ -45,11 +41,11 @@ if (document.querySelector('h1.nologin') !== null) {
             skipValues[handle].innerHTML = values[handle];
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -72,7 +68,7 @@ if (document.querySelector('h1.nologin') !== null) {
                     return target_data[Math.round(key)];
                 },
                 from: value => {
-                    ; return Object.keys(target_data).filter((key) => {
+                    return Object.keys(target_data).filter((key) => {
                         return target_data[key] === value;
                     })[0];
                 }
@@ -87,11 +83,11 @@ if (document.querySelector('h1.nologin') !== null) {
             skipValues[handle].innerHTML = values[handle];
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -156,11 +152,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -223,11 +219,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -290,11 +286,11 @@ if (document.querySelector('h1.nologin') !== null) {
             }
         });
 
-        skipSlider.noUiSlider.on('start', (values, handle) => {
+        skipSlider.noUiSlider.on('start', () => {
             clearTimeout(updateFilterTimer);
         });
 
-        skipSlider.noUiSlider.on('set', (values, handle) => {
+        skipSlider.noUiSlider.on('set', () => {
             if (fumens_data_raw !== undefined && mainGrid !== undefined) {
                 updateFilterTimer = setTimeout(() => {
                     updateGrid2();
@@ -393,7 +389,8 @@ FROM ? AS TBL1`;
     let sort_click_count;
     let sort_target;
 
-    const storeSort = (...args) => {
+    // const storeSort = (...args) => {
+    const storeSort = () => {
         mainGrid.off('ready', storeSort);
 
         // console.log('row: ' + JSON.stringify(args), args);
