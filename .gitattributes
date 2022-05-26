@@ -64,3 +64,6 @@
 
 # for make docker file.
 *.sh     eol=lf
+
+# eslint
+*.js     eol=lf
