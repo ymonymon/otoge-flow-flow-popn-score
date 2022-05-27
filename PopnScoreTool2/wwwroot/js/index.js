@@ -20,6 +20,14 @@ if (document.querySelector('h1.nologin') !== null) {
 
   let updateFilterTimer;
 
+  document.getElementById('reset-button').addEventListener('click', () => {
+    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+        skipSlider =>
+        skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
+    
+    updateGrid2();
+  });
+
   const updateStats = () => {
     const targetData = filteredData === undefined ? allData : filteredData;
     const res = alasql('MATRIX OF SELECT [4] AS medal, [2] AS levelType, COUNT(*) AS c FROM ? GROUP BY [4], [2]', [targetData]);
@@ -604,9 +612,10 @@ ELSE '-2' END`, [targetData]);
 
     {
       const skipSlider = document.getElementById('skipstep-version');
-      const startPos = (prevFilter !== null && prevFilter.version !== null)
+      const defaultPos = VERSION_DATA[0];
+      const startPos = (prevFilter !== null && prevFilter.version !== undefined)
         ? VERSION_DATA[prevFilter.version]
-        : VERSION_DATA[0];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -614,6 +623,7 @@ ELSE '-2' END`, [targetData]);
           max: VERSION_DATA.length - 1,
         },
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: true,
         format: {
@@ -646,9 +656,10 @@ ELSE '-2' END`, [targetData]);
     }
     {
       const skipSlider = document.getElementById('skipstep-medal');
+      const defaultPos = [medal_data[0], medal_data[medal_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
         ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
-        : [medal_data[0], medal_data[medal_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -657,6 +668,7 @@ ELSE '-2' END`, [targetData]);
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -714,9 +726,10 @@ ELSE '-2' END`, [targetData]);
     }
     {
       const skipSlider = document.getElementById('skipstep-rank');
+      const defaultPos = [rank_data[0], rank_data[rank_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
         ? [rank_data[prevFilter.rank[0]], rank_data[prevFilter.rank[1]]]
-        : [rank_data[0], rank_data[rank_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -725,6 +738,7 @@ ELSE '-2' END`, [targetData]);
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -782,9 +796,10 @@ ELSE '-2' END`, [targetData]);
     }
     {
       const skipSlider = document.getElementById('skipstep-score');
+      const defaultPos = [score_data[0], score_data[score_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.score !== undefined && prevFilter.score.length === 2)
         ? [score_data[prevFilter.score[0]], score_data[prevFilter.score[1]]]
-        : [score_data[0], score_data[score_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -792,8 +807,9 @@ ELSE '-2' END`, [targetData]);
           max: score_data.length - 1,
         },
         connect: true,
-        start: startPos,
         // start: [score_data[0], '100k'],
+        start: startPos,
+        default: defaultPos,
         step: 1,
         margin: 1,
         tooltips: [true, true],
@@ -851,9 +867,10 @@ ELSE '-2' END`, [targetData]);
     }
     {
       const skipSlider = document.getElementById('skipstep-lv');
+      const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
         ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
-        : [lv_data[0], lv_data[lv_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -862,6 +879,7 @@ ELSE '-2' END`, [targetData]);
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -917,9 +935,10 @@ ELSE '-2' END`, [targetData]);
     }
     {
       const skipSlider = document.getElementById('skipstep-lv-type');
+      const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
         ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
-        : [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -928,6 +947,7 @@ ELSE '-2' END`, [targetData]);
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {

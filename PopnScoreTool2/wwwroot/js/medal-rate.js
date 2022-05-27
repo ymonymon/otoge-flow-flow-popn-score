@@ -8,15 +8,24 @@ let fumens_data_raw;
 
 let updateFilterTimer;
 
+document.getElementById('reset-button').addEventListener('click', () => {
+  Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+    skipSlider =>
+    skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
+
+  updateGrid2();
+});
+
 {
   // load filter
   const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
 
   {
     const skipSlider = document.getElementById('skipstep-version');
+    const defaultPos = VERSION_DATA[0];
     const startPos = (prevFilter !== null && prevFilter.version !== undefined)
       ? VERSION_DATA[prevFilter.version]
-      : VERSION_DATA[0];
+      : defaultPos;
 
     noUiSlider.create(skipSlider, {
       range: {
@@ -24,6 +33,7 @@ let updateFilterTimer;
         max: VERSION_DATA.length - 1,
       },
       start: startPos,
+      default: defaultPos,
       step: 1,
       tooltips: true,
       format: {
@@ -54,9 +64,10 @@ let updateFilterTimer;
   }
   {
     const skipSlider = document.getElementById('skipstep-lv');
+    const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
     const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
-    ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
-    : [lv_data[0], lv_data[lv_data.length - 1]];
+      ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+      : defaultPos;
 
     noUiSlider.create(skipSlider, {
       range: {
@@ -65,6 +76,7 @@ let updateFilterTimer;
       },
       connect: true,
       start: startPos,
+      default: defaultPos,
       step: 1,
       tooltips: [true, true],
       format: {
@@ -118,9 +130,10 @@ let updateFilterTimer;
   }
   {
     const skipSlider = document.getElementById('skipstep-lv-type');
+    const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
     const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
       ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
-      : [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+      : defaultPos;
 
     noUiSlider.create(skipSlider, {
       range: {
@@ -129,6 +142,7 @@ let updateFilterTimer;
       },
       connect: true,
       start: startPos,
+      default: defaultPos,
       step: 1,
       tooltips: [true, true],
       format: {

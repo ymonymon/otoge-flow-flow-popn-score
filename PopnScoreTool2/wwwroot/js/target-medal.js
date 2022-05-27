@@ -11,15 +11,24 @@ if (document.querySelector('h1.nologin') !== null) {
 
   let updateFilterTimer;
 
+  document.getElementById('reset-button').addEventListener('click', () => {
+    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+      skipSlider =>
+      skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
+  
+    updateGrid2();
+  });
+
   {
     // load filter
     const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
 
     {
       const skipSlider = document.getElementById('skipstep-version');
+      const defaultPos = VERSION_DATA[0];
       const startPos = (prevFilter !== null && prevFilter.version !== undefined)
         ? VERSION_DATA[prevFilter.version]
-        : VERSION_DATA[0];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -27,6 +36,7 @@ if (document.querySelector('h1.nologin') !== null) {
           max: VERSION_DATA.length - 1,
         },
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: true,
         format: {
@@ -57,9 +67,10 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-target');
+      const defaultPos = target_data[target_data.length - 1];
       const startPos = (prevFilter !== null && prevFilter.target !== undefined)
         ? target_data[prevFilter.target]
-        : target_data[target_data.length - 1];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -67,6 +78,7 @@ if (document.querySelector('h1.nologin') !== null) {
           max: target_data.length - 1,
         },
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: true,
         format: {
@@ -97,9 +109,10 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-medal');
+      const defaultPos = [medal_data[0], medal_data[medal_data.length - 2]]; // default without perfect
       const startPos = (prevFilter !== null && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
         ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
-        : [medal_data[0], medal_data[medal_data.length - 2]]; // default without perfect
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -108,6 +121,7 @@ if (document.querySelector('h1.nologin') !== null) {
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -163,9 +177,10 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-lv');
+      const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
         ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
-        : [lv_data[0], lv_data[lv_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -174,6 +189,7 @@ if (document.querySelector('h1.nologin') !== null) {
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -227,9 +243,10 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-lv-type');
+      const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
       const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
         ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
-        : [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+        : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
@@ -238,6 +255,7 @@ if (document.querySelector('h1.nologin') !== null) {
         },
         connect: true,
         start: startPos,
+        default: defaultPos,
         step: 1,
         tooltips: [true, true],
         format: {
