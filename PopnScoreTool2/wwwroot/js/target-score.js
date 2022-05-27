@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
-// const PAGE_NAME = 'targetScore';
+
+const PAGE_NAME = 'targetScore';
 if (document.querySelector('h1.nologin') !== null) {
   // no login
 } else {
@@ -36,451 +37,482 @@ if (document.querySelector('h1.nologin') !== null) {
   };
 
   {
-    const skipSlider = document.getElementById('skipstep-target');
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: target_score_data.length - 1,
-      },
-      start: target_score_data[target_score_data.length - 1],
-      step: 1,
-      tooltips: true,
-      format: {
-        to: (key) => target_score_data[Math.round(key)],
-        from: (value) => Object.keys(target_score_data).filter((key) => target_score_data[key] === value)[0],
-      },
-    });
+    // load filter
+    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
 
-    const skipValues = [
-      document.getElementById('target-text'),
-    ];
+    {
+      const skipSlider = document.getElementById('skipstep-target');
+      const startPos = (prevFilter !== null && prevFilter.target !== undefined)
+        ? target_score_data[prevFilter.target]
+        : target_score_data[target_score_data.length - 1];
 
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-    });
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: target_score_data.length - 1,
+        },
+        start: startPos,
+        step: 1,
+        tooltips: true,
+        format: {
+          to: (key) => target_score_data[Math.round(key)],
+          from: (value) => Object.keys(target_score_data).filter((key) => target_score_data[key] === value)[0],
+        },
+      });
 
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
+      const skipValues = [
+        document.getElementById('target-text'),
+      ];
 
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-diff');
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+      });
 
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: DIFF_DATA.length - 1,
-      },
-      connect: true,
-      start: [DIFF_DATA[0], -1],
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => DIFF_DATA[Math.round(key)],
-        from: (value) => Object.keys(DIFF_DATA).filter((key) => DIFF_DATA[key] === value)[0],
-      },
-    });
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
 
-    const skipValues = [
-      document.getElementById('diff-lower'),
-      document.getElementById('diff-upper'),
-      document.getElementById('diff-hyphen'),
-      document.getElementById('diff-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if ((skipValues[0].innerText == DIFF_DATA[0]
-                || skipValues[0].innerHTML == DIFF_DATA[0])
-                && (skipValues[1].innerText == DIFF_DATA[DIFF_DATA.length - 1]
-                    || skipValues[1].innerHTML == DIFF_DATA[DIFF_DATA.length - 1])) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-medal');
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: medal_data.length - 1,
-      },
-      connect: true,
-      start: [medal_data[0], medal_data[medal_data.length - 1]],
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => medal_data[Math.round(key)],
-        from: (value) => Object.keys(medal_data).filter((key) => medal_data[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('medal-lower'),
-      document.getElementById('medal-upper'),
-      document.getElementById('medal-hyphen'),
-      document.getElementById('medal-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if ((skipValues[0].innerText == medal_data[0]
-                || skipValues[0].innerHTML == medal_data[0])
-                && (skipValues[1].innerText == medal_data[medal_data.length - 1]
-                    || skipValues[1].innerHTML == medal_data[medal_data.length - 1])) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-rank');
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: rank_data.length - 1,
-      },
-      connect: true,
-      start: [rank_data[0], rank_data[rank_data.length - 1]],
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => rank_data[Math.round(key)],
-        from: (value) => Object.keys(rank_data).filter((key) => rank_data[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('rank-lower'),
-      document.getElementById('rank-upper'),
-      document.getElementById('rank-hyphen'),
-      document.getElementById('rank-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if ((skipValues[0].innerText == rank_data[0]
-                || skipValues[0].innerHTML == rank_data[0])
-                && (skipValues[1].innerText == rank_data[rank_data.length - 1]
-                    || skipValues[1].innerHTML == rank_data[rank_data.length - 1])) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-score');
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: score_data.length - 1,
-      },
-      connect: true,
-      // start: [score_data[0], score_data[score_data.length - 1]],
-      start: [score_data[0], '100k'],
-      step: 1,
-      margin: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => score_data[Math.round(key)],
-        from: (value) => Object.keys(score_data).filter((key) => score_data[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('score-lower'),
-      document.getElementById('score-upper'),
-      document.getElementById('score-line'),
-      document.getElementById('score-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      const key_score = Object.keys(score_data).filter((key) => score_data[key] === values[handle])[0];
-
-      skipValues[handle].innerHTML = score_data_display[key_score];
-
-      if (values[0] == score_data[0]
-                && values[1] == score_data[score_data.length - 1]) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        if (values[1] == score_data[score_data.length - 1]) {
-          skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
-        } else {
-          skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
         }
-        skipValues[3].style.display = 'none';
-      }
-    });
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-diff');
+      const startPos = (prevFilter !== null && prevFilter.diff !== undefined && prevFilter.diff.length === 2)
+        ? [DIFF_DATA[prevFilter.diff[0]], DIFF_DATA[prevFilter.diff[1]]]
+        : [DIFF_DATA[0], -1];
 
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: DIFF_DATA.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => DIFF_DATA[Math.round(key)],
+          from: (value) => Object.keys(DIFF_DATA).filter((key) => DIFF_DATA[key] === value)[0],
+        },
+      });
 
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-version');
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: VERSION_DATA.length - 1,
-      },
-      start: VERSION_DATA[0],
-      step: 1,
-      tooltips: true,
-      format: {
-        to: (key) => VERSION_DATA[Math.round(key)],
-        from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
-      },
-    });
+      const skipValues = [
+        document.getElementById('diff-lower'),
+        document.getElementById('diff-upper'),
+        document.getElementById('diff-hyphen'),
+        document.getElementById('diff-same'),
+      ];
 
-    const skipValues = [
-      document.getElementById('version-text'),
-    ];
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
 
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-    });
+        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if ((skipValues[0].innerText == DIFF_DATA[0]
+                  || skipValues[0].innerHTML == DIFF_DATA[0])
+                  && (skipValues[1].innerText == DIFF_DATA[DIFF_DATA.length - 1]
+                      || skipValues[1].innerHTML == DIFF_DATA[DIFF_DATA.length - 1])) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
 
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
 
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-lv');
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-medal');
+      const startPos = (prevFilter !== null && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
+        ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
+        : [medal_data[0], medal_data[medal_data.length - 1]];
 
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: lv_data.length - 1,
-      },
-      connect: true,
-      start: [lv_data[0], lv_data[lv_data.length - 1]],
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => lv_data[Math.round(key)],
-        from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
-      },
-    });
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: medal_data.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => medal_data[Math.round(key)],
+          from: (value) => Object.keys(medal_data).filter((key) => medal_data[key] === value)[0],
+        },
+      });
 
-    const skipValues = [
-      document.getElementById('lv-lower'),
-      document.getElementById('lv-upper'),
-      document.getElementById('lv-hyphen'),
-      document.getElementById('lv-same'),
-    ];
+      const skipValues = [
+        document.getElementById('medal-lower'),
+        document.getElementById('medal-upper'),
+        document.getElementById('medal-hyphen'),
+        document.getElementById('medal-same'),
+      ];
 
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
 
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText == lv_data[0]
-                && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
+        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if ((skipValues[0].innerText == medal_data[0]
+                  || skipValues[0].innerHTML == medal_data[0])
+                  && (skipValues[1].innerText == medal_data[medal_data.length - 1]
+                      || skipValues[1].innerHTML == medal_data[medal_data.length - 1])) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
 
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
 
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-lv-type');
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-rank');
+      const startPos = (prevFilter !== null && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
+        ? [rank_data[prevFilter.rank[0]], rank_data[prevFilter.rank[1]]]
+        : [rank_data[0], rank_data[rank_data.length - 1]];
 
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: lv_type_data.length - 1,
-      },
-      connect: true,
-      start: [lv_type_data[0], lv_type_data[lv_type_data.length - 1]],
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => lv_type_data[Math.round(key)],
-        from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
-      },
-    });
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: rank_data.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => rank_data[Math.round(key)],
+          from: (value) => Object.keys(rank_data).filter((key) => rank_data[key] === value)[0],
+        },
+      });
 
-    const skipValues = [
-      document.getElementById('lv-type-lower'),
-      document.getElementById('lv-type-upper'),
-      document.getElementById('lv-type-hyphen'),
-      document.getElementById('lv-type-same'),
-    ];
+      const skipValues = [
+        document.getElementById('rank-lower'),
+        document.getElementById('rank-upper'),
+        document.getElementById('rank-hyphen'),
+        document.getElementById('rank-same'),
+      ];
 
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
 
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText == lv_type_data[0]
-                && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
+        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if ((skipValues[0].innerText == rank_data[0]
+                  || skipValues[0].innerHTML == rank_data[0])
+                  && (skipValues[1].innerText == rank_data[rank_data.length - 1]
+                      || skipValues[1].innerHTML == rank_data[rank_data.length - 1])) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
 
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
 
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-score');
+      const startPos = (prevFilter !== null && prevFilter.score !== undefined && prevFilter.score.length === 2)
+        ? [score_data[prevFilter.score[0]], score_data[prevFilter.score[1]]]
+        : [score_data[0], '100k'];
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: score_data.length - 1,
+        },
+        connect: true,
+        // start: [score_data[0], score_data[score_data.length - 1]],
+        start: startPos,
+        step: 1,
+        margin: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => score_data[Math.round(key)],
+          from: (value) => Object.keys(score_data).filter((key) => score_data[key] === value)[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('score-lower'),
+        document.getElementById('score-upper'),
+        document.getElementById('score-line'),
+        document.getElementById('score-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        const key_score = Object.keys(score_data).filter((key) => score_data[key] === values[handle])[0];
+
+        skipValues[handle].innerHTML = score_data_display[key_score];
+
+        if (values[0] == score_data[0]
+                  && values[1] == score_data[score_data.length - 1]) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          if (values[1] == score_data[score_data.length - 1]) {
+            skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
+          } else {
+            skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
+          }
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-version');
+      const startPos = (prevFilter !== null && prevFilter.version !== undefined)
+        ? VERSION_DATA[prevFilter.version]
+        : VERSION_DATA[0];
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: VERSION_DATA.length - 1,
+        },
+        start: startPos,
+        step: 1,
+        tooltips: true,
+        format: {
+          to: (key) => VERSION_DATA[Math.round(key)],
+          from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('version-text'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-lv');
+      const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+        ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+        : [lv_data[0], lv_data[lv_data.length - 1]];
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: lv_data.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => lv_data[Math.round(key)],
+          from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('lv-lower'),
+        document.getElementById('lv-upper'),
+        document.getElementById('lv-hyphen'),
+        document.getElementById('lv-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+
+        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if (skipValues[0].innerText == lv_data[0]
+                  && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-lv-type');
+      const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+        ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
+        : [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: lv_type_data.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => lv_type_data[Math.round(key)],
+          from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('lv-type-lower'),
+        document.getElementById('lv-type-upper'),
+        document.getElementById('lv-type-hyphen'),
+        document.getElementById('lv-type-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+
+        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if (skipValues[0].innerText == lv_type_data[0]
+                  && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
   }
 
   const fumenFilter = (target, diff, medal, rank, score, version, lv, lv_type) => {
@@ -971,6 +1003,18 @@ FROM ? AS TBL1`, [res2]);
     val = skipSlider.noUiSlider.get();
     const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
     const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
+
+    // save filter
+    localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify({
+      'target': key_target,
+      'diff': [key_diff1, key_diff2],
+      'medal': [key_medal1, key_medal2],
+      'rank': [key_rank1, key_rank2],
+      'score': [key_score1, key_score2],
+      'version': key_version,
+      'lv': [key_lv1, key_lv2],
+      'lv_type': [key_lv_type1, key_lv_type2]
+    }));
 
     const filteredData = fumenFilter(
       [key_target].map(Number),

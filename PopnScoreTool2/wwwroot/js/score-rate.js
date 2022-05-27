@@ -1,4 +1,7 @@
 /* eslint-disable no-undef */
+
+const PAGE_NAME = 'scoreRate';
+
 let mainGrid;
 let fumens_data_raw;
 let old_top_score_data_raw;
@@ -7,162 +10,177 @@ let score_rate_data_raw;
 let updateFilterTimer;
 
 {
-  const skipSlider = document.getElementById('skipstep-version');
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: VERSION_DATA.length - 1,
-    },
-    start: VERSION_DATA[0],
-    step: 1,
-    tooltips: true,
-    format: {
-      to: (key) => VERSION_DATA[Math.round(key)],
-      from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
-    },
-  });
+  // load filter
+  const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
 
-  const skipValues = [
-    document.getElementById('version-text'),
-  ];
+  {
+    const skipSlider = document.getElementById('skipstep-version');
+    const startPos = (prevFilter !== null && prevFilter.version !== undefined)
+      ? VERSION_DATA[prevFilter.version]
+      : VERSION_DATA[0];
 
-  skipSlider.noUiSlider.on('update', (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
-  });
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: VERSION_DATA.length - 1,
+      },
+      start: startPos,
+      step: 1,
+      tooltips: true,
+      format: {
+        to: (key) => VERSION_DATA[Math.round(key)],
+        from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
+      },
+    });
 
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
+    const skipValues = [
+      document.getElementById('version-text'),
+    ];
 
-  skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-      }, 1000);
-    }
-  });
-}
-{
-  const skipSlider = document.getElementById('skipstep-lv');
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
+    });
 
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: lv_data.length - 1,
-    },
-    connect: true,
-    start: [lv_data[0], lv_data[lv_data.length - 1]],
-    step: 1,
-    tooltips: [true, true],
-    format: {
-      to: (key) => lv_data[Math.round(key)],
-      from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
-    },
-  });
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
 
-  const skipValues = [
-    document.getElementById('lv-lower'),
-    document.getElementById('lv-upper'),
-    document.getElementById('lv-hyphen'),
-    document.getElementById('lv-same'),
-  ];
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
+  {
+    const skipSlider = document.getElementById('skipstep-lv');
+    const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+      ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+      : [lv_data[0], lv_data[lv_data.length - 1]];
 
-  skipSlider.noUiSlider.on('update', (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: lv_data.length - 1,
+      },
+      connect: true,
+      start: startPos,
+      step: 1,
+      tooltips: [true, true],
+      format: {
+        to: (key) => lv_data[Math.round(key)],
+        from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
+      },
+    });
 
-    if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-      skipValues[3].innerHTML = values[handle];
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else if (skipValues[0].innerText == lv_data[0]
-            && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
-      skipValues[3].innerHTML = 'ALL';
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else {
-      skipValues[0].style.display = 'inline';
-      skipValues[1].style.display = 'inline';
-      skipValues[2].style.display = 'inline';
-      skipValues[3].style.display = 'none';
-    }
-  });
+    const skipValues = [
+      document.getElementById('lv-lower'),
+      document.getElementById('lv-upper'),
+      document.getElementById('lv-hyphen'),
+      document.getElementById('lv-same'),
+    ];
 
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
 
-  skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-      }, 1000);
-    }
-  });
-}
-{
-  const skipSlider = document.getElementById('skipstep-lv-type');
+      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        skipValues[3].innerHTML = values[handle];
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else if (skipValues[0].innerText == lv_data[0]
+              && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
+        skipValues[3].innerHTML = 'ALL';
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else {
+        skipValues[0].style.display = 'inline';
+        skipValues[1].style.display = 'inline';
+        skipValues[2].style.display = 'inline';
+        skipValues[3].style.display = 'none';
+      }
+    });
 
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: lv_type_data.length - 1,
-    },
-    connect: true,
-    start: [lv_type_data[0], lv_type_data[lv_type_data.length - 1]],
-    step: 1,
-    tooltips: [true, true],
-    format: {
-      to: (key) => lv_type_data[Math.round(key)],
-      from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
-    },
-  });
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
 
-  const skipValues = [
-    document.getElementById('lv-type-lower'),
-    document.getElementById('lv-type-upper'),
-    document.getElementById('lv-type-hyphen'),
-    document.getElementById('lv-type-same'),
-  ];
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
+  {
+    const skipSlider = document.getElementById('skipstep-lv-type');
+    const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+      ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
+      : [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
 
-  skipSlider.noUiSlider.on('update', (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: lv_type_data.length - 1,
+      },
+      connect: true,
+      start: startPos,
+      step: 1,
+      tooltips: [true, true],
+      format: {
+        to: (key) => lv_type_data[Math.round(key)],
+        from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+      },
+    });
 
-    if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
-      skipValues[3].innerHTML = values[handle];
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else if (skipValues[0].innerText == lv_type_data[0]
-            && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
-      skipValues[3].innerHTML = 'ALL';
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else {
-      skipValues[0].style.display = 'inline';
-      skipValues[1].style.display = 'inline';
-      skipValues[2].style.display = 'inline';
-      skipValues[3].style.display = 'none';
-    }
-  });
+    const skipValues = [
+      document.getElementById('lv-type-lower'),
+      document.getElementById('lv-type-upper'),
+      document.getElementById('lv-type-hyphen'),
+      document.getElementById('lv-type-same'),
+    ];
 
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
 
-  skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-      }, 1000);
-    }
-  });
+      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        skipValues[3].innerHTML = values[handle];
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else if (skipValues[0].innerText == lv_type_data[0]
+              && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
+        skipValues[3].innerHTML = 'ALL';
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else {
+        skipValues[0].style.display = 'inline';
+        skipValues[1].style.display = 'inline';
+        skipValues[2].style.display = 'inline';
+        skipValues[3].style.display = 'none';
+      }
+    });
+
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
+
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
 }
 
 const fumenFilter = (version, lv, lv_type) => {
@@ -487,6 +505,13 @@ const updateGrid2 = () => {
   const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
   const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
 
+  // save filter
+  localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify({
+    'version': key_version,
+    'lv': [key_lv1, key_lv2],
+    'lv_type': [key_lv_type1, key_lv_type2]
+  }));
+  
   const filteredData = fumenFilter(
     [key_version].map(Number),
     [key_lv1, key_lv2].map(Number),
