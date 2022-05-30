@@ -11,7 +11,7 @@
                 const json = JSON.parse(decodeURIComponent(value2));
 
                 try {
-                    localStorage.setItem('datalist', JSON.stringify(json));
+                    window.localStorage.setItem('datalist', JSON.stringify(json));
                 } catch (e) {
                 }
             }

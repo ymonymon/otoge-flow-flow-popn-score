@@ -972,7 +972,7 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     if (filterSaveOnly) {
       // save filter
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+      window.localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
         'stats': key_stats,
         'diff': [key_diff1, key_diff2],
         'medal': [key_medal1, key_medal2],

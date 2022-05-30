@@ -52,7 +52,7 @@ if (document.querySelector('h1.nologin') !== null) {
     
     // remove filter 
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
+    window.localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
 
     updateGrid2();
   });
@@ -85,6 +85,7 @@ if (document.querySelector('h1.nologin') !== null) {
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
     const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
+
 
     {
       const skipSlider = document.getElementById('skipstep-target');
@@ -1092,7 +1093,7 @@ FROM ? AS TBL1`, [res2]);
     if (filterSaveOnly) {
       // save filter
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+      window.localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
         'target': key_target,
         'diff': [key_diff1, key_diff2],
         'medal': [key_medal1, key_medal2],

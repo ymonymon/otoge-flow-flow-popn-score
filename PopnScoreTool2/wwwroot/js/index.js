@@ -59,7 +59,7 @@ if (document.querySelector('h1.nologin') !== null) {
     
     // remove filter 
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
+    window.localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
 
     updateGrid2();
   });
@@ -626,7 +626,7 @@ ELSE '-2' END`, [targetData]);
     if (filterSaveOnly) {
       // save filter
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+      window.localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
         version: key_version,
         medal: [key_medal1, key_medal2],
         rank: [key_rank1, key_rank2],
