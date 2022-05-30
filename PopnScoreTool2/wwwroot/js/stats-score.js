@@ -20,8 +20,12 @@ if (document.querySelector('h1.nologin') !== null) {
       // change filter
       const selectedFilter = target.children[0].id.replace('btnradio', '');
       window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
-      // load fileter
-      const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
+      // load filter
+      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+      const prevFilter =
+        (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+        ? null
+        : prevFilters[selectedFilter];
 
       Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
         skipSlider => {
@@ -50,9 +54,19 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider =>
       skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
 
-    // remove filter 
+    // remove filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    if (prevFilters !== null) {
+      if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
+        delete prevFilters[selectedFilter];
+        if (Object.keys(prevFilters).length === 0) {
+          window.localStorage.removeItem(`${PAGE_NAME}.filter`);
+        } else {
+          window.localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify(prevFilters));
+        }
+      }
+    }
 
     updateGrid2();
   });
@@ -61,7 +75,11 @@ if (document.querySelector('h1.nologin') !== null) {
     // load filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
-    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    const prevFilter =
+      (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+      ? null
+      : prevFilters[selectedFilter];
 
     {
       const skipSlider = document.getElementById('skipstep-stats');
@@ -972,7 +990,8 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     if (filterSaveOnly) {
       // save filter
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      window.localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`)) ?? {};
+      prevFilters[selectedFilter] = {
         'stats': key_stats,
         'diff': [key_diff1, key_diff2],
         'medal': [key_medal1, key_medal2],
@@ -981,7 +1000,9 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
         'version': key_version,
         'lv': [key_lv1, key_lv2],
         'lv_type': [key_lv_type1, key_lv_type2]
-      }));
+      };
+
+      window.localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify(prevFilters));
     } else {
       const filteredData = fumenFilter(
         [key_stats].map(Number),
