@@ -13,17 +13,55 @@ if (document.querySelector('h1.nologin') !== null) {
 
   let updateFilterTimer;
 
+  let initializing = true;
+
+  document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
+    if (initializing === false && target.children[0].getAttribute('name') === 'btnradio') {
+      // change filter
+      const selectedFilter = target.children[0].id.replace('btnradio', '');
+      window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
+      // load fileter
+      const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
+
+      Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+        skipSlider => {
+          if (skipSlider.noUiSlider !== undefined) {
+            if (prevFilter === null) {
+              skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
+            } else {
+              const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replace('-', '_')];
+              const table = skipSlider.noUiSlider.options.matchingTable;
+              if (Array.isArray(filter)) {
+                skipSlider.noUiSlider.set([table[filter[0]], table[filter[1]]]);
+              } else {
+                skipSlider.noUiSlider.set(table[filter]);
+              }
+            }
+          }
+        }
+        );
+
+      updateGrid2();
+    }
+  });
+
   document.getElementById('reset-button').addEventListener('click', () => {
     Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
       skipSlider =>
       skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
+
+    // remove filter 
+    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+    localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
 
     updateGrid2();
   });
 
   {
     // load filter
-    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+    document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
+    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
 
     {
       const skipSlider = document.getElementById('skipstep-stats');
@@ -39,6 +77,7 @@ if (document.querySelector('h1.nologin') !== null) {
         },
         start: startPos,
         default: defaultPos,
+        matchingTable: STATS_DATA,
         step: 1,
         tooltips: true,
         format: {
@@ -61,6 +100,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -82,6 +123,7 @@ if (document.querySelector('h1.nologin') !== null) {
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: DIFF_DATA,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -129,6 +171,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -150,6 +194,7 @@ if (document.querySelector('h1.nologin') !== null) {
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: medal_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -197,6 +242,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -218,6 +265,7 @@ if (document.querySelector('h1.nologin') !== null) {
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: rank_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -265,6 +313,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -287,6 +337,7 @@ if (document.querySelector('h1.nologin') !== null) {
         // start: [score_data[0], score_data[score_data.length - 1]],
         start: startPos,
         default: defaultPos,
+        matchingTable: score_data,
         step: 1,
         margin: 1,
         tooltips: [true, true],
@@ -334,6 +385,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -354,6 +407,7 @@ if (document.querySelector('h1.nologin') !== null) {
         },
         start: startPos,
         default: defaultPos,
+        matchingTable: VERSION_DATA,
         step: 1,
         tooltips: true,
         format: {
@@ -376,6 +430,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -397,6 +453,7 @@ if (document.querySelector('h1.nologin') !== null) {
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: lv_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -442,6 +499,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -463,6 +522,7 @@ if (document.querySelector('h1.nologin') !== null) {
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: lv_type_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -508,6 +568,8 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
           }, 1000);
@@ -865,8 +927,7 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     });
   });
 
-  const updateGrid2 = () => {
-    // document.getElementById('wrapper').innerHTML = '';
+  const updateGrid2 = (filterSaveOnly) => {
     let skipSlider;
     let val;
 
@@ -908,29 +969,34 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
     const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
 
-    // save filter
-    localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify({
-      'stats': key_stats,
-      'diff': [key_diff1, key_diff2],
-      'medal': [key_medal1, key_medal2],
-      'rank': [key_rank1, key_rank2],
-      'score': [key_score1, key_score2],
-      'version': key_version,
-      'lv': [key_lv1, key_lv2],
-      'lv_type': [key_lv_type1, key_lv_type2]
-    }));
+    if (filterSaveOnly) {
+      // save filter
+      const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+      localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+        'stats': key_stats,
+        'diff': [key_diff1, key_diff2],
+        'medal': [key_medal1, key_medal2],
+        'rank': [key_rank1, key_rank2],
+        'score': [key_score1, key_score2],
+        'version': key_version,
+        'lv': [key_lv1, key_lv2],
+        'lv_type': [key_lv_type1, key_lv_type2]
+      }));
+    } else {
+      const filteredData = fumenFilter(
+        [key_stats].map(Number),
+        [key_diff1, key_diff2].map(Number),
+        [key_medal1, key_medal2].map(Number),
+        [key_rank1, key_rank2].map(Number),
+        [key_score1, key_score2].map(Number),
+        [key_version].map(Number),
+        [key_lv1, key_lv2].map(Number),
+        [key_lv_type1, key_lv_type2].map(Number),
+      );
 
-    const filteredData = fumenFilter(
-      [key_stats].map(Number),
-      [key_diff1, key_diff2].map(Number),
-      [key_medal1, key_medal2].map(Number),
-      [key_rank1, key_rank2].map(Number),
-      [key_score1, key_score2].map(Number),
-      [key_version].map(Number),
-      [key_lv1, key_lv2].map(Number),
-      [key_lv_type1, key_lv_type2].map(Number),
-    );
-
-    updateGrid(filteredData);
+      updateGrid(filteredData);
+    }
   };
+
+  initializing = false;
 }

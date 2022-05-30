@@ -20,11 +20,47 @@ if (document.querySelector('h1.nologin') !== null) {
 
   let updateFilterTimer;
 
+  let initializing = true;
+
+  document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
+    if (initializing === false && target.children[0].getAttribute('name') === 'btnradio') {
+      // change filter
+      const selectedFilter = target.children[0].id.replace('btnradio', '');
+      window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
+      // load fileter
+      const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
+
+      Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+        skipSlider => {
+          if (skipSlider.noUiSlider !== undefined) {
+            if (prevFilter === null) {
+              skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
+            } else {
+              const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replace('-', '_')];
+              const table = skipSlider.noUiSlider.options.matchingTable;
+              if (Array.isArray(filter)) {
+                skipSlider.noUiSlider.set([table[filter[0]], table[filter[1]]]);
+              } else {
+                skipSlider.noUiSlider.set(table[filter]);
+              }
+            }
+          }
+        }
+        );
+
+      updateGrid2();
+    }
+  });
+
   document.getElementById('reset-button').addEventListener('click', () => {
     Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
         skipSlider =>
         skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
     
+    // remove filter 
+    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+    localStorage.removeItem(`${PAGE_NAME}.${selectedFilter}.filter`);
+
     updateGrid2();
   });
 
@@ -321,155 +357,178 @@ ELSE '-2' END`, [targetData]);
   };
 
   const updateGrid = (data) => {
-    mainGrid = new gridjs.Grid({
-      columns: [
-        {
-          id: '0',
-          name: 'title',
-          formatter: (_, row) =>
-            /*
-                        // 見た目が悪くなるので保留
-                        if (row.cells[0].data === row.cells[1].data) {
-                            return gridjs.html(row.cells[0].data);
-                        } else {
-                            return gridjs.html(row.cells[0].data + '<br />' + row.cells[1].data);
-                        } */
-            gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '1',
-          name: 'genre',
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              style: 'display:none',
-            };
-          },
-        },
-        {
-          id: '2',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        },
-        {
-          id: '3',
-          name: 'lv',
-          attributes: (cell, row) => {
-            if (cell === null) {
+    if (mainGrid === undefined) {
+      mainGrid = new gridjs.Grid({
+        columns: [
+          {
+            id: '0',
+            name: 'title',
+            formatter: (_, row) =>
+              /*
+                          // 見た目が悪くなるので保留
+                          if (row.cells[0].data === row.cells[1].data) {
+                              return gridjs.html(row.cells[0].data);
+                          } else {
+                              return gridjs.html(row.cells[0].data + '<br />' + row.cells[1].data);
+                          } */
+              gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
+            attributes: (cell) => {
+              if (cell === null) {
+                return undefined;
+              }
               return {
                 colspan: '2',
               };
-            }
-            return {
-              style: `background-color:${
-                row.cells[2].data == 1 ? '#9ED0FF'
-                  : (row.cells[2].data == 2 ? '#C1FF84'
-                    : (row.cells[2].data == 3 ? '#FFFF99'
-                      : (row.cells[2].data == 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
-              colspan: '2',
-            };
+            },
           },
-        },
-        {
-          id: '4',
-          name: 'm',
-          formatter: (cell, row) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                                + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
+          {
+            id: '1',
+            name: 'genre',
+            attributes: (cell) => {
+              if (cell === null) {
+                return undefined;
+              }
+              return {
+                style: 'display:none',
+              };
+            },
           },
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '5',
-          name: 'r',
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
+          {
+            id: '2',
+            name: '',
+            sort: 0,
+            width: '1px',
+            attributes: {
               style: 'display:none',
-            };
+            },
           },
-        },
-        {
-          id: '6',
-          name: 'score',
-          formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
-          attributes: (cell) => {
-            if (cell === null) {
+          {
+            id: '3',
+            name: 'lv',
+            attributes: (cell, row) => {
+              if (cell === null) {
+                return {
+                  colspan: '2',
+                };
+              }
+              return {
+                style: `background-color:${
+                  row.cells[2].data == 1 ? '#9ED0FF'
+                    : (row.cells[2].data == 2 ? '#C1FF84'
+                      : (row.cells[2].data == 3 ? '#FFFF99'
+                        : (row.cells[2].data == 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
+                colspan: '2',
+              };
+            },
+          },
+          {
+            id: '4',
+            name: 'm',
+            formatter: (cell, row) => {
+              if (cell === null) {
+                return undefined;
+              }
+              return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                                  + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
+            },
+            attributes: (cell) => {
+              if (cell === null) {
+                return undefined;
+              }
               return {
                 colspan: '2',
               };
-            }
-            return {
-              style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
-              colspan: '2',
-            };
+            },
           },
-        },
-        {
-          id: '7',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
+          {
+            id: '5',
+            name: 'r',
+            attributes: (cell) => {
+              if (cell === null) {
+                return undefined;
+              }
+              return {
+                style: 'display:none',
+              };
+            },
           },
-        }],
-      sort: true,
-      search: true,
-      pagination: {
-        enabled: true,
-        limit: 20,
-      },
-      fixedHeader: true,
-      height: '400px',
-      style: {
-        table: {
-          width: '100%',
-        },
-        th: {
-          padding: '0px',
-          'text-align': 'center',
-          'min-width': 'auto',
-        },
-        td: {
-          padding: '0px',
-          'text-align': 'center',
-        },
-      },
-      language: {
+          {
+            id: '6',
+            name: 'score',
+            formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
+            attributes: (cell) => {
+              if (cell === null) {
+                return {
+                  colspan: '2',
+                };
+              }
+              return {
+                style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
+                colspan: '2',
+              };
+            },
+          },
+          {
+            id: '7',
+            name: '',
+            sort: 0,
+            width: '1px',
+            attributes: {
+              style: 'display:none',
+            },
+          }],
+        sort: true,
+        search: true,
         pagination: {
-          previous: '←',
-          next: '→',
+          enabled: true,
+          limit: 20,
         },
-      },
-      data,
-    }).render(document.getElementById('wrapper'));
+        fixedHeader: true,
+        height: '400px',
+        style: {
+          table: {
+            width: '100%',
+          },
+          th: {
+            padding: '0px',
+            'text-align': 'center',
+            'min-width': 'auto',
+          },
+          td: {
+            padding: '0px',
+            'text-align': 'center',
+          },
+        },
+        language: {
+          pagination: {
+            previous: '←',
+            next: '→',
+          },
+        },
+        data,
+      }).render(document.getElementById('wrapper'));
+    } else {
+      const sort_a = $('.gridjs-sort-asc');
+      const sort_d = $('.gridjs-sort-desc');
+      sort_target = null;
+      sort_click_count = 0;
+      if (sort_a.length > 0) {
+        sort_target = sort_a.parent()[0].attributes['data-column-id'].nodeValue;
+        sort_click_count = 1;
+      }
+      if (sort_d.length > 0) {
+        sort_target = sort_d.parent()[0].attributes['data-column-id'].nodeValue;
+        sort_click_count = 2;
+      }
+  
+      mainGrid.updateConfig({
+        data: filteredData,
+      }).forceRender();
+  
+      if (sort_click_count > 0) {
+        mainGrid.on('ready', storeSort);
+      }  
+    }
   };
 
   $.getJSON('/api/values', (data) => {
@@ -531,8 +590,7 @@ ELSE '-2' END`, [targetData]);
     }, 0);
   };
 
-  const updateGrid2 = () => {
-    // document.getElementById('wrapper').innerHTML = '';
+  const updateGrid2 = (filterSaveOnly) => {
     let skipSlider;
     let val;
 
@@ -565,50 +623,36 @@ ELSE '-2' END`, [targetData]);
     const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
     const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
 
-    // save filter
-    localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify({
-      version: key_version,
-      medal: [key_medal1, key_medal2],
-      rank: [key_rank1, key_rank2],
-      score: [key_score1, key_score2],
-      lv: [key_lv1, key_lv2],
-      lv_type: [key_lv_type1, key_lv_type2],
-    }));
+    if (filterSaveOnly) {
+      // save filter
+      const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+      localStorage.setItem(`${PAGE_NAME}.${selectedFilter}.filter`, JSON.stringify({
+        version: key_version,
+        medal: [key_medal1, key_medal2],
+        rank: [key_rank1, key_rank2],
+        score: [key_score1, key_score2],
+        lv: [key_lv1, key_lv2],
+        lv_type: [key_lv_type1, key_lv_type2],
+      }));
+    } else {
+      filteredData = fumenFilter(
+        allData,
+        [key_version].map(Number),
+        [key_medal1, key_medal2].map(Number),
+        [key_rank1, key_rank2].map(Number),
+        [key_score1, key_score2].map(Number),
+        [key_lv1, key_lv2].map(Number),
+        [key_lv_type1, key_lv_type2].map(Number),
+      );
 
-    filteredData = fumenFilter(
-      allData,
-      [key_version].map(Number),
-      [key_medal1, key_medal2].map(Number),
-      [key_rank1, key_rank2].map(Number),
-      [key_score1, key_score2].map(Number),
-      [key_lv1, key_lv2].map(Number),
-      [key_lv_type1, key_lv_type2].map(Number),
-    );
-
-    const sort_a = $('.gridjs-sort-asc');
-    const sort_d = $('.gridjs-sort-desc');
-    sort_target = null;
-    sort_click_count = 0;
-    if (sort_a.length > 0) {
-      sort_target = sort_a.parent()[0].attributes['data-column-id'].nodeValue;
-      sort_click_count = 1;
-    }
-    if (sort_d.length > 0) {
-      sort_target = sort_d.parent()[0].attributes['data-column-id'].nodeValue;
-      sort_click_count = 2;
-    }
-
-    mainGrid.updateConfig({
-      data: filteredData,
-    }).forceRender();
-
-    if (sort_click_count > 0) {
-      mainGrid.on('ready', storeSort);
+      updateGrid(filteredData);
     }
   };
   {
     // load filter
-    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+    document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
+    const prevFilter = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.${selectedFilter}.filter`));
 
     {
       const skipSlider = document.getElementById('skipstep-version');
@@ -624,6 +668,7 @@ ELSE '-2' END`, [targetData]);
         },
         start: startPos,
         default: defaultPos,
+        matchingTable: VERSION_DATA,
         step: 1,
         tooltips: true,
         format: {
@@ -646,6 +691,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -669,6 +716,7 @@ ELSE '-2' END`, [targetData]);
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: medal_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -716,6 +764,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -739,6 +789,7 @@ ELSE '-2' END`, [targetData]);
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: rank_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -786,6 +837,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -810,6 +863,7 @@ ELSE '-2' END`, [targetData]);
         // start: [score_data[0], '100k'],
         start: startPos,
         default: defaultPos,
+        matchingTable: score_data,
         step: 1,
         margin: 1,
         tooltips: [true, true],
@@ -857,6 +911,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -880,6 +936,7 @@ ELSE '-2' END`, [targetData]);
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: lv_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -925,6 +982,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -948,6 +1007,7 @@ ELSE '-2' END`, [targetData]);
         connect: true,
         start: startPos,
         default: defaultPos,
+        matchingTable: lv_type_data,
         step: 1,
         tooltips: [true, true],
         format: {
@@ -993,6 +1053,8 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
             updateStats();
@@ -1016,4 +1078,6 @@ ELSE '-2' END`, [targetData]);
       });
     }
   }
+
+  initializing = false;
 }
