@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import * as site from './site_m.js';
 
 const PAGE_NAME = 'statsScore';
 if (document.querySelector('h1.nologin') !== null) {
@@ -13,6 +14,9 @@ if (document.querySelector('h1.nologin') !== null) {
 
   let updateFilterTimer;
 
+  let sort_click_count;
+  let sort_target;
+
   let initializing = true;
 
   document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
@@ -21,7 +25,7 @@ if (document.querySelector('h1.nologin') !== null) {
       const selectedFilter = target.children[0].id.replace('btnradio', '');
       window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
       // load filter
-      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
       const prevFilter =
         (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
         ? null
@@ -45,6 +49,13 @@ if (document.querySelector('h1.nologin') !== null) {
         }
         );
 
+      // change filter で local storage は更新しない。
+      if (prevFilters === null) {
+        window.localStorage.removeItem(`${PAGE_NAME}.filters`)
+      } else {
+        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters))
+      }
+
       updateGrid2();
     }
   });
@@ -56,14 +67,14 @@ if (document.querySelector('h1.nologin') !== null) {
 
     // remove filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
     if (prevFilters !== null) {
       if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
         delete prevFilters[selectedFilter];
         if (Object.keys(prevFilters).length === 0) {
-          window.localStorage.removeItem(`${PAGE_NAME}.filter`);
+          window.localStorage.removeItem(`${PAGE_NAME}.filters`);
         } else {
-          window.localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify(prevFilters));
+          window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
         }
       }
     }
@@ -75,7 +86,7 @@ if (document.querySelector('h1.nologin') !== null) {
     // load filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`));
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
     const prevFilter =
       (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
@@ -702,9 +713,17 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     const result = res2.map((a) => [a[0], a[1], a[2], a[3], a[10], a[11], a[6], a[7], a[4], a[8], a[9]]);
     return result;
   };
-
-  let sort_click_count;
-  let sort_target;
+  
+  // const onReady = (...args) => {
+  const onReady = () => {
+    // page 移動, sort 変更のタイミングでも呼ばれる。
+    // console.log('row: ' + JSON.stringify(args), args);
+    const test = site.getCurrentSortStatus();
+    // console.log(test);
+    if (test[0]) {
+      updateGrid2(true);
+    }
+  }
 
   // const storeSort = (...args) => {
   const storeSort = () => {
@@ -902,26 +921,24 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
         },
         data,
       }).render(document.getElementById('wrapper'));
+
+      mainGrid.on('ready', onReady);
+
+      // 1st sort.
+      [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
+
+      if (0 < sort_click_count) {
+        mainGrid.on('ready', storeSort);
+      }
     } else {
-      const sort_a = $('.gridjs-sort-asc');
-      const sort_d = $('.gridjs-sort-desc');
-      sort_target = null;
-      sort_click_count = 0;
-      if (sort_a.length > 0) {
-        sort_target = sort_a.parent()[0].attributes['data-column-id'].nodeValue;
-        sort_click_count = 1;
-      }
-      if (sort_d.length > 0) {
-        sort_target = sort_d.parent()[0].attributes['data-column-id'].nodeValue;
-        sort_click_count = 2;
-      }
+      [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
 
       mainGrid.updateConfig({
         columns: columns_setting,
         data,
       }).forceRender();
 
-      if (sort_click_count > 0) {
+      if (0 < sort_click_count) {
         mainGrid.on('ready', storeSort);
       }
     }
@@ -988,9 +1005,11 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
 
     if (filterSaveOnly) {
-      // save filter
+      // save filter & sort
+      const sortStatus = site.getCurrentSortStatus();
+
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filter`)) ?? {};
+      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
       prevFilters[selectedFilter] = {
         'stats': key_stats,
         'diff': [key_diff1, key_diff2],
@@ -999,10 +1018,11 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
         'score': [key_score1, key_score2],
         'version': key_version,
         'lv': [key_lv1, key_lv2],
-        'lv_type': [key_lv_type1, key_lv_type2]
+        'lv_type': [key_lv_type1, key_lv_type2],
+        'sort': sortStatus
       };
 
-      window.localStorage.setItem(`${PAGE_NAME}.filter`, JSON.stringify(prevFilters));
+      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
     } else {
       const filteredData = fumenFilter(
         [key_stats].map(Number),
