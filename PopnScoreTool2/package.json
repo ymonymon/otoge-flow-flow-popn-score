@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "directories": {
+    "doc": "doc"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "eslint-config-eslint": "^6.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.8.1",
-    "eslint-plugin-react": "^7.20.6"
-  }
+    "eslint": "^8.16.0",
+    "eslint-plugin-react": "^7.30.0",
+    "prettier": "^2.6.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

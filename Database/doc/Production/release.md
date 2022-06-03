@@ -10,7 +10,7 @@
 ### ビルドとタグ付け
 
     > cd .\Database\
-    > docker build . -t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/db1:latest
+    > docker image build . -t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/db1:latest
 
 ### 認証
 
@@ -21,9 +21,9 @@ PowerShell 7 上で
 
 #### image の push
 
-    docker push {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
+    docker image push {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
 
-    docker push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/db1
+    docker image push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/db1
 
 #### AWS MC で該当するクラスターのタスクを終了。再起動まで待つ
 

@@ -39,20 +39,20 @@ PowerShell 7 上で
 
 #### step 4: tag 付け
 
-    docker tag {IMAGE ID} {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
+    docker image tag {IMAGE ID} {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
 
-    docker tag 57a96a9c7e21 {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
-    docker tag a3d0f9c1cdea {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
+    docker image tag 57a96a9c7e21 {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
+    docker image tag a3d0f9c1cdea {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
 
-    docker tag d0d3c9bb63e5 {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
-    docker tag c7c89bfffedd {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
+    docker image tag d0d3c9bb63e5 {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
+    docker image tag c7c89bfffedd {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
 
 #### step 5: image の push
 
-    docker push {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
+    docker image push {aws_account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}
 
-    docker push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
-    docker push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
+    docker image push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2
+    docker image push {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2
 
 #### step 6: AWS MC で該当するクラスターのタスクを終了。再起動まで待つ
 

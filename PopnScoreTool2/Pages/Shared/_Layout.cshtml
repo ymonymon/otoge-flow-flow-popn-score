@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - popnscoretool2</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css?20220518" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="apple-touch-icon" type="image/png" href="/favicon/apple-touch-icon-180x180.png">
     <link rel="icon" type="image/png" href="/favicon/icon-192x192.png">
     @RenderSection("Header", false)
@@ -14,7 +14,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">pst2 α-8版</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">pst2 α-9版</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,19 +29,19 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/upload">Upload</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/targetmedal">TargetMedal</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/targetscore">TargetScore</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/targetscore">TargetScore</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/targetmedal">TargetMedal</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/statsscore">StatsScore</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/medalrate">MedalRate</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/scorerate">ScoreRate</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/scorerate">ScoreRate</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/medalrate">MedalRate</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/help">Help</a>

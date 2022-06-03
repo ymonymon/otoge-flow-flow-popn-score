@@ -363,6 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # otoge-flow-flow rules
+*.bak
 *.user.md
 *.user.bat
 /*.code-workspace
