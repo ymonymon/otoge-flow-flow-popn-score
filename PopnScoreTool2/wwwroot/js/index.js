@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-undef */
 import * as site from './site_m.js';
 
@@ -33,13 +34,13 @@ if (document.querySelector('h1.nologin') !== null) {
       window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
       // load filter
       const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-      const prevFilter =
-        (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+      const prevFilter = (prevFilters === null
+        || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
         ? null
         : prevFilters[selectedFilter];
 
       Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-        skipSlider => {
+        (skipSlider) => {
           if (skipSlider.noUiSlider !== undefined) {
             if (prevFilter === null) {
               skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
@@ -53,14 +54,16 @@ if (document.querySelector('h1.nologin') !== null) {
               }
             }
           }
-        }
-        );
+
+          return undefined;
+        },
+      );
 
       // change filter で local storage は更新しない。
       if (prevFilters === null) {
-        window.localStorage.removeItem(`${PAGE_NAME}.filters`)
+        window.localStorage.removeItem(`${PAGE_NAME}.filters`);
       } else {
-        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters))
+        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
       }
 
       updateGrid2();
@@ -69,9 +72,9 @@ if (document.querySelector('h1.nologin') !== null) {
 
   document.getElementById('reset-button').addEventListener('click', () => {
     Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-        skipSlider =>
-        skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
-    
+      (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
+    );
+
     // remove filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
@@ -103,8 +106,8 @@ if (document.querySelector('h1.nologin') !== null) {
       const row = [element1];
       for (const element2 of levelTypeOrder) {
         const filterResult = res.filter((a) => a[0] === element1 && a[1] === element2);
-        const c = filterResult.length == 0 ? 0 : filterResult[0][2];
-        if (element1 == 0 || element1 >= 4) {
+        const c = filterResult.length === 0 ? 0 : filterResult[0][2];
+        if (element1 === 0 || element1 >= 4) {
           clearStats[element2] += c;
         }
         totalStats[element2] += c;
@@ -123,14 +126,13 @@ if (document.querySelector('h1.nologin') !== null) {
     totalStats[0] = 'total';
     statsData.push(totalStats);
 
-    if (stats1Grid == undefined) {
+    if (stats1Grid === undefined) {
       stats1Grid = new gridjs.Grid({
         columns: [
           {
             id: '0',
             name: '',
-            formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data
-              : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
+            formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
             attributes: {
               style: 'padding: 0px; text-align: center',
             },
@@ -238,34 +240,39 @@ ELSE '-2' END`, [targetData]);
         const order = medalOrder[idx];
         row.push(order);
         const filterResult = resMedal.filter((a) => a[0] === order);
-        const c = filterResult.length == 0 ? (order === undefined ? undefined : 0) : filterResult[0][1];
+        const c = filterResult.length === 0
+          ? (order === undefined ? undefined : 0) : filterResult[0][1];
         row.push(c);
       }
       {
         const order = rankOrder[idx];
         row.push(order);
         const filterResult = resRank.filter((a) => a[0] === order);
-        const c = filterResult.length == 0 ? (order === undefined ? undefined : 0) : filterResult[0][1];
+        const c = filterResult.length === 0
+          ? (order === undefined ? undefined : 0) : filterResult[0][1];
         row.push(c);
       }
       {
         const order = scoreTypeOrder[idx];
         row.push(order);
         const filterResult = resScore.filter((a) => a[0] === order);
-        const c = filterResult.length == 0 ? (order === undefined ? undefined : 0) : filterResult[0][1];
+        const c = filterResult.length === 0
+          ? (order === undefined ? undefined : 0) : filterResult[0][1];
         row.push(c);
       }
       statsData.push(row);
     }
 
-    if (stats2Grid == undefined) {
+    if (stats2Grid === undefined) {
       stats2Grid = new gridjs.Grid({
         columns: [
           {
             id: '0',
             name: 'medal',
-            formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data
-              : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
+            formatter: (_, row) => gridjs.html(
+              !Number.isInteger(row.cells[0].data) ? row.cells[0].data
+                : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`,
+            ),
             attributes: {
               style: 'padding: 0px; text-align: center',
             },
@@ -277,8 +284,10 @@ ELSE '-2' END`, [targetData]);
           {
             id: '2',
             name: 'rank',
-            formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[2].data) ? row.cells[2].data
-              : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18">`),
+            formatter: (_, row) => gridjs.html(
+              !Number.isInteger(row.cells[2].data) ? row.cells[2].data
+                : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18">`,
+            ),
             attributes: {
               style: 'padding: 0px; text-align: center',
             },
@@ -326,15 +335,17 @@ ELSE '-2' END`, [targetData]);
 
   $.getJSON('/api/profile', (data) => {
     const arr = data[0];
-    document.getElementById('name').innerHTML = arr[0];
-    document.getElementById('chara').innerHTML = arr[2];
-    document.getElementById('popnFriendId').innerHTML = arr[1];
-    document.getElementById('creditsCount').innerHTML = `${arr[3]} / ${arr[4]} / ${arr[5]}`;
-    document.getElementById('comment').innerHTML = arr[6];
-    document.getElementById('lastUpdate').innerHTML = arr[7];
+    const [name, popnFriendId, chara, c1, c2, c3, comment, lastUpdate] = arr;
+
+    document.getElementById('name').innerHTML = name;
+    document.getElementById('chara').innerHTML = chara;
+    document.getElementById('popnFriendId').innerHTML = popnFriendId;
+    document.getElementById('creditsCount').innerHTML = `${c1} / ${c2} / ${c3}`;
+    document.getElementById('comment').innerHTML = comment;
+    document.getElementById('lastUpdate').innerHTML = lastUpdate;
     $('div#profile').show();
   }).fail((jqXHR) => {
-    if (jqXHR.status == 404) {
+    if (jqXHR.status === 404) {
       document.getElementById('name').innerHTML = 'アップロード未完了ユーザー';
       $('div#profile').show();
     }
@@ -344,34 +355,34 @@ ELSE '-2' END`, [targetData]);
     let sql = 'MATRIX OF SELECT * FROM ?';
     let arg = [data];
     if (version[0] !== 0) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' [7] = ?';
       arg = arg.concat([VERSION_DATA_R[version[0]]]);
     }
     if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [4] AND [4] <= ?';
       arg = arg.concat([medal_data_r[medal[0]], medal_data_r[medal[1]]]);
     }
     if (rank[0] !== 0 || rank[1] !== rank_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [5] AND [5] <= ?';
       arg = arg.concat([rank_data_r[rank[0]], rank_data_r[rank[1]]]);
     }
     if (score[0] !== 0 || score[1] !== score_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [6] AND [6] < ?';
       arg = arg.concat([
         score_data_r[score[0]],
         score_data_r[score[1]]]);
     }
     if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [3] AND [3] <= ?';
       arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
     }
     if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [2] AND [2] <= ?';
       arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
     }
@@ -388,15 +399,7 @@ ELSE '-2' END`, [targetData]);
           {
             id: '0',
             name: 'title',
-            formatter: (_, row) =>
-              /*
-                          // 見た目が悪くなるので保留
-                          if (row.cells[0].data === row.cells[1].data) {
-                              return gridjs.html(row.cells[0].data);
-                          } else {
-                              return gridjs.html(row.cells[0].data + '<br />' + row.cells[1].data);
-                          } */
-              gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
+            formatter: (_, row) => gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
             attributes: (cell) => {
               if (cell === null) {
                 return undefined;
@@ -438,10 +441,10 @@ ELSE '-2' END`, [targetData]);
               }
               return {
                 style: `background-color:${
-                  row.cells[2].data == 1 ? '#9ED0FF'
-                    : (row.cells[2].data == 2 ? '#C1FF84'
-                      : (row.cells[2].data == 3 ? '#FFFF99'
-                        : (row.cells[2].data == 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
+                  row.cells[2].data === 1 ? '#9ED0FF'
+                    : (row.cells[2].data === 2 ? '#C1FF84'
+                      : (row.cells[2].data === 3 ? '#FFFF99'
+                        : (row.cells[2].data === 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
                 colspan: '2',
               };
             },
@@ -537,20 +540,20 @@ ELSE '-2' END`, [targetData]);
 
       // 1st sort.
       [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
-  
-      if (0 < sort_click_count) {
+
+      if (sort_click_count > 0) {
         mainGrid.on('ready', storeSort);
       }
     } else {
       [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
-  
+
       mainGrid.updateConfig({
         data: filteredData,
       }).forceRender();
-  
-      if (0 < sort_click_count) {
+
+      if (sort_click_count > 0) {
         mainGrid.on('ready', storeSort);
-      }  
+      }
     }
   };
 
@@ -565,7 +568,7 @@ ELSE '-2' END`, [targetData]);
     updateStats();
     updateStats2();
   }).fail((jqXHR) => {
-    if (jqXHR.status == 404) {
+    if (jqXHR.status === 404) {
       allData = [];
       updateGrid(allData);
       updateGrid2();
@@ -608,8 +611,8 @@ ELSE '-2' END`, [targetData]);
     if (test[0]) {
       updateGrid2(true);
     }
-  }
-  
+  };
+
   // const storeSort = (...args) => {
   const storeSort = () => {
     mainGrid.off('ready', storeSort);
@@ -667,7 +670,7 @@ ELSE '-2' END`, [targetData]);
         score: [key_score1, key_score2],
         lv: [key_lv1, key_lv2],
         lv_type: [key_lv_type1, key_lv_type2],
-        sort: sortStatus
+        sort: sortStatus,
       };
 
       window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
@@ -690,8 +693,8 @@ ELSE '-2' END`, [targetData]);
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter =
-      (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    const prevFilter = (prevFilters === null
+      || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
@@ -714,7 +717,9 @@ ELSE '-2' END`, [targetData]);
         tooltips: true,
         format: {
           to: (key) => VERSION_DATA[Math.round(key)],
-          from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
+          from: (value) => Object.keys(VERSION_DATA).filter(
+            (key) => VERSION_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -745,7 +750,9 @@ ELSE '-2' END`, [targetData]);
     {
       const skipSlider = document.getElementById('skipstep-medal');
       const defaultPos = [medal_data[0], medal_data[medal_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.medal !== undefined
+        && prevFilter.medal.length === 2)
         ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
         : defaultPos;
 
@@ -776,16 +783,16 @@ ELSE '-2' END`, [targetData]);
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText == medal_data[0]
-                    || skipValues[0].innerHTML == medal_data[0])
-                    && (skipValues[1].innerText == medal_data[medal_data.length - 1]
-                        || skipValues[1].innerHTML == medal_data[medal_data.length - 1])) {
+        } else if ((skipValues[0].innerText === medal_data[0]
+                    || skipValues[0].innerHTML === medal_data[0])
+                    && (skipValues[1].innerText === medal_data[medal_data.length - 1]
+                        || skipValues[1].innerHTML === medal_data[medal_data.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -818,7 +825,9 @@ ELSE '-2' END`, [targetData]);
     {
       const skipSlider = document.getElementById('skipstep-rank');
       const defaultPos = [rank_data[0], rank_data[rank_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.rank !== undefined
+        && prevFilter.rank.length === 2)
         ? [rank_data[prevFilter.rank[0]], rank_data[prevFilter.rank[1]]]
         : defaultPos;
 
@@ -849,16 +858,16 @@ ELSE '-2' END`, [targetData]);
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText == rank_data[0]
-                    || skipValues[0].innerHTML == rank_data[0])
-                    && (skipValues[1].innerText == rank_data[rank_data.length - 1]
-                        || skipValues[1].innerHTML == rank_data[rank_data.length - 1])) {
+        } else if ((skipValues[0].innerText === rank_data[0]
+                    || skipValues[0].innerHTML === rank_data[0])
+                    && (skipValues[1].innerText === rank_data[rank_data.length - 1]
+                        || skipValues[1].innerHTML === rank_data[rank_data.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -891,7 +900,9 @@ ELSE '-2' END`, [targetData]);
     {
       const skipSlider = document.getElementById('skipstep-score');
       const defaultPos = [score_data[0], score_data[score_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.score !== undefined && prevFilter.score.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.score !== undefined
+        && prevFilter.score.length === 2)
         ? [score_data[prevFilter.score[0]], score_data[prevFilter.score[1]]]
         : defaultPos;
 
@@ -922,12 +933,14 @@ ELSE '-2' END`, [targetData]);
       ];
 
       skipSlider.noUiSlider.on('update', (values, handle) => {
-        const key_score = Object.keys(score_data).filter((key) => score_data[key] === values[handle])[0];
+        const key_score = Object.keys(score_data).filter(
+          (key) => score_data[key] === values[handle],
+        )[0];
 
         skipValues[handle].innerHTML = score_data_display[key_score];
 
-        if (values[0] == score_data[0]
-                    && values[1] == score_data[score_data.length - 1]) {
+        if (values[0] === score_data[0]
+                    && values[1] === score_data[score_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -937,7 +950,7 @@ ELSE '-2' END`, [targetData]);
           skipValues[0].style.display = 'inline';
           skipValues[1].style.display = 'inline';
           skipValues[2].style.display = 'inline';
-          if (values[1] == score_data[score_data.length - 1]) {
+          if (values[1] === score_data[score_data.length - 1]) {
             skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
           } else {
             skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
@@ -965,7 +978,9 @@ ELSE '-2' END`, [targetData]);
     {
       const skipSlider = document.getElementById('skipstep-lv');
       const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.lv !== undefined
+        && prevFilter.lv.length === 2)
         ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
         : defaultPos;
 
@@ -996,14 +1011,14 @@ ELSE '-2' END`, [targetData]);
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText == lv_data[0]
-                    && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
+        } else if (skipValues[0].innerText === lv_data[0]
+                    && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -1036,7 +1051,9 @@ ELSE '-2' END`, [targetData]);
     {
       const skipSlider = document.getElementById('skipstep-lv-type');
       const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.lv_type !== undefined
+        && prevFilter.lv_type.length === 2)
         ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
         : defaultPos;
 
@@ -1053,7 +1070,9 @@ ELSE '-2' END`, [targetData]);
         tooltips: [true, true],
         format: {
           to: (key) => lv_type_data[Math.round(key)],
-          from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+          from: (value) => Object.keys(lv_type_data).filter(
+            (key) => lv_type_data[key] === value,
+          )[0],
         },
       });
 
@@ -1067,14 +1086,14 @@ ELSE '-2' END`, [targetData]);
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText == lv_type_data[0]
-                    && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
+        } else if (skipValues[0].innerText === lv_type_data[0]
+                    && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -1110,12 +1129,14 @@ ELSE '-2' END`, [targetData]);
   {
     const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`));
     if (showStatus !== null) {
-      const nodelist = document.querySelectorAll('.item');
+      const nodelist2 = document.querySelectorAll('.item');
 
-      Array.from(nodelist).map((a) => {
+      Array.from(nodelist2).map((a) => {
         const { id } = a.parentNode;
         // ls の結果から表示非表示初期対応
         document.querySelector(`#${id} .content`).style.display = (showStatus[id] === '1') ? '' : 'none';
+
+        return undefined;
       });
     }
   }
