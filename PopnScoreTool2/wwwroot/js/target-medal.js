@@ -45,27 +45,27 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
     sql += ' [14] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
   }
-  if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
+  if (medal[0] !== 0 || medal[1] !== otoge.MEDAL_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [4] AND [4] <= ?';
 
-    if (target[0] === target_data.length - 1) {
+    if (target[0] === otoge.TARGET_MEDAL_DATA_R.length - 1) {
       // next
-      arg = arg.concat([medal_data_r[medal[0]], medal_data_r[medal[1]]]);
+      arg = arg.concat([otoge.MEDAL_DATA_R[medal[0]], otoge.MEDAL_DATA_R[medal[1]]]);
     } else {
       // fix target/固定ターゲットの場合は終わっているものをフィルタする。
-      arg = arg.concat([medal_data_r[medal[0]],
-        medal_data_r[medal[1]] < (target_data_r[target[0]] - 1)
-          ? medal_data_r[medal[1]] : (target_data_r[target[0]] - 1),
+      arg = arg.concat([otoge.MEDAL_DATA_R[medal[0]],
+        otoge.MEDAL_DATA_R[medal[1]] < (otoge.TARGET_MEDAL_DATA_R_R[target[0]] - 1)
+          ? otoge.MEDAL_DATA_R[medal[1]] : (otoge.TARGET_MEDAL_DATA_R_R[target[0]] - 1),
       ]);
     }
   }
-  if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
+  if (lv[0] !== 0 || lv[1] !== otoge.LV_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
+  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
@@ -74,7 +74,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
   const res2 = alasql(sql, arg);
 
   let result;
-  if (target[0] === target_data.length - 1) {
+  if (target[0] === otoge.TARGET_MEDAL_DATA_R.length - 1) {
     result = alasql(`MATRIX OF
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
 CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
@@ -88,10 +88,10 @@ ELSE 'score' END,
 TBL1.[12], TBL1.[13]
 FROM ? AS TBL1`, [res2]);
   } else {
-    // ${target_data_r[target[0]] + 1} is column number
+    // ${otoge.TARGET_MEDAL_DATA_R_R[target[0]] + 1} is column number
     const test = `MATRIX OF
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
-CASE WHEN TBL1.[4] < 10 THEN TBL1.[${target_data_r[target[0]] + 1}]
+CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R_R[target[0]] + 1}]
 ELSE 'score' END,
 TBL1.[12], TBL1.[13]
 FROM ? AS TBL1`;
@@ -185,8 +185,8 @@ const updateGrid = (data) => {
           id: '4',
           name: 'n→t',
           formatter: (_, row) => {
-            let next_medal = target_data_r[target_medal_key];
-            if (target_medal_key === String(target_data.length - 1)) {
+            let next_medal = otoge.TARGET_MEDAL_DATA_R_R[target_medal_key];
+            if (target_medal_key === String(otoge.TARGET_MEDAL_DATA_R.length - 1)) {
               if (row.cells[4].data < 4) {
                 next_medal = 4;
               } else {
@@ -322,25 +322,35 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-target');
   val = skipSlider.noUiSlider.get();
-  const key_target = Object.keys(target_data).filter((key) => target_data[key] === val)[0];
+  const key_target = Object.keys(otoge.TARGET_MEDAL_DATA_R).filter(
+    (key) => otoge.TARGET_MEDAL_DATA_R[key] === val,
+  )[0];
 
   // for column
   target_medal_key = key_target;
 
   skipSlider = document.getElementById('skipstep-medal');
   val = skipSlider.noUiSlider.get();
-  const key_medal1 = Object.keys(medal_data).filter((key) => medal_data[key] === val[0])[0];
-  const key_medal2 = Object.keys(medal_data).filter((key) => medal_data[key] === val[1])[0];
+  const key_medal1 = Object.keys(otoge.MEDAL_DATA).filter(
+    (key) => otoge.MEDAL_DATA[key] === val[0],
+  )[0];
+  const key_medal2 = Object.keys(otoge.MEDAL_DATA).filter(
+    (key) => otoge.MEDAL_DATA[key] === val[1],
+  )[0];
 
   skipSlider = document.getElementById('skipstep-lv');
   val = skipSlider.noUiSlider.get();
-  const key_lv1 = Object.keys(lv_data).filter((key) => lv_data[key] === val[0])[0];
-  const key_lv2 = Object.keys(lv_data).filter((key) => lv_data[key] === val[1])[0];
+  const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
+  const key_lv2 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[1])[0];
 
   skipSlider = document.getElementById('skipstep-lv-type');
   val = skipSlider.noUiSlider.get();
-  const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
-  const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
+  const key_lv_type1 = Object.keys(otoge.LV_TYPE_DATA).filter(
+    (key) => otoge.LV_TYPE_DATA[key] === val[0],
+  )[0];
+  const key_lv_type2 = Object.keys(otoge.LV_TYPE_DATA).filter(
+    (key) => otoge.LV_TYPE_DATA[key] === val[1],
+  )[0];
 
   if (filterSaveOnly) {
     // save filter & sort
@@ -498,24 +508,26 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-target');
-      const defaultPos = target_data[target_data.length - 1];
+      const defaultPos = otoge.TARGET_MEDAL_DATA_R[otoge.TARGET_MEDAL_DATA_R.length - 1];
       const startPos = (prevFilter !== null && prevFilter.target !== undefined)
-        ? target_data[prevFilter.target]
+        ? otoge.TARGET_MEDAL_DATA_R[prevFilter.target]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: target_data.length - 1,
+          max: otoge.TARGET_MEDAL_DATA_R.length - 1,
         },
         start: startPos,
         default: defaultPos,
-        matchingTable: target_data,
+        matchingTable: otoge.TARGET_MEDAL_DATA_R,
         step: 1,
         tooltips: true,
         format: {
-          to: (key) => target_data[Math.round(key)],
-          from: (value) => Object.keys(target_data).filter((key) => target_data[key] === value)[0],
+          to: (key) => otoge.TARGET_MEDAL_DATA_R[Math.round(key)],
+          from: (value) => Object.keys(otoge.TARGET_MEDAL_DATA_R).filter(
+            (key) => otoge.TARGET_MEDAL_DATA_R[key] === value,
+          )[0],
         },
       });
 
@@ -543,27 +555,29 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-medal');
-      const defaultPos = [medal_data[0],
-        medal_data[medal_data.length - 2]]; // default without perfect
+      const defaultPos = [otoge.MEDAL_DATA[0],
+        otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]]; // default without perfect
       const startPos = (prevFilter !== null
         && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
-        ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
+        ? [otoge.MEDAL_DATA[prevFilter.medal[0]], otoge.MEDAL_DATA[prevFilter.medal[1]]]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: medal_data.length - 1,
+          max: otoge.MEDAL_DATA.length - 1,
         },
         connect: true,
         start: startPos,
         default: defaultPos,
-        matchingTable: medal_data,
+        matchingTable: otoge.MEDAL_DATA,
         step: 1,
         tooltips: [true, true],
         format: {
-          to: (key) => medal_data[Math.round(key)],
-          from: (value) => Object.keys(medal_data).filter((key) => medal_data[key] === value)[0],
+          to: (key) => otoge.MEDAL_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.MEDAL_DATA).filter(
+            (key) => otoge.MEDAL_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -583,10 +597,11 @@ if (document.querySelector('h1.nologin') !== null) {
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText === medal_data[0]
-                  || skipValues[0].innerHTML === medal_data[0])
-                  && (skipValues[1].innerText === medal_data[medal_data.length - 1]
-                      || skipValues[1].innerHTML === medal_data[medal_data.length - 1])) {
+        } else if ((skipValues[0].innerText === otoge.MEDAL_DATA[0]
+                  || skipValues[0].innerHTML === otoge.MEDAL_DATA[0])
+                  && (skipValues[1].innerText === otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 1]
+                      || skipValues[1].innerHTML === otoge.MEDAL_DATA[
+                        otoge.MEDAL_DATA.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -616,26 +631,28 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-lv');
-      const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
+      const defaultPos = [otoge.LV_DATA[0], otoge.LV_DATA[otoge.LV_DATA.length - 1]];
       const startPos = (prevFilter !== null
         && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
-        ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+        ? [otoge.LV_DATA[prevFilter.lv[0]], otoge.LV_DATA[prevFilter.lv[1]]]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: lv_data.length - 1,
+          max: otoge.LV_DATA.length - 1,
         },
         connect: true,
         start: startPos,
         default: defaultPos,
-        matchingTable: lv_data,
+        matchingTable: otoge.LV_DATA,
         step: 1,
         tooltips: [true, true],
         format: {
-          to: (key) => lv_data[Math.round(key)],
-          from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
+          to: (key) => otoge.LV_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.LV_DATA).filter(
+            (key) => otoge.LV_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -655,8 +672,8 @@ if (document.querySelector('h1.nologin') !== null) {
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText === lv_data[0]
-                  && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
+        } else if (skipValues[0].innerText === otoge.LV_DATA[0]
+                  && skipValues[1].innerText === otoge.LV_DATA[otoge.LV_DATA.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -686,27 +703,27 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-lv-type');
-      const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+      const defaultPos = [otoge.LV_TYPE_DATA[0], otoge.LV_TYPE_DATA[otoge.LV_TYPE_DATA.length - 1]];
       const startPos = (prevFilter !== null
         && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
-        ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
+        ? [otoge.LV_TYPE_DATA[prevFilter.lv_type[0]], otoge.LV_TYPE_DATA[prevFilter.lv_type[1]]]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: lv_type_data.length - 1,
+          max: otoge.LV_TYPE_DATA.length - 1,
         },
         connect: true,
         start: startPos,
         default: defaultPos,
-        matchingTable: lv_type_data,
+        matchingTable: otoge.LV_TYPE_DATA,
         step: 1,
         tooltips: [true, true],
         format: {
-          to: (key) => lv_type_data[Math.round(key)],
-          from: (value) => Object.keys(lv_type_data).filter(
-            (key) => lv_type_data[key] === value,
+          to: (key) => otoge.LV_TYPE_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.LV_TYPE_DATA).filter(
+            (key) => otoge.LV_TYPE_DATA[key] === value,
           )[0],
         },
       });
@@ -727,8 +744,9 @@ if (document.querySelector('h1.nologin') !== null) {
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText === lv_type_data[0]
-                  && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
+        } else if (skipValues[0].innerText === otoge.LV_TYPE_DATA[0]
+                  && skipValues[1].innerText === otoge.LV_TYPE_DATA[
+                    otoge.LV_TYPE_DATA.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';

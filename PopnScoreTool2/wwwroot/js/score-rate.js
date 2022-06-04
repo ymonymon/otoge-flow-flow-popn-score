@@ -43,12 +43,12 @@ INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_
     sql += ' [4] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
   }
-  if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
+  if (lv[0] !== 0 || lv[1] !== otoge.LV_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
+  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
@@ -324,13 +324,17 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-lv');
   val = skipSlider.noUiSlider.get();
-  const key_lv1 = Object.keys(lv_data).filter((key) => lv_data[key] === val[0])[0];
-  const key_lv2 = Object.keys(lv_data).filter((key) => lv_data[key] === val[1])[0];
+  const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
+  const key_lv2 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[1])[0];
 
   skipSlider = document.getElementById('skipstep-lv-type');
   val = skipSlider.noUiSlider.get();
-  const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
-  const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
+  const key_lv_type1 = Object.keys(otoge.LV_TYPE_DATA).filter(
+    (key) => otoge.LV_TYPE_DATA[key] === val[0],
+  )[0];
+  const key_lv_type2 = Object.keys(otoge.LV_TYPE_DATA).filter(
+    (key) => otoge.LV_TYPE_DATA[key] === val[1],
+  )[0];
 
   if (filterSaveOnly) {
     // save filter & sort
@@ -481,26 +485,28 @@ document.getElementById('reset-button').addEventListener('click', () => {
   }
   {
     const skipSlider = document.getElementById('skipstep-lv');
-    const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
+    const defaultPos = [otoge.LV_DATA[0], otoge.LV_DATA[otoge.LV_DATA.length - 1]];
     const startPos = (prevFilter !== null
       && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
-      ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+      ? [otoge.LV_DATA[prevFilter.lv[0]], otoge.LV_DATA[prevFilter.lv[1]]]
       : defaultPos;
 
     noUiSlider.create(skipSlider, {
       range: {
         min: 0,
-        max: lv_data.length - 1,
+        max: otoge.LV_DATA.length - 1,
       },
       connect: true,
       start: startPos,
       default: defaultPos,
-      matchingTable: lv_data,
+      matchingTable: otoge.LV_DATA,
       step: 1,
       tooltips: [true, true],
       format: {
-        to: (key) => lv_data[Math.round(key)],
-        from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
+        to: (key) => otoge.LV_DATA[Math.round(key)],
+        from: (value) => Object.keys(otoge.LV_DATA).filter(
+          (key) => otoge.LV_DATA[key] === value,
+        )[0],
       },
     });
 
@@ -520,8 +526,8 @@ document.getElementById('reset-button').addEventListener('click', () => {
         skipValues[1].style.display = 'none';
         skipValues[2].style.display = 'none';
         skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText === lv_data[0]
-              && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
+      } else if (skipValues[0].innerText === otoge.LV_DATA[0]
+              && skipValues[1].innerText === otoge.LV_DATA[otoge.LV_DATA.length - 1]) {
         skipValues[3].innerHTML = 'ALL';
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
@@ -551,26 +557,28 @@ document.getElementById('reset-button').addEventListener('click', () => {
   }
   {
     const skipSlider = document.getElementById('skipstep-lv-type');
-    const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+    const defaultPos = [otoge.LV_TYPE_DATA[0], otoge.LV_TYPE_DATA[otoge.LV_TYPE_DATA.length - 1]];
     const startPos = (prevFilter !== null
       && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
-      ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
+      ? [otoge.LV_TYPE_DATA[prevFilter.lv_type[0]], otoge.LV_TYPE_DATA[prevFilter.lv_type[1]]]
       : defaultPos;
 
     noUiSlider.create(skipSlider, {
       range: {
         min: 0,
-        max: lv_type_data.length - 1,
+        max: otoge.LV_TYPE_DATA.length - 1,
       },
       connect: true,
       start: startPos,
       default: defaultPos,
-      matchingTable: lv_type_data,
+      matchingTable: otoge.LV_TYPE_DATA,
       step: 1,
       tooltips: [true, true],
       format: {
-        to: (key) => lv_type_data[Math.round(key)],
-        from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+        to: (key) => otoge.LV_TYPE_DATA[Math.round(key)],
+        from: (value) => Object.keys(otoge.LV_TYPE_DATA).filter(
+          (key) => otoge.LV_TYPE_DATA[key] === value,
+        )[0],
       },
     });
 
@@ -590,8 +598,8 @@ document.getElementById('reset-button').addEventListener('click', () => {
         skipValues[1].style.display = 'none';
         skipValues[2].style.display = 'none';
         skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText === lv_type_data[0]
-              && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
+      } else if (skipValues[0].innerText === otoge.LV_TYPE_DATA[0]
+              && skipValues[1].innerText === otoge.LV_TYPE_DATA[otoge.LV_TYPE_DATA.length - 1]) {
         skipValues[3].innerHTML = 'ALL';
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
