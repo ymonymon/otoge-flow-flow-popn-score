@@ -6,7 +6,7 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    // 'airbnb-base',
+    'airbnb-base',
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -15,12 +15,20 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  rules: {/*
-
+  settings: {
+  },
+  rules: {
+    // /*
     'import/extensions': [
       'error', 'always',
       {
       },
-    ],*/
+    ],
+    'no-use-before-define': ['error', {
+      functions: false,
+      classes: true,
+      variables: true,
+    }],
+    // */
   },
 };

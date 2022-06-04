@@ -410,10 +410,13 @@ if (document.querySelector('h1.nologin') !== null) {
     const clearStats = [undefined, 0, 0, 0, 0];
     const totalStats = [undefined, 0, 0, 0, 0];
 
-    for (const element1 of medalOrder) {
+    // for (const element1 of medalOrder) {
+    medalOrder.map((element1) => {
       let medalSum = 0;
       const row = [element1];
-      for (const element2 of levelTypeOrder) {
+
+      // for (const element2 of levelTypeOrder) {
+      levelTypeOrder.map((element2) => {
         const filterResult = res.filter((a) => a[0] === element1 && a[1] === element2);
         const c = filterResult.length === 0 ? 0 : filterResult[0][2];
         if (element1 === 0 || element1 >= 4) {
@@ -422,10 +425,14 @@ if (document.querySelector('h1.nologin') !== null) {
         totalStats[element2] += c;
         row.push(c);
         medalSum += c;
-      }
+
+        return undefined;
+      });
+
       row.push(medalSum);
       statsData.push(row);
-    }
+      return undefined;
+    });
 
     clearStats.push(clearStats.reduce((a, b) => a + b));
     clearStats[0] = 'clear';
@@ -543,7 +550,7 @@ ELSE '-2' END`, [targetData]);
     const scoreTypeOrder = ['100k', '99.4k', '99k', '98k', '95k', '90k', '85k', '80k', '70k', '0', undefined, '-2'];
     const statsData = [];
 
-    for (const idx of indexer) {
+    indexer.map((idx) => {
       const row = [];
       {
         const order = medalOrder[idx];
@@ -577,7 +584,9 @@ ELSE '-2' END`, [targetData]);
         }
       }
       statsData.push(row);
-    }
+
+      return undefined;
+    });
 
     if (stats2Grid === undefined) {
       stats2Grid = new gridjs.Grid({
