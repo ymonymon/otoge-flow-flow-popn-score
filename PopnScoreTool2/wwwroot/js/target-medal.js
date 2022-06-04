@@ -596,8 +596,8 @@ FROM ? AS TBL1`;
               ? row.cells[5].data.toFixed(2) : row.cells[5].data),
             sort: {
               compare: (a, b) => {
-                const a_is_finite = isFinite(a);
-                const b_is_finite = isFinite(b);
+                const a_is_finite = Number.isFinite(a);
+                const b_is_finite = Number.isFinite(b);
                 if (!a_is_finite && !b_is_finite) {
                   return 0;
                 } if (!a_is_finite) {
