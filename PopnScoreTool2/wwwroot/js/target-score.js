@@ -339,10 +339,9 @@ const updateGrid = (data) => {
             // const now_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[now_score_class];
             let target_score_class_str = '';
             if (target_score_class <= 10) {
-              target_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[target_score_class];
-            }
-            if (target_score_class < 4) {
-              target_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[4]; // 85kから
+              // 85kから
+              target_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[
+                target_score_class < 4 ? 4 : target_score_class];
             }
 
             // return now_score_class_str + '→' + target_score_class_str;
