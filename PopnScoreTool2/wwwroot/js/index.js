@@ -434,11 +434,11 @@ if (document.querySelector('h1.nologin') !== null) {
       return undefined;
     });
 
-    clearStats.push(clearStats.reduce((a, b) => a + b));
+    clearStats.push(clearStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
     clearStats[0] = 'clear';
     statsData.push(clearStats);
 
-    totalStats.push(totalStats.reduce((a, b) => a + b));
+    totalStats.push(totalStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
     totalStats[0] = 'total';
     statsData.push(totalStats);
 
