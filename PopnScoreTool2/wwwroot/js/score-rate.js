@@ -23,13 +23,12 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
     window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
     // load filter
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter =
-      (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
     Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-      skipSlider => {
+      (skipSlider) => {
         if (skipSlider.noUiSlider !== undefined) {
           if (prevFilter === null) {
             skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
@@ -43,14 +42,16 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
             }
           }
         }
-      }
-      );
+
+        return undefined;
+      },
+    );
 
     // change filter で local storage は更新しない。
     if (prevFilters === null) {
-      window.localStorage.removeItem(`${PAGE_NAME}.filters`)
+      window.localStorage.removeItem(`${PAGE_NAME}.filters`);
     } else {
-      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters))
+      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
     }
 
     updateGrid2();
@@ -59,23 +60,23 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
 
 document.getElementById('reset-button').addEventListener('click', () => {
   Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-    skipSlider =>
-    skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
+    (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
+  );
 
-    // remove filter
-    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    if (prevFilters !== null) {
-      if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
-        delete prevFilters[selectedFilter];
-        if (Object.keys(prevFilters).length === 0) {
-          window.localStorage.removeItem(`${PAGE_NAME}.filters`);
-        } else {
-          window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-        }
+  // remove filter
+  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
+  if (prevFilters !== null) {
+    if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
+      delete prevFilters[selectedFilter];
+      if (Object.keys(prevFilters).length === 0) {
+        window.localStorage.removeItem(`${PAGE_NAME}.filters`);
+      } else {
+        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
       }
     }
-    
+  }
+
   updateGrid2();
 });
 
@@ -84,8 +85,7 @@ document.getElementById('reset-button').addEventListener('click', () => {
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-  const prevFilter =
-    (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+  const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
     ? null
     : prevFilters[selectedFilter];
 
@@ -327,8 +327,8 @@ const onReady = () => {
   if (test[0]) {
     updateGrid2(true);
   }
-}
-  
+};
+
 // const storeSort = (...args) => {
 const storeSort = () => {
   mainGrid.off('ready', storeSort);
@@ -555,7 +555,7 @@ const updateGrid = (data) => {
     // 1st sort.
     [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
 
-    if (0 < sort_click_count) {
+    if (sort_click_count > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
@@ -565,7 +565,7 @@ const updateGrid = (data) => {
       data,
     }).forceRender();
 
-    if (0 < sort_click_count) {
+    if (sort_click_count > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
@@ -608,14 +608,14 @@ const updateGrid2 = (filterSaveOnly) => {
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
     prevFilters[selectedFilter] = {
-      'version': key_version,
-      'lv': [key_lv1, key_lv2],
-      'lv_type': [key_lv_type1, key_lv_type2],
-      'sort': sortStatus
+      version: key_version,
+      lv: [key_lv1, key_lv2],
+      lv_type: [key_lv_type1, key_lv_type2],
+      sort: sortStatus,
     };
 
     window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-} else {
+  } else {
     const filteredData = fumenFilter(
       [key_version].map(Number),
       [key_lv1, key_lv2].map(Number),

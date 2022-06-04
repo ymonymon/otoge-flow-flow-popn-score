@@ -28,13 +28,12 @@ if (document.querySelector('h1.nologin') !== null) {
       window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
       // load filter
       const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-      const prevFilter =
-        (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+      const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
         ? null
         : prevFilters[selectedFilter];
 
       Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-        skipSlider => {
+        (skipSlider) => {
           if (skipSlider.noUiSlider !== undefined) {
             if (prevFilter === null) {
               skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
@@ -48,14 +47,14 @@ if (document.querySelector('h1.nologin') !== null) {
               }
             }
           }
-        }
-        );
+        },
+      );
 
       // change filter で local storage は更新しない。
       if (prevFilters === null) {
-        window.localStorage.removeItem(`${PAGE_NAME}.filters`)
+        window.localStorage.removeItem(`${PAGE_NAME}.filters`);
       } else {
-        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters))
+        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
       }
 
       updateGrid2();
@@ -64,9 +63,9 @@ if (document.querySelector('h1.nologin') !== null) {
 
   document.getElementById('reset-button').addEventListener('click', () => {
     Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-      skipSlider =>
-      skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default));
-    
+      (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
+    );
+
     // remove filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
@@ -111,8 +110,7 @@ if (document.querySelector('h1.nologin') !== null) {
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter =
-      (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
@@ -799,7 +797,7 @@ FROM ? AS TBL1`, [res2]);
     if (test[0]) {
       updateGrid2(true);
     }
-  }
+  };
 
   // const storeSort = (...args) => {
   const storeSort = () => {
@@ -1052,7 +1050,7 @@ FROM ? AS TBL1`, [res2]);
       // 1st sort.
       [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '8', 2);
 
-      if (0 < sort_click_count) {
+      if (sort_click_count > 0) {
         mainGrid.on('ready', storeSort);
       }
     } else {
@@ -1062,7 +1060,7 @@ FROM ? AS TBL1`, [res2]);
         data,
       }).forceRender();
 
-      if (0 < sort_click_count) {
+      if (sort_click_count > 0) {
         mainGrid.on('ready', storeSort);
       }
     }
@@ -1132,15 +1130,15 @@ FROM ? AS TBL1`, [res2]);
       const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
       const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
       prevFilters[selectedFilter] = {
-        'target': key_target,
-        'diff': [key_diff1, key_diff2],
-        'medal': [key_medal1, key_medal2],
-        'rank': [key_rank1, key_rank2],
-        'score': [key_score1, key_score2],
-        'version': key_version,
-        'lv': [key_lv1, key_lv2],
-        'lv_type': [key_lv_type1, key_lv_type2],
-        'sort': sortStatus,
+        target: key_target,
+        diff: [key_diff1, key_diff2],
+        medal: [key_medal1, key_medal2],
+        rank: [key_rank1, key_rank2],
+        score: [key_score1, key_score2],
+        version: key_version,
+        lv: [key_lv1, key_lv2],
+        lv_type: [key_lv_type1, key_lv_type2],
+        sort: sortStatus,
       };
 
       window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
