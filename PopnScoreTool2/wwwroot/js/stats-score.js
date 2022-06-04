@@ -82,10 +82,10 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
   let sql = 'MATRIX OF SELECT * FROM ?';
   let arg = [res];
 
-  if (diff[0] !== 0 || diff[1] !== DIFF_DATA.length - 1) {
+  if (diff[0] !== 0 || diff[1] !== otoge.DIFF_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [7] AND [7] <= ?';
-    arg = arg.concat([DIFF_DATA_R[diff[0]], DIFF_DATA_R[diff[1]]]);
+    arg = arg.concat([otoge.DIFF_DATA_R[diff[0]], otoge.DIFF_DATA_R[diff[1]]]);
   }
   if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -108,7 +108,7 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
   if (version[0] !== 0) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [5] = ?';
-    arg = arg.concat([VERSION_DATA_R[version[0]]]);
+    arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
   }
   if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -275,7 +275,7 @@ const updateGrid = (data) => {
       id: '9',
       name: 'c',
       formatter: (_, row) => {
-        if (document.getElementById('skipstep-stats').noUiSlider.get() === STATS_DATA[0]) {
+        if (document.getElementById('skipstep-stats').noUiSlider.get() === otoge.STATS_DATA[0]) {
           return gridjs.html(`${row.cells[9].data}<br><span style='color:gray'>(${row.cells[10].data})</span>`);
         }
         return row.cells[10].data;
@@ -361,12 +361,16 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-stats');
   val = skipSlider.noUiSlider.get();
-  const key_stats = Object.keys(STATS_DATA).filter((key) => STATS_DATA[key] === val)[0];
+  const key_stats = Object.keys(otoge.STATS_DATA).filter((key) => otoge.STATS_DATA[key] === val)[0];
 
   skipSlider = document.getElementById('skipstep-diff');
   val = skipSlider.noUiSlider.get();
-  const key_diff1 = Object.keys(DIFF_DATA).filter((key) => DIFF_DATA[key] === val[0])[0];
-  const key_diff2 = Object.keys(DIFF_DATA).filter((key) => DIFF_DATA[key] === val[1])[0];
+  const key_diff1 = Object.keys(otoge.DIFF_DATA).filter(
+    (key) => otoge.DIFF_DATA[key] === val[0],
+  )[0];
+  const key_diff2 = Object.keys(otoge.DIFF_DATA).filter(
+    (key) => otoge.DIFF_DATA[key] === val[1],
+  )[0];
 
   skipSlider = document.getElementById('skipstep-medal');
   val = skipSlider.noUiSlider.get();
@@ -385,7 +389,9 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-version');
   val = skipSlider.noUiSlider.get();
-  const key_version = Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === val)[0];
+  const key_version = Object.keys(otoge.VERSION_DATA).filter(
+    (key) => otoge.VERSION_DATA[key] === val,
+  )[0];
 
   skipSlider = document.getElementById('skipstep-lv');
   val = skipSlider.noUiSlider.get();
@@ -512,24 +518,26 @@ if (document.querySelector('h1.nologin') !== null) {
 
     {
       const skipSlider = document.getElementById('skipstep-stats');
-      const defaultPos = STATS_DATA[0];
+      const defaultPos = otoge.STATS_DATA[0];
       const startPos = (prevFilter !== null && prevFilter.stats !== undefined)
-        ? STATS_DATA[prevFilter.stats]
+        ? otoge.STATS_DATA[prevFilter.stats]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: STATS_DATA.length - 1,
+          max: otoge.STATS_DATA.length - 1,
         },
         start: startPos,
         default: defaultPos,
-        matchingTable: STATS_DATA,
+        matchingTable: otoge.STATS_DATA,
         step: 1,
         tooltips: true,
         format: {
-          to: (key) => STATS_DATA[Math.round(key)],
-          from: (value) => Object.keys(STATS_DATA).filter((key) => STATS_DATA[key] === value)[0],
+          to: (key) => otoge.STATS_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.STATS_DATA).filter(
+            (key) => otoge.STATS_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -557,26 +565,28 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-diff');
-      const defaultPos = [DIFF_DATA[0], -1];
+      const defaultPos = [otoge.DIFF_DATA[0], -1];
       const startPos = (prevFilter !== null
         && prevFilter.diff !== undefined && prevFilter.diff.length === 2)
-        ? [DIFF_DATA[prevFilter.diff[0]], DIFF_DATA[prevFilter.diff[1]]]
+        ? [otoge.DIFF_DATA[prevFilter.diff[0]], otoge.DIFF_DATA[prevFilter.diff[1]]]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: DIFF_DATA.length - 1,
+          max: otoge.DIFF_DATA.length - 1,
         },
         connect: true,
         start: startPos,
         default: defaultPos,
-        matchingTable: DIFF_DATA,
+        matchingTable: otoge.DIFF_DATA,
         step: 1,
         tooltips: [true, true],
         format: {
-          to: (key) => DIFF_DATA[Math.round(key)],
-          from: (value) => Object.keys(DIFF_DATA).filter((key) => DIFF_DATA[key] === value)[0],
+          to: (key) => otoge.DIFF_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.DIFF_DATA).filter(
+            (key) => otoge.DIFF_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -596,10 +606,10 @@ if (document.querySelector('h1.nologin') !== null) {
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText === DIFF_DATA[0]
-                  || skipValues[0].innerHTML === DIFF_DATA[0])
-                  && (skipValues[1].innerText === DIFF_DATA[DIFF_DATA.length - 1]
-                      || skipValues[1].innerHTML === DIFF_DATA[DIFF_DATA.length - 1])) {
+        } else if ((skipValues[0].innerText === otoge.DIFF_DATA[0]
+                  || skipValues[0].innerHTML === otoge.DIFF_DATA[0])
+                  && (skipValues[1].innerText === otoge.DIFF_DATA[otoge.DIFF_DATA.length - 1]
+                      || skipValues[1].innerHTML === otoge.DIFF_DATA[otoge.DIFF_DATA.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -848,25 +858,25 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-version');
-      const defaultPos = VERSION_DATA[0];
+      const defaultPos = otoge.VERSION_DATA[0];
       const startPos = (prevFilter !== null && prevFilter.version !== undefined)
-        ? VERSION_DATA[prevFilter.version]
+        ? otoge.VERSION_DATA[prevFilter.version]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: VERSION_DATA.length - 1,
+          max: otoge.VERSION_DATA.length - 1,
         },
         start: startPos,
         default: defaultPos,
-        matchingTable: VERSION_DATA,
+        matchingTable: otoge.VERSION_DATA,
         step: 1,
         tooltips: true,
         format: {
-          to: (key) => VERSION_DATA[Math.round(key)],
-          from: (value) => Object.keys(VERSION_DATA).filter(
-            (key) => VERSION_DATA[key] === value,
+          to: (key) => otoge.VERSION_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.VERSION_DATA).filter(
+            (key) => otoge.VERSION_DATA[key] === value,
           )[0],
         },
       });

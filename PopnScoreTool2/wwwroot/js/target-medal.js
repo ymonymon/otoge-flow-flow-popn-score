@@ -43,7 +43,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
   if (version[0] !== 0) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [14] = ?';
-    arg = arg.concat([VERSION_DATA_R[version[0]]]);
+    arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
   }
   if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -316,7 +316,9 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-version');
   val = skipSlider.noUiSlider.get();
-  const key_version = Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === val)[0];
+  const key_version = Object.keys(otoge.VERSION_DATA).filter(
+    (key) => otoge.VERSION_DATA[key] === val,
+  )[0];
 
   skipSlider = document.getElementById('skipstep-target');
   val = skipSlider.noUiSlider.get();
@@ -449,25 +451,25 @@ if (document.querySelector('h1.nologin') !== null) {
 
     {
       const skipSlider = document.getElementById('skipstep-version');
-      const defaultPos = VERSION_DATA[0];
+      const defaultPos = otoge.VERSION_DATA[0];
       const startPos = (prevFilter !== null && prevFilter.version !== undefined)
-        ? VERSION_DATA[prevFilter.version]
+        ? otoge.VERSION_DATA[prevFilter.version]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: VERSION_DATA.length - 1,
+          max: otoge.VERSION_DATA.length - 1,
         },
         start: startPos,
         default: defaultPos,
-        matchingTable: VERSION_DATA,
+        matchingTable: otoge.VERSION_DATA,
         step: 1,
         tooltips: true,
         format: {
-          to: (key) => VERSION_DATA[Math.round(key)],
-          from: (value) => Object.keys(VERSION_DATA).filter(
-            (key) => VERSION_DATA[key] === value,
+          to: (key) => otoge.VERSION_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.VERSION_DATA).filter(
+            (key) => otoge.VERSION_DATA[key] === value,
           )[0],
         },
       });
