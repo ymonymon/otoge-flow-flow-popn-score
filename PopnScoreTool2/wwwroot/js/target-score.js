@@ -28,7 +28,8 @@ if (document.querySelector('h1.nologin') !== null) {
       window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
       // load filter
       const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-      const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+      const prevFilter = (prevFilters === null
+        || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
         ? null
         : prevFilters[selectedFilter];
 
@@ -47,6 +48,8 @@ if (document.querySelector('h1.nologin') !== null) {
               }
             }
           }
+
+          return undefined;
         },
       );
 
@@ -110,7 +113,8 @@ if (document.querySelector('h1.nologin') !== null) {
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    const prevFilter = (prevFilters === null
+      || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
@@ -133,7 +137,9 @@ if (document.querySelector('h1.nologin') !== null) {
         tooltips: true,
         format: {
           to: (key) => target_score_data[Math.round(key)],
-          from: (value) => Object.keys(target_score_data).filter((key) => target_score_data[key] === value)[0],
+          from: (value) => Object.keys(target_score_data).filter(
+            (key) => target_score_data[key] === value,
+          )[0],
         },
       });
 
@@ -162,7 +168,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-diff');
       const defaultPos = [DIFF_DATA[0], -1];
-      const startPos = (prevFilter !== null && prevFilter.diff !== undefined && prevFilter.diff.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.diff !== undefined && prevFilter.diff.length === 2)
         ? [DIFF_DATA[prevFilter.diff[0]], DIFF_DATA[prevFilter.diff[1]]]
         : defaultPos;
 
@@ -193,16 +200,16 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText == DIFF_DATA[0]
-                  || skipValues[0].innerHTML == DIFF_DATA[0])
-                  && (skipValues[1].innerText == DIFF_DATA[DIFF_DATA.length - 1]
-                      || skipValues[1].innerHTML == DIFF_DATA[DIFF_DATA.length - 1])) {
+        } else if ((skipValues[0].innerText === DIFF_DATA[0]
+                  || skipValues[0].innerHTML === DIFF_DATA[0])
+                  && (skipValues[1].innerText === DIFF_DATA[DIFF_DATA.length - 1]
+                      || skipValues[1].innerHTML === DIFF_DATA[DIFF_DATA.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -233,7 +240,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-medal');
       const defaultPos = [medal_data[0], medal_data[medal_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.medal !== undefined && prevFilter.medal.length === 2)
         ? [medal_data[prevFilter.medal[0]], medal_data[prevFilter.medal[1]]]
         : defaultPos;
 
@@ -264,16 +272,16 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText == medal_data[0]
-                  || skipValues[0].innerHTML == medal_data[0])
-                  && (skipValues[1].innerText == medal_data[medal_data.length - 1]
-                      || skipValues[1].innerHTML == medal_data[medal_data.length - 1])) {
+        } else if ((skipValues[0].innerText === medal_data[0]
+                  || skipValues[0].innerHTML === medal_data[0])
+                  && (skipValues[1].innerText === medal_data[medal_data.length - 1]
+                      || skipValues[1].innerHTML === medal_data[medal_data.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -304,7 +312,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-rank');
       const defaultPos = [rank_data[0], rank_data[rank_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
         ? [rank_data[prevFilter.rank[0]], rank_data[prevFilter.rank[1]]]
         : defaultPos;
 
@@ -335,16 +344,16 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText == rank_data[0]
-                  || skipValues[0].innerHTML == rank_data[0])
-                  && (skipValues[1].innerText == rank_data[rank_data.length - 1]
-                      || skipValues[1].innerHTML == rank_data[rank_data.length - 1])) {
+        } else if ((skipValues[0].innerText === rank_data[0]
+                  || skipValues[0].innerHTML === rank_data[0])
+                  && (skipValues[1].innerText === rank_data[rank_data.length - 1]
+                      || skipValues[1].innerHTML === rank_data[rank_data.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -375,7 +384,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-score');
       const defaultPos = [score_data[0], '100k'];
-      const startPos = (prevFilter !== null && prevFilter.score !== undefined && prevFilter.score.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.score !== undefined && prevFilter.score.length === 2)
         ? [score_data[prevFilter.score[0]], score_data[prevFilter.score[1]]]
         : defaultPos;
 
@@ -406,12 +416,14 @@ if (document.querySelector('h1.nologin') !== null) {
       ];
 
       skipSlider.noUiSlider.on('update', (values, handle) => {
-        const key_score = Object.keys(score_data).filter((key) => score_data[key] === values[handle])[0];
+        const key_score = Object.keys(score_data).filter(
+          (key) => score_data[key] === values[handle],
+        )[0];
 
         skipValues[handle].innerHTML = score_data_display[key_score];
 
-        if (values[0] == score_data[0]
-                  && values[1] == score_data[score_data.length - 1]) {
+        if (values[0] === score_data[0]
+                  && values[1] === score_data[score_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -421,7 +433,7 @@ if (document.querySelector('h1.nologin') !== null) {
           skipValues[0].style.display = 'inline';
           skipValues[1].style.display = 'inline';
           skipValues[2].style.display = 'inline';
-          if (values[1] == score_data[score_data.length - 1]) {
+          if (values[1] === score_data[score_data.length - 1]) {
             skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
           } else {
             skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
@@ -463,7 +475,9 @@ if (document.querySelector('h1.nologin') !== null) {
         tooltips: true,
         format: {
           to: (key) => VERSION_DATA[Math.round(key)],
-          from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
+          from: (value) => Object.keys(VERSION_DATA).filter(
+            (key) => VERSION_DATA[key] === value,
+          )[0],
         },
       });
 
@@ -492,7 +506,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-lv');
       const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
         ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
         : defaultPos;
 
@@ -523,14 +538,14 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText == lv_data[0]
-                  && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
+        } else if (skipValues[0].innerText === lv_data[0]
+                  && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -561,7 +576,8 @@ if (document.querySelector('h1.nologin') !== null) {
     {
       const skipSlider = document.getElementById('skipstep-lv-type');
       const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
-      const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+      const startPos = (prevFilter !== null
+        && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
         ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
         : defaultPos;
 
@@ -578,7 +594,9 @@ if (document.querySelector('h1.nologin') !== null) {
         tooltips: [true, true],
         format: {
           to: (key) => lv_type_data[Math.round(key)],
-          from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+          from: (value) => Object.keys(lv_type_data).filter(
+            (key) => lv_type_data[key] === value,
+          )[0],
         },
       });
 
@@ -592,14 +610,14 @@ if (document.querySelector('h1.nologin') !== null) {
       skipSlider.noUiSlider.on('update', (values, handle) => {
         skipValues[handle].innerHTML = values[handle];
 
-        if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
           skipValues[3].innerHTML = values[handle];
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
           skipValues[2].style.display = 'none';
           skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText == lv_type_data[0]
-                  && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
+        } else if (skipValues[0].innerText === lv_type_data[0]
+                  && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
@@ -650,7 +668,7 @@ INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
 INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_raw, my_music_data_raw]);
 
     let res2;
-    if (target[0] == target_score_data.length - 1) {
+    if (target[0] === target_score_data.length - 1) {
       // get next
       res2 = alasql(`MATRIX OF
 SELECT 
@@ -733,24 +751,24 @@ FROM ? AS TBL1`, [res2]);
     let sql = 'MATRIX OF SELECT * FROM ?';
     let arg = [res3];
     if (diff[0] !== 0 || diff[1] !== DIFF_DATA.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [10] AND [10] <= ?';
       arg = arg.concat([DIFF_DATA_R[diff[0]], DIFF_DATA_R[diff[1]]]);
     }
     if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [4] AND [4] <= ?';
       arg = arg.concat([medal_data_r[medal[0]], medal_data_r[medal[1]]]);
     }
     if (rank[0] !== 0 || rank[1] !== rank_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [5] AND [5] <= ?';
       arg = arg.concat([rank_data_r[rank[0]], rank_data_r[rank[1]]]);
     }
     if (score[0] !== 0 || score[1] !== score_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [6] AND [6] < ?';
-      if (target[0] == target_score_data.length - 1) {
+      if (target[0] === target_score_data.length - 1) {
         // next
         arg = arg.concat([
           score_data_r[score[0]],
@@ -759,23 +777,24 @@ FROM ? AS TBL1`, [res2]);
         // fix target
         arg = arg.concat([
           score_data_r[score[0]],
-          score_data_r[score[1]] < score_data_r[target_score_data_r[target[0]]] ? score_data_r[score[1]] : score_data_r[target_score_data_r[target[0]]],
+          score_data_r[score[1]] < score_data_r[target_score_data_r[target[0]]]
+            ? score_data_r[score[1]] : score_data_r[target_score_data_r[target[0]]],
         ]);
       }
     }
 
     if (version[0] !== 0) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' [12] = ?';
       arg = arg.concat([VERSION_DATA_R[version[0]]]);
     }
     if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [3] AND [3] <= ?';
       arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
     }
     if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
-      sql += (arg.length == 1) ? ' WHERE' : ' AND';
+      sql += (arg.length === 1) ? ' WHERE' : ' AND';
       sql += ' ? <= [2] AND [2] <= ?';
       arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
     }
@@ -783,7 +802,8 @@ FROM ? AS TBL1`, [res2]);
     const res4 = alasql(sql, arg);
 
     // remove score class/version column
-    const result = res4.map((a) => [a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[10], a[11]]);
+    const result = res4.map((a) => [a[0], a[1], a[2], a[3], a[4],
+      Sa[5], a[6], a[7], a[8], a[10], a[11]]);
 
     return result;
   };
@@ -863,11 +883,7 @@ FROM ? AS TBL1`, [res2]);
                 };
               }
               return {
-                style: `background-color:${
-                  row.cells[2].data == 1 ? '#9ED0FF'
-                    : (row.cells[2].data == 2 ? '#C1FF84'
-                      : (row.cells[2].data == 3 ? '#FFFF99'
-                        : (row.cells[2].data == 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
+                style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
                 colspan: '2',
               };
             },
@@ -917,7 +933,7 @@ FROM ? AS TBL1`, [res2]);
             formatter: (_, row) => {
               let target_score_class = target_score_data_r[target_score_key];
               const now_score_class = scoreToScoreClass(row.cells[6].data);
-              if (target_score_key == target_score_data.length - 1) {
+              if (target_score_key === target_score_data.length - 1) {
                 if (now_score_class < 10) {
                   target_score_class = now_score_class + 1;
                 } else {
@@ -950,7 +966,8 @@ FROM ? AS TBL1`, [res2]);
             id: '8',
             // important!
             name: gridjs.html('target<br>%'),
-            formatter: (_, row) => (Number.isFinite(row.cells[8].data) ? row.cells[8].data.toFixed(2) : row.cells[8].data),
+            formatter: (_, row) => (Number.isFinite(row.cells[8].data)
+              ? row.cells[8].data.toFixed(2) : row.cells[8].data),
             sort: {
               compare: (a, b) => {
                 const a_is_finite = isFinite(a);
@@ -1084,7 +1101,9 @@ FROM ? AS TBL1`, [res2]);
 
     skipSlider = document.getElementById('skipstep-target');
     val = skipSlider.noUiSlider.get();
-    const key_target = Object.keys(target_score_data).filter((key) => target_score_data[key] === val)[0];
+    const key_target = Object.keys(target_score_data).filter(
+      (key) => target_score_data[key] === val,
+    )[0];
 
     // for column
     target_score_key = key_target;

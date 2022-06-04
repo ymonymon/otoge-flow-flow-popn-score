@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-undef */
 import * as site from './site_m.js';
+import * as otoge from './const_m.js';
 
 const PAGE_NAME = 'medalRate';
 
@@ -22,7 +23,8 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
     window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
     // load filter
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter = (prevFilters === null || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    const prevFilter = (prevFilters === null
+      || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
@@ -41,6 +43,8 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
             }
           }
         }
+
+        return undefined;
       },
     );
 
@@ -135,7 +139,8 @@ document.getElementById('reset-button').addEventListener('click', () => {
   {
     const skipSlider = document.getElementById('skipstep-lv');
     const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
-    const startPos = (prevFilter !== null && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+    const startPos = (prevFilter !== null
+      && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
       ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
       : defaultPos;
 
@@ -166,14 +171,14 @@ document.getElementById('reset-button').addEventListener('click', () => {
     skipSlider.noUiSlider.on('update', (values, handle) => {
       skipValues[handle].innerHTML = values[handle];
 
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
         skipValues[3].innerHTML = values[handle];
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
         skipValues[2].style.display = 'none';
         skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText == lv_data[0]
-              && skipValues[1].innerText == lv_data[lv_data.length - 1]) {
+      } else if (skipValues[0].innerText === lv_data[0]
+              && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
         skipValues[3].innerHTML = 'ALL';
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
@@ -204,7 +209,8 @@ document.getElementById('reset-button').addEventListener('click', () => {
   {
     const skipSlider = document.getElementById('skipstep-lv-type');
     const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
-    const startPos = (prevFilter !== null && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+    const startPos = (prevFilter !== null
+      && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
       ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
       : defaultPos;
 
@@ -235,14 +241,14 @@ document.getElementById('reset-button').addEventListener('click', () => {
     skipSlider.noUiSlider.on('update', (values, handle) => {
       skipValues[handle].innerHTML = values[handle];
 
-      if (skipValues[0].innerHTML == skipValues[1].innerHTML) {
+      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
         skipValues[3].innerHTML = values[handle];
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
         skipValues[2].style.display = 'none';
         skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText == lv_type_data[0]
-              && skipValues[1].innerText == lv_type_data[lv_type_data.length - 1]) {
+      } else if (skipValues[0].innerText === lv_type_data[0]
+              && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
         skipValues[3].innerHTML = 'ALL';
         skipValues[0].style.display = 'none';
         skipValues[1].style.display = 'none';
@@ -296,17 +302,17 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
   let sql = 'MATRIX OF SELECT * FROM ?';
   let arg = [data];
   if (version[0] !== 0) {
-    sql += (arg.length == 1) ? ' WHERE' : ' AND';
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [4] = ?';
     arg = arg.concat([VERSION_DATA_R[version[0]]]);
   }
   if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
-    sql += (arg.length == 1) ? ' WHERE' : ' AND';
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
   if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
-    sql += (arg.length == 1) ? ' WHERE' : ' AND';
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
   }
@@ -314,7 +320,8 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
   const res2 = alasql(sql, arg);
 
   // version除去
-  const result = res2.map((a) => [a[0], a[1], a[2], a[3], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13]]);
+  const result = res2.map((a) => [a[0], a[1], a[2], a[3], a[5],
+    a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13]]);
   return result;
 };
 
@@ -393,11 +400,7 @@ const updateGrid = (data) => {
               };
             }
             return {
-              style: `background-color:${
-                row.cells[2].data == 1 ? '#9ED0FF'
-                  : (row.cells[2].data == 2 ? '#C1FF84'
-                    : (row.cells[2].data == 3 ? '#FFFF99'
-                      : (row.cells[2].data == 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
+              style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
               colspan: '2',
             };
           },
