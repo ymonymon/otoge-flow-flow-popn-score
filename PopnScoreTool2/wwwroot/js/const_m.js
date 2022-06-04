@@ -193,7 +193,7 @@ export const SCORE_DATA_R = [
   200000,
 ];
 /*
-export const otoge.SCORE_DATA_r_lower = [
+export const otoge.SCORE_DATA_R_LOWER = [
     -2,
     0,
     70000,
@@ -206,7 +206,7 @@ export const otoge.SCORE_DATA_r_lower = [
     99400,
     100000,
 ];
-export const otoge.SCORE_DATA_r_upper = [
+export const otoge.SCORE_DATA_R_UPPER = [
     0,
     70000,
     80000,
@@ -228,4 +228,18 @@ export const LV_TYPE_DATA = [
   'NORMAL',
   'HYPER',
   'EX',
+];
+
+export const ARROW_TARGET_SCORE_DATA = [
+  '85k',
+  '90k',
+  '95k',
+  '98k',
+  '99k',
+  '99.4k',
+  '100k',
+];
+
+export const ARROW_TARGET_SCORE_DATA_R = [
+  4, 5, 6, 7, 8, 9, 10,
 ];
