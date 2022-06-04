@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-undef */
 import * as site from './site_m.js';
+import * as otoge from './const_m.js';
 
 /*
 import {
@@ -240,25 +241,32 @@ ELSE '-2' END`, [targetData]);
         const order = medalOrder[idx];
         row.push(order);
         const filterResult = resMedal.filter((a) => a[0] === order);
-        const c = filterResult.length === 0
-          ? (order === undefined ? undefined : 0) : filterResult[0][1];
-        row.push(c);
+
+        if (filterResult.length === 0) {
+          row.push(order === undefined ? undefined : 0);
+        } else {
+          row.push(filterResult[0][1]);
+        }
       }
       {
         const order = rankOrder[idx];
         row.push(order);
         const filterResult = resRank.filter((a) => a[0] === order);
-        const c = filterResult.length === 0
-          ? (order === undefined ? undefined : 0) : filterResult[0][1];
-        row.push(c);
+        if (filterResult.length === 0) {
+          row.push(order === undefined ? undefined : 0);
+        } else {
+          row.push(filterResult[0][1]);
+        }
       }
       {
         const order = scoreTypeOrder[idx];
         row.push(order);
         const filterResult = resScore.filter((a) => a[0] === order);
-        const c = filterResult.length === 0
-          ? (order === undefined ? undefined : 0) : filterResult[0][1];
-        row.push(c);
+        if (filterResult.length === 0) {
+          row.push(order === undefined ? undefined : 0);
+        } else {
+          row.push(filterResult[0][1]);
+        }
       }
       statsData.push(row);
     }
@@ -299,7 +307,14 @@ ELSE '-2' END`, [targetData]);
           {
             id: '4',
             name: 'score',
-            formatter: (_, row) => (row.cells[4].data === undefined ? undefined : (row.cells[4].data === '-2' ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18">') : row.cells[4].data)),
+            formatter: (_, row) => {
+              if (row.cells[4].data === undefined) {
+                return undefined;
+              }
+
+              return (row.cells[4].data === '-2'
+                ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18">') : row.cells[4].data);
+            },
             attributes: {
               style: 'padding: 0px; text-align: center',
             },
@@ -440,11 +455,7 @@ ELSE '-2' END`, [targetData]);
                 };
               }
               return {
-                style: `background-color:${
-                  row.cells[2].data === 1 ? '#9ED0FF'
-                    : (row.cells[2].data === 2 ? '#C1FF84'
-                      : (row.cells[2].data === 3 ? '#FFFF99'
-                        : (row.cells[2].data === 4 ? '#FF99FF' : '#FFFFFF')))}; padding:0px; text-align: center`,
+                style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
                 colspan: '2',
               };
             },
