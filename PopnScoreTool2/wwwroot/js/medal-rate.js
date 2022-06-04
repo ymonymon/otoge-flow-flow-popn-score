@@ -16,268 +16,6 @@ let sort_target;
 
 let initializing = true;
 
-document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
-  if (initializing === false && target.children[0].getAttribute('name') === 'btnradio') {
-    // change filter
-    const selectedFilter = target.children[0].id.replace('btnradio', '');
-    window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
-    // load filter
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-    const prevFilter = (prevFilters === null
-      || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
-      ? null
-      : prevFilters[selectedFilter];
-
-    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-      (skipSlider) => {
-        if (skipSlider.noUiSlider !== undefined) {
-          if (prevFilter === null) {
-            skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
-          } else {
-            const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replace('-', '_')];
-            const table = skipSlider.noUiSlider.options.matchingTable;
-            if (Array.isArray(filter)) {
-              skipSlider.noUiSlider.set([table[filter[0]], table[filter[1]]]);
-            } else {
-              skipSlider.noUiSlider.set(table[filter]);
-            }
-          }
-        }
-
-        return undefined;
-      },
-    );
-
-    // change filter で local storage は更新しない。
-    if (prevFilters === null) {
-      window.localStorage.removeItem(`${PAGE_NAME}.filters`);
-    } else {
-      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-    }
-
-    updateGrid2();
-  }
-});
-
-document.getElementById('reset-button').addEventListener('click', () => {
-  Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
-    (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
-  );
-
-  // remove filter
-  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-  if (prevFilters !== null) {
-    if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
-      delete prevFilters[selectedFilter];
-      if (Object.keys(prevFilters).length === 0) {
-        window.localStorage.removeItem(`${PAGE_NAME}.filters`);
-      } else {
-        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-      }
-    }
-  }
-
-  updateGrid2();
-});
-
-{
-  // load filter
-  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-  document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
-  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
-  const prevFilter = (prevFilters === null
-     || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
-    ? null
-    : prevFilters[selectedFilter];
-
-  {
-    const skipSlider = document.getElementById('skipstep-version');
-    const defaultPos = VERSION_DATA[0];
-    const startPos = (prevFilter !== null && prevFilter.version !== undefined)
-      ? VERSION_DATA[prevFilter.version]
-      : defaultPos;
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: VERSION_DATA.length - 1,
-      },
-      start: startPos,
-      default: defaultPos,
-      matchingTable: VERSION_DATA,
-      step: 1,
-      tooltips: true,
-      format: {
-        to: (key) => VERSION_DATA[Math.round(key)],
-        from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('version-text'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateGrid2(true);
-        clearTimeout(updateFilterTimer);
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-lv');
-    const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
-    const startPos = (prevFilter !== null
-      && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
-      ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
-      : defaultPos;
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: lv_data.length - 1,
-      },
-      connect: true,
-      start: startPos,
-      default: defaultPos,
-      matchingTable: lv_data,
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => lv_data[Math.round(key)],
-        from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('lv-lower'),
-      document.getElementById('lv-upper'),
-      document.getElementById('lv-hyphen'),
-      document.getElementById('lv-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-
-      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText === lv_data[0]
-              && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateGrid2(true);
-        clearTimeout(updateFilterTimer);
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-  {
-    const skipSlider = document.getElementById('skipstep-lv-type');
-    const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
-    const startPos = (prevFilter !== null
-      && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
-      ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
-      : defaultPos;
-
-    noUiSlider.create(skipSlider, {
-      range: {
-        min: 0,
-        max: lv_type_data.length - 1,
-      },
-      connect: true,
-      start: startPos,
-      default: defaultPos,
-      matchingTable: lv_type_data,
-      step: 1,
-      tooltips: [true, true],
-      format: {
-        to: (key) => lv_type_data[Math.round(key)],
-        from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
-      },
-    });
-
-    const skipValues = [
-      document.getElementById('lv-type-lower'),
-      document.getElementById('lv-type-upper'),
-      document.getElementById('lv-type-hyphen'),
-      document.getElementById('lv-type-same'),
-    ];
-
-    skipSlider.noUiSlider.on('update', (values, handle) => {
-      skipValues[handle].innerHTML = values[handle];
-
-      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-        skipValues[3].innerHTML = values[handle];
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else if (skipValues[0].innerText === lv_type_data[0]
-              && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        skipValues[3].style.display = 'none';
-      }
-    });
-
-    skipSlider.noUiSlider.on('start', () => {
-      clearTimeout(updateFilterTimer);
-    });
-
-    skipSlider.noUiSlider.on('set', () => {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-        updateGrid2(true);
-        clearTimeout(updateFilterTimer);
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2();
-        }, 1000);
-      }
-    });
-  }
-}
-
 const fumenFilter = (version, lv, lv_type) => {
   // AS は必須
   const res = alasql(`MATRIX OF
@@ -571,16 +309,7 @@ const updateGrid = (data) => {
   }
 };
 
-$.getJSON('/api/globalmedalrate', (medal_rate_data) => {
-  $.getJSON('/api/fumens', (fumens_data) => {
-    medal_rate_data_raw = medal_rate_data;
-    fumens_data_raw = fumens_data;
-
-    updateGrid2();
-  });
-});
-
-const updateGrid2 = (filterSaveOnly) => {
+function updateGrid2(filterSaveOnly) {
   let skipSlider;
   let val;
 
@@ -621,6 +350,277 @@ const updateGrid2 = (filterSaveOnly) => {
 
     updateGrid(filteredData);
   }
-};
+}
+
+document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
+  if (initializing === false && target.children[0].getAttribute('name') === 'btnradio') {
+    // change filter
+    const selectedFilter = target.children[0].id.replace('btnradio', '');
+    window.localStorage.setItem(`${PAGE_NAME}.selectedFilter`, selectedFilter);
+    // load filter
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
+    const prevFilter = (prevFilters === null
+      || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+      ? null
+      : prevFilters[selectedFilter];
+
+    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+      (skipSlider) => {
+        if (skipSlider.noUiSlider !== undefined) {
+          if (prevFilter === null) {
+            skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
+          } else {
+            const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replace('-', '_')];
+            const table = skipSlider.noUiSlider.options.matchingTable;
+            if (Array.isArray(filter)) {
+              skipSlider.noUiSlider.set([table[filter[0]], table[filter[1]]]);
+            } else {
+              skipSlider.noUiSlider.set(table[filter]);
+            }
+          }
+        }
+
+        return undefined;
+      },
+    );
+
+    // change filter で local storage は更新しない。
+    if (prevFilters === null) {
+      window.localStorage.removeItem(`${PAGE_NAME}.filters`);
+    } else {
+      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
+    }
+
+    updateGrid2();
+  }
+});
+
+document.getElementById('reset-button').addEventListener('click', () => {
+  Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+    (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
+  );
+
+  // remove filter
+  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
+  if (prevFilters !== null) {
+    if (Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter)) {
+      delete prevFilters[selectedFilter];
+      if (Object.keys(prevFilters).length === 0) {
+        window.localStorage.removeItem(`${PAGE_NAME}.filters`);
+      } else {
+        window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
+      }
+    }
+  }
+
+  updateGrid2();
+});
+
+{
+  // load filter
+  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+  document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
+  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
+  const prevFilter = (prevFilters === null
+     || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
+    ? null
+    : prevFilters[selectedFilter];
+
+  {
+    const skipSlider = document.getElementById('skipstep-version');
+    const defaultPos = VERSION_DATA[0];
+    const startPos = (prevFilter !== null && prevFilter.version !== undefined)
+      ? VERSION_DATA[prevFilter.version]
+      : defaultPos;
+
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: VERSION_DATA.length - 1,
+      },
+      start: startPos,
+      default: defaultPos,
+      matchingTable: VERSION_DATA,
+      step: 1,
+      tooltips: true,
+      format: {
+        to: (key) => VERSION_DATA[Math.round(key)],
+        from: (value) => Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === value)[0],
+      },
+    });
+
+    const skipValues = [
+      document.getElementById('version-text'),
+    ];
+
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
+    });
+
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
+
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateGrid2(true);
+        clearTimeout(updateFilterTimer);
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
+  {
+    const skipSlider = document.getElementById('skipstep-lv');
+    const defaultPos = [lv_data[0], lv_data[lv_data.length - 1]];
+    const startPos = (prevFilter !== null
+      && prevFilter.lv !== undefined && prevFilter.lv.length === 2)
+      ? [lv_data[prevFilter.lv[0]], lv_data[prevFilter.lv[1]]]
+      : defaultPos;
+
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: lv_data.length - 1,
+      },
+      connect: true,
+      start: startPos,
+      default: defaultPos,
+      matchingTable: lv_data,
+      step: 1,
+      tooltips: [true, true],
+      format: {
+        to: (key) => lv_data[Math.round(key)],
+        from: (value) => Object.keys(lv_data).filter((key) => lv_data[key] === value)[0],
+      },
+    });
+
+    const skipValues = [
+      document.getElementById('lv-lower'),
+      document.getElementById('lv-upper'),
+      document.getElementById('lv-hyphen'),
+      document.getElementById('lv-same'),
+    ];
+
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
+
+      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+        skipValues[3].innerHTML = values[handle];
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else if (skipValues[0].innerText === lv_data[0]
+              && skipValues[1].innerText === lv_data[lv_data.length - 1]) {
+        skipValues[3].innerHTML = 'ALL';
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else {
+        skipValues[0].style.display = 'inline';
+        skipValues[1].style.display = 'inline';
+        skipValues[2].style.display = 'inline';
+        skipValues[3].style.display = 'none';
+      }
+    });
+
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
+
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateGrid2(true);
+        clearTimeout(updateFilterTimer);
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
+  {
+    const skipSlider = document.getElementById('skipstep-lv-type');
+    const defaultPos = [lv_type_data[0], lv_type_data[lv_type_data.length - 1]];
+    const startPos = (prevFilter !== null
+      && prevFilter.lv_type !== undefined && prevFilter.lv_type.length === 2)
+      ? [lv_type_data[prevFilter.lv_type[0]], lv_type_data[prevFilter.lv_type[1]]]
+      : defaultPos;
+
+    noUiSlider.create(skipSlider, {
+      range: {
+        min: 0,
+        max: lv_type_data.length - 1,
+      },
+      connect: true,
+      start: startPos,
+      default: defaultPos,
+      matchingTable: lv_type_data,
+      step: 1,
+      tooltips: [true, true],
+      format: {
+        to: (key) => lv_type_data[Math.round(key)],
+        from: (value) => Object.keys(lv_type_data).filter((key) => lv_type_data[key] === value)[0],
+      },
+    });
+
+    const skipValues = [
+      document.getElementById('lv-type-lower'),
+      document.getElementById('lv-type-upper'),
+      document.getElementById('lv-type-hyphen'),
+      document.getElementById('lv-type-same'),
+    ];
+
+    skipSlider.noUiSlider.on('update', (values, handle) => {
+      skipValues[handle].innerHTML = values[handle];
+
+      if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+        skipValues[3].innerHTML = values[handle];
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else if (skipValues[0].innerText === lv_type_data[0]
+              && skipValues[1].innerText === lv_type_data[lv_type_data.length - 1]) {
+        skipValues[3].innerHTML = 'ALL';
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else {
+        skipValues[0].style.display = 'inline';
+        skipValues[1].style.display = 'inline';
+        skipValues[2].style.display = 'inline';
+        skipValues[3].style.display = 'none';
+      }
+    });
+
+    skipSlider.noUiSlider.on('start', () => {
+      clearTimeout(updateFilterTimer);
+    });
+
+    skipSlider.noUiSlider.on('set', () => {
+      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+        updateGrid2(true);
+        clearTimeout(updateFilterTimer);
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2();
+        }, 1000);
+      }
+    });
+  }
+}
+
+$.getJSON('/api/globalmedalrate', (medal_rate_data) => {
+  $.getJSON('/api/fumens', (fumens_data) => {
+    medal_rate_data_raw = medal_rate_data;
+    fumens_data_raw = fumens_data;
+
+    updateGrid2();
+  });
+});
 
 initializing = false;

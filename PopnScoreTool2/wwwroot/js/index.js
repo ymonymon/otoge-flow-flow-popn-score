@@ -11,23 +11,313 @@ import {
 */
 
 const PAGE_NAME = 'index';
+
+let mainGrid;
+let stats1Grid;
+let stats2Grid;
+
+let allData;
+let filteredData;
+
+let updateFilterTimer;
+
+let sort_click_count;
+let sort_target;
+
+let initializing = true;
+
+const fumenFilter = (data, version, medal, rank, score, lv, lv_type) => {
+  let sql = 'MATRIX OF SELECT * FROM ?';
+  let arg = [data];
+  if (version[0] !== 0) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' [7] = ?';
+    arg = arg.concat([VERSION_DATA_R[version[0]]]);
+  }
+  if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [4] AND [4] <= ?';
+    arg = arg.concat([medal_data_r[medal[0]], medal_data_r[medal[1]]]);
+  }
+  if (rank[0] !== 0 || rank[1] !== rank_data.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [5] AND [5] <= ?';
+    arg = arg.concat([rank_data_r[rank[0]], rank_data_r[rank[1]]]);
+  }
+  if (score[0] !== 0 || score[1] !== score_data.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [6] AND [6] < ?';
+    arg = arg.concat([
+      score_data_r[score[0]],
+      score_data_r[score[1]]]);
+  }
+  if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [3] AND [3] <= ?';
+    arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
+  }
+  if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [2] AND [2] <= ?';
+    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+  }
+
+  const res = alasql(sql, arg);
+
+  return res;
+};
+
+// const onReady = (...args) => {
+const onReady = () => {
+  // page 移動, sort 変更のタイミングでも呼ばれる。
+  // console.log('row: ' + JSON.stringify(args), args);
+  const test = site.getCurrentSortStatus();
+  // console.log(test);
+  if (test[0]) {
+    updateGrid2(true);
+  }
+};
+
+// const storeSort = (...args) => {
+const storeSort = () => {
+  mainGrid.off('ready', storeSort);
+
+  // console.log('row: ' + JSON.stringify(args), args);
+
+  setTimeout(() => {
+    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+  }, 0);
+};
+
+const updateGrid = (data) => {
+  if (mainGrid === undefined) {
+    mainGrid = new gridjs.Grid({
+      columns: [
+        {
+          id: '0',
+          name: 'title',
+          formatter: (_, row) => gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
+          attributes: (cell) => {
+            if (cell === null) {
+              return undefined;
+            }
+            return {
+              colspan: '2',
+            };
+          },
+        },
+        {
+          id: '1',
+          name: 'genre',
+          attributes: (cell) => {
+            if (cell === null) {
+              return undefined;
+            }
+            return {
+              style: 'display:none',
+            };
+          },
+        },
+        {
+          id: '2',
+          name: '',
+          sort: 0,
+          width: '1px',
+          attributes: {
+            style: 'display:none',
+          },
+        },
+        {
+          id: '3',
+          name: 'lv',
+          attributes: (cell, row) => {
+            if (cell === null) {
+              return {
+                colspan: '2',
+              };
+            }
+            return {
+              style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+              colspan: '2',
+            };
+          },
+        },
+        {
+          id: '4',
+          name: 'm',
+          formatter: (cell, row) => {
+            if (cell === null) {
+              return undefined;
+            }
+            return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                                + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
+          },
+          attributes: (cell) => {
+            if (cell === null) {
+              return undefined;
+            }
+            return {
+              colspan: '2',
+            };
+          },
+        },
+        {
+          id: '5',
+          name: 'r',
+          attributes: (cell) => {
+            if (cell === null) {
+              return undefined;
+            }
+            return {
+              style: 'display:none',
+            };
+          },
+        },
+        {
+          id: '6',
+          name: 'score',
+          formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
+          attributes: (cell) => {
+            if (cell === null) {
+              return {
+                colspan: '2',
+              };
+            }
+            return {
+              style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
+              colspan: '2',
+            };
+          },
+        },
+        {
+          id: '7',
+          name: '',
+          sort: 0,
+          width: '1px',
+          attributes: {
+            style: 'display:none',
+          },
+        }],
+      sort: true,
+      search: true,
+      pagination: {
+        enabled: true,
+        limit: 20,
+      },
+      fixedHeader: true,
+      height: '400px',
+      style: {
+        table: {
+          width: '100%',
+        },
+        th: {
+          padding: '0px',
+          'text-align': 'center',
+          'min-width': 'auto',
+        },
+        td: {
+          padding: '0px',
+          'text-align': 'center',
+        },
+      },
+      language: {
+        pagination: {
+          previous: '←',
+          next: '→',
+        },
+      },
+      data,
+    }).render(document.getElementById('wrapper'));
+
+    mainGrid.on('ready', onReady);
+
+    // 1st sort.
+    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+
+    if (sort_click_count > 0) {
+      mainGrid.on('ready', storeSort);
+    }
+  } else {
+    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+
+    mainGrid.updateConfig({
+      data: filteredData,
+    }).forceRender();
+
+    if (sort_click_count > 0) {
+      mainGrid.on('ready', storeSort);
+    }
+  }
+};
+
+function updateGrid2(filterSaveOnly) {
+  let skipSlider;
+  let val;
+
+  skipSlider = document.getElementById('skipstep-version');
+  val = skipSlider.noUiSlider.get();
+  const key_version = Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === val)[0];
+
+  skipSlider = document.getElementById('skipstep-medal');
+  val = skipSlider.noUiSlider.get();
+  const key_medal1 = Object.keys(medal_data).filter((key) => medal_data[key] === val[0])[0];
+  const key_medal2 = Object.keys(medal_data).filter((key) => medal_data[key] === val[1])[0];
+
+  skipSlider = document.getElementById('skipstep-rank');
+  val = skipSlider.noUiSlider.get();
+  const key_rank1 = Object.keys(rank_data).filter((key) => rank_data[key] === val[0])[0];
+  const key_rank2 = Object.keys(rank_data).filter((key) => rank_data[key] === val[1])[0];
+
+  skipSlider = document.getElementById('skipstep-score');
+  val = skipSlider.noUiSlider.get();
+  const key_score1 = Object.keys(score_data).filter((key) => score_data[key] === val[0])[0];
+  const key_score2 = Object.keys(score_data).filter((key) => score_data[key] === val[1])[0];
+
+  skipSlider = document.getElementById('skipstep-lv');
+  val = skipSlider.noUiSlider.get();
+  const key_lv1 = Object.keys(lv_data).filter((key) => lv_data[key] === val[0])[0];
+  const key_lv2 = Object.keys(lv_data).filter((key) => lv_data[key] === val[1])[0];
+
+  skipSlider = document.getElementById('skipstep-lv-type');
+  val = skipSlider.noUiSlider.get();
+  const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
+  const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
+
+  if (filterSaveOnly) {
+    // save filter & sort
+    const sortStatus = site.getCurrentSortStatus();
+
+    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
+    prevFilters[selectedFilter] = {
+      version: key_version,
+      medal: [key_medal1, key_medal2],
+      rank: [key_rank1, key_rank2],
+      score: [key_score1, key_score2],
+      lv: [key_lv1, key_lv2],
+      lv_type: [key_lv_type1, key_lv_type2],
+      sort: sortStatus,
+    };
+
+    window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
+  } else {
+    filteredData = fumenFilter(
+      allData,
+      [key_version].map(Number),
+      [key_medal1, key_medal2].map(Number),
+      [key_rank1, key_rank2].map(Number),
+      [key_score1, key_score2].map(Number),
+      [key_lv1, key_lv2].map(Number),
+      [key_lv_type1, key_lv_type2].map(Number),
+    );
+
+    updateGrid(filteredData);
+  }
+}
+
 if (document.querySelector('h1.nologin') !== null) {
   // no login
 } else {
-  let mainGrid;
-  let stats1Grid;
-  let stats2Grid;
-
-  let allData;
-  let filteredData;
-
-  let updateFilterTimer;
-
-  let sort_click_count;
-  let sort_target;
-
-  let initializing = true;
-
   document.getElementById('filter-selection').addEventListener('click', ({ target }) => {
     if (initializing === false && target.children[0].getAttribute('name') === 'btnradio') {
       // change filter
@@ -366,208 +656,6 @@ ELSE '-2' END`, [targetData]);
     }
   });
 
-  const fumenFilter = (data, version, medal, rank, score, lv, lv_type) => {
-    let sql = 'MATRIX OF SELECT * FROM ?';
-    let arg = [data];
-    if (version[0] !== 0) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' [7] = ?';
-      arg = arg.concat([VERSION_DATA_R[version[0]]]);
-    }
-    if (medal[0] !== 0 || medal[1] !== medal_data.length - 1) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' ? <= [4] AND [4] <= ?';
-      arg = arg.concat([medal_data_r[medal[0]], medal_data_r[medal[1]]]);
-    }
-    if (rank[0] !== 0 || rank[1] !== rank_data.length - 1) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' ? <= [5] AND [5] <= ?';
-      arg = arg.concat([rank_data_r[rank[0]], rank_data_r[rank[1]]]);
-    }
-    if (score[0] !== 0 || score[1] !== score_data.length - 1) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' ? <= [6] AND [6] < ?';
-      arg = arg.concat([
-        score_data_r[score[0]],
-        score_data_r[score[1]]]);
-    }
-    if (lv[0] !== 0 || lv[1] !== lv_data.length - 1) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' ? <= [3] AND [3] <= ?';
-      arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
-    }
-    if (lv_type[0] !== 0 || lv_type[1] !== lv_type_data.length - 1) {
-      sql += (arg.length === 1) ? ' WHERE' : ' AND';
-      sql += ' ? <= [2] AND [2] <= ?';
-      arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
-    }
-
-    const res = alasql(sql, arg);
-
-    return res;
-  };
-
-  const updateGrid = (data) => {
-    if (mainGrid === undefined) {
-      mainGrid = new gridjs.Grid({
-        columns: [
-          {
-            id: '0',
-            name: 'title',
-            formatter: (_, row) => gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
-            attributes: (cell) => {
-              if (cell === null) {
-                return undefined;
-              }
-              return {
-                colspan: '2',
-              };
-            },
-          },
-          {
-            id: '1',
-            name: 'genre',
-            attributes: (cell) => {
-              if (cell === null) {
-                return undefined;
-              }
-              return {
-                style: 'display:none',
-              };
-            },
-          },
-          {
-            id: '2',
-            name: '',
-            sort: 0,
-            width: '1px',
-            attributes: {
-              style: 'display:none',
-            },
-          },
-          {
-            id: '3',
-            name: 'lv',
-            attributes: (cell, row) => {
-              if (cell === null) {
-                return {
-                  colspan: '2',
-                };
-              }
-              return {
-                style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
-                colspan: '2',
-              };
-            },
-          },
-          {
-            id: '4',
-            name: 'm',
-            formatter: (cell, row) => {
-              if (cell === null) {
-                return undefined;
-              }
-              return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                                  + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
-            },
-            attributes: (cell) => {
-              if (cell === null) {
-                return undefined;
-              }
-              return {
-                colspan: '2',
-              };
-            },
-          },
-          {
-            id: '5',
-            name: 'r',
-            attributes: (cell) => {
-              if (cell === null) {
-                return undefined;
-              }
-              return {
-                style: 'display:none',
-              };
-            },
-          },
-          {
-            id: '6',
-            name: 'score',
-            formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
-            attributes: (cell) => {
-              if (cell === null) {
-                return {
-                  colspan: '2',
-                };
-              }
-              return {
-                style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
-                colspan: '2',
-              };
-            },
-          },
-          {
-            id: '7',
-            name: '',
-            sort: 0,
-            width: '1px',
-            attributes: {
-              style: 'display:none',
-            },
-          }],
-        sort: true,
-        search: true,
-        pagination: {
-          enabled: true,
-          limit: 20,
-        },
-        fixedHeader: true,
-        height: '400px',
-        style: {
-          table: {
-            width: '100%',
-          },
-          th: {
-            padding: '0px',
-            'text-align': 'center',
-            'min-width': 'auto',
-          },
-          td: {
-            padding: '0px',
-            'text-align': 'center',
-          },
-        },
-        language: {
-          pagination: {
-            previous: '←',
-            next: '→',
-          },
-        },
-        data,
-      }).render(document.getElementById('wrapper'));
-
-      mainGrid.on('ready', onReady);
-
-      // 1st sort.
-      [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
-
-      if (sort_click_count > 0) {
-        mainGrid.on('ready', storeSort);
-      }
-    } else {
-      [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
-
-      mainGrid.updateConfig({
-        data: filteredData,
-      }).forceRender();
-
-      if (sort_click_count > 0) {
-        mainGrid.on('ready', storeSort);
-      }
-    }
-  };
-
   $.getJSON('/api/values', (data) => {
     allData = data;
     updateGrid(allData); // init
@@ -613,92 +701,6 @@ ELSE '-2' END`, [targetData]);
     });
   });
 
-  // const onReady = (...args) => {
-  const onReady = () => {
-    // page 移動, sort 変更のタイミングでも呼ばれる。
-    // console.log('row: ' + JSON.stringify(args), args);
-    const test = site.getCurrentSortStatus();
-    // console.log(test);
-    if (test[0]) {
-      updateGrid2(true);
-    }
-  };
-
-  // const storeSort = (...args) => {
-  const storeSort = () => {
-    mainGrid.off('ready', storeSort);
-
-    // console.log('row: ' + JSON.stringify(args), args);
-
-    setTimeout(() => {
-      [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
-    }, 0);
-  };
-
-  const updateGrid2 = (filterSaveOnly) => {
-    let skipSlider;
-    let val;
-
-    skipSlider = document.getElementById('skipstep-version');
-    val = skipSlider.noUiSlider.get();
-    const key_version = Object.keys(VERSION_DATA).filter((key) => VERSION_DATA[key] === val)[0];
-
-    skipSlider = document.getElementById('skipstep-medal');
-    val = skipSlider.noUiSlider.get();
-    const key_medal1 = Object.keys(medal_data).filter((key) => medal_data[key] === val[0])[0];
-    const key_medal2 = Object.keys(medal_data).filter((key) => medal_data[key] === val[1])[0];
-
-    skipSlider = document.getElementById('skipstep-rank');
-    val = skipSlider.noUiSlider.get();
-    const key_rank1 = Object.keys(rank_data).filter((key) => rank_data[key] === val[0])[0];
-    const key_rank2 = Object.keys(rank_data).filter((key) => rank_data[key] === val[1])[0];
-
-    skipSlider = document.getElementById('skipstep-score');
-    val = skipSlider.noUiSlider.get();
-    const key_score1 = Object.keys(score_data).filter((key) => score_data[key] === val[0])[0];
-    const key_score2 = Object.keys(score_data).filter((key) => score_data[key] === val[1])[0];
-
-    skipSlider = document.getElementById('skipstep-lv');
-    val = skipSlider.noUiSlider.get();
-    const key_lv1 = Object.keys(lv_data).filter((key) => lv_data[key] === val[0])[0];
-    const key_lv2 = Object.keys(lv_data).filter((key) => lv_data[key] === val[1])[0];
-
-    skipSlider = document.getElementById('skipstep-lv-type');
-    val = skipSlider.noUiSlider.get();
-    const key_lv_type1 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[0])[0];
-    const key_lv_type2 = Object.keys(lv_type_data).filter((key) => lv_type_data[key] === val[1])[0];
-
-    if (filterSaveOnly) {
-      // save filter & sort
-      const sortStatus = site.getCurrentSortStatus();
-
-      const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-      const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
-      prevFilters[selectedFilter] = {
-        version: key_version,
-        medal: [key_medal1, key_medal2],
-        rank: [key_rank1, key_rank2],
-        score: [key_score1, key_score2],
-        lv: [key_lv1, key_lv2],
-        lv_type: [key_lv_type1, key_lv_type2],
-        sort: sortStatus,
-      };
-
-      window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-    } else {
-      filteredData = fumenFilter(
-        allData,
-        [key_version].map(Number),
-        [key_medal1, key_medal2].map(Number),
-        [key_rank1, key_rank2].map(Number),
-        [key_score1, key_score2].map(Number),
-        [key_lv1, key_lv2].map(Number),
-        [key_lv_type1, key_lv_type2].map(Number),
-      );
-
-      updateGrid(filteredData);
-    }
-  };
   {
     // load filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
