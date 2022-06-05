@@ -3,15 +3,15 @@
 @{
     ViewData["Title"] = "TargetScore";
 }
+<h1>@ViewData["Title"]</h1>
 <div class="text-center">
     @if (User.Identity.IsAuthenticated)
     {
-    <h1>@ViewData["Title"]</h1>
-    <div id="filter" style="">
+    <div id="filter">
         <div class="item">
             Filter
         </div>
-        <div class="content">
+        <div class="content" style="user-select:none; -webkit-user-select: none;">
             <ul style="display:flex; list-style: none; padding: 0px;">
                 <li style="width:10%">target</li>
                 <li style="width:70%; padding: 0px 20px">
@@ -110,41 +110,80 @@
                     <span id="lv-type-same"></span>
                 </li>
             </ul>
-            <div class="d-flex m-2 justify-content-between">
-                <div class="btn-group btn-group-toggle text-monospace" id="filter-selection" data-toggle="buttons">
-                    <label class="btn btn-outline-primary" for="btnradio0">
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">→t</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-arrow-target-score">
+                    </div>
+                </li>
+                <li style="width:20%">
+                    <span id="arrow-target-score-lower"></span>
+                    <span id="arrow-target-score-hyphen">-</span>
+                    <span id="arrow-target-score-upper"></span>
+                    <span id="arrow-target-score-same"></span>
+                </li>
+            </ul>
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">t%</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-target-percent">
+                    </div>
+                </li>
+                <li style="width:20%">
+                    <span id="target-percent-lower"></span>
+                    <span id="target-percent-hyphen">-</span>
+                    <span id="target-percent-upper"></span>
+                    <span id="target-percent-same"></span>
+                </li>
+            </ul>
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">c</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-count">
+                    </div>
+                </li>
+                <li style="width:20%">
+                    <span id="count-lower"></span>
+                    <span id="count-hyphen">-</span>
+                    <span id="count-upper"></span>
+                    <span id="count-same"></span>
+                </li>
+            </ul>
+            <div class="d-flex justify-content-between">
+                <div class="flex-wrap btn-group btn-group-toggle mx-1 text-monospace" id="filter-selection" data-toggle="buttons">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio0">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio0" autocomplete="off">a
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio1">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio1">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">b
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio2">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio2">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">c
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio3">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio3">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">d
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio4">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio4">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off">e
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio5">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio5">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio5" autocomplete="off">f
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio6">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio6">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio6" autocomplete="off">g
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio7">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio7">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio7" autocomplete="off">h
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio8">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio8">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio8" autocomplete="off">i
                     </label>
-                    <label class="btn btn-outline-primary" for="btnradio9">
+                    <label class="btn btn-outline-primary" style="flex: initial" for="btnradio9">
                         <input type="radio" class="btn-check" name="btnradio" id="btnradio9" autocomplete="off">j
                     </label>
                 </div>
-                <div>
-                    <button type="button" id="reset-button" class="btn btn-secondary">Reset</button>
+                <div class="mr-1">
+                    <button type="button" id="reset-button" class="btn btn-secondary">🗑️</button>
                 </div>
             </div>
         </div>
@@ -152,11 +191,11 @@
         </div>
     </div>
 
-    <div id="medal-rate" style="">
+    <div id="medal-rate">
         <div class="item">
             Target Score
         </div>
-        <div class="content" style="">
+        <div class="content">
             <div id="wrapper"></div>
         </div>
     </div>
@@ -167,6 +206,5 @@
     }
 </div>
 @section scripts{
-    <script src="~/js/const.js" asp-append-version="true"></script>
     <script type="module" src="~/js/target-score.js" asp-append-version="true"></script>
 }

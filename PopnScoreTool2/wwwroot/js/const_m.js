@@ -1,30 +1,20 @@
-﻿/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-/*
- Copyright (c) 2020-2022 otoge-flow-flow.com
- Released under the MIT license
- https://opensource.org/licenses/mit-license.php
-*/
-define = (name, value) => {
-  Object.defineProperty(window, name, {
-    get: () => value,
-    set: () => { throw (`${name} is already defined !!`); },
-  });
-};
+export const LV_TYPE_BACK_COLOR = [
+  '#FFFFFF',
+  '#9ED0FF',
+  '#C1FF84',
+  '#FFFF99',
+  '#FF99FF',
+];
 
-define('STATS_DATA', [
+export const STATS_DATA = [
   'av.',
   '75%',
   'me.',
   '25%',
   'top',
-]);
+];
 
-define('STATS_DATA_R', [
-  0, 1, 2, 3, 4,
-]);
-
-define('DIFF_DATA', [
+export const DIFF_DATA = [
   '-∞',
   '-20k',
   '-10k',
@@ -42,13 +32,14 @@ define('DIFF_DATA', [
   '+10k',
   '+20k',
   '+∞',
-]);
+];
 
-define('DIFF_DATA_R', [
-  -200000, -20000, -10000, -5000, -3000, -2000, -1000, -1, 0, +1, +1000, +2000, +3000, +5000, +10000, +20000, +200000,
-]);
+export const DIFF_DATA_R = [
+  -200000, -20000, -10000, -5000, -3000, -2000, -1000, -1, 0,
+  +1, +1000, +2000, +3000, +5000, +10000, +20000, +200000,
+];
 
-define('VERSION_DATA', [
+export const VERSION_DATA = [
   'ALL',
   'pop\'n 1',
   'pop\'n 2',
@@ -79,14 +70,14 @@ define('VERSION_DATA', [
   'TV･ｱﾆﾒ',
   'CS',
   'BEMANI',
-]);
+];
 
-define('VERSION_DATA_R', [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 23, 24, 25,
-]);
+export const VERSION_DATA_R = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 23, 24, 25,
+];
 
-// todo : name -> target_medal_data
-const target_data = [
+export const TARGET_MEDAL_DATA = [
   '<img src="/icon/medal_4.png" alt="4" width="18" height="18">',
   '<img src="/icon/medal_5.png" alt="5" width="18" height="18">',
   '<img src="/icon/medal_6.png" alt="6" width="18" height="18">',
@@ -96,11 +87,11 @@ const target_data = [
   '<img src="/icon/medal_10.png" alt="10" width="18" height="18">',
   'NEXT',
 ];
-const target_data_r = [
+export const TARGET_MEDAL_DATA_R = [
   4, 5, 6, 7, 8, 9, 10, 999,
 ];
 
-const target_score_data = [
+export const TARGET_SCORE_DATA = [
   '85k',
   '90k',
   '95k',
@@ -110,11 +101,12 @@ const target_score_data = [
   '100k',
   'NEXT',
 ];
-const target_score_data_r = [
+
+export const TARGET_SCORE_DATA_R = [
   4, 5, 6, 7, 8, 9, 10, 999,
 ];
 
-const target_score_class_data = [
+export const TARGET_SCORE_CLASS_DATA = [
   '-',
   '0',
   '70k',
@@ -128,7 +120,7 @@ const target_score_class_data = [
   '100k',
 ];
 
-const medal_data = [
+export const MEDAL_DATA = [
   'NO PLAY',
   '<img src="/icon/medal_0.png" alt="0" width="18" height="18">',
   '<img src="/icon/medal_1.png" alt="1" width="18" height="18">',
@@ -142,8 +134,8 @@ const medal_data = [
   '<img src="/icon/medal_9.png" alt="9" width="18" height="18">',
   '<img src="/icon/medal_10.png" alt="10" width="18" height="18">',
 ];
-const medal_data_r = [-2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const rank_data = [
+export const MEDAL_DATA_R = [-2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const RANK_DATA = [
   'NO PLAY',
   'NO RANK',
   '<img src="/icon/rank_3.png" alt="3" width="18" height="18">',
@@ -155,8 +147,8 @@ const rank_data = [
   '<img src="/icon/rank_9.png" alt="9" width="18" height="18">',
   '<img src="/icon/rank_10.png" alt="10" width="18" height="18">',
 ];
-const rank_data_r = [-2, -1, 3, 4, 5, 6, 7, 8, 9, 10];
-const score_data = [
+export const RANK_DATA_R = [-2, -1, 3, 4, 5, 6, 7, 8, 9, 10];
+export const SCORE_DATA = [
   'NO PLAY',
   '0',
   '70k',
@@ -171,7 +163,7 @@ const score_data = [
   '=100k',
 ];
 
-const score_data_display = [
+export const SCORE_DATA_DISPLAY = [
   'NO PLAY',
   '0',
   '70k',
@@ -186,7 +178,7 @@ const score_data_display = [
   '100k',
 ];
 
-const score_data_r = [
+export const SCORE_DATA_R = [
   -2,
   0,
   70000,
@@ -201,7 +193,7 @@ const score_data_r = [
   200000,
 ];
 /*
-var score_data_r_lower = [
+export const otoge.SCORE_DATA_R_LOWER = [
     -2,
     0,
     70000,
@@ -214,7 +206,7 @@ var score_data_r_lower = [
     99400,
     100000,
 ];
-var score_data_r_upper = [
+export const otoge.SCORE_DATA_R_UPPER = [
     0,
     70000,
     80000,
@@ -228,12 +220,70 @@ var score_data_r_upper = [
     200000,
 ];
 */
-const lv_data = Array.from({ length: 51 }, (v, k) => String(k));
-lv_data.shift();
+export const LV_DATA = Array.from({ length: 51 }, (v, k) => String(k));
+LV_DATA.shift();
 
-const lv_type_data = [
+export const LV_TYPE_DATA = [
   'EASY',
   'NORMAL',
   'HYPER',
   'EX',
+];
+
+export const ARROW_TARGET_SCORE_DATA = [
+  '85k',
+  '90k',
+  '95k',
+  '98k',
+  '99k',
+  '99.4k',
+  '100k',
+];
+
+export const ARROW_TARGET_SCORE_DATA_R = [
+  4, 5, 6, 7, 8, 9, 10,
+];
+
+export const TARGET_PERCENT_DATA = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '60',
+  '70',
+  '80',
+  '90',
+  '100',
+];
+
+export const COUNT_DATA = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '60',
+  '70',
+  '80',
+  '90',
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '1000',
+  '∞',
 ];
