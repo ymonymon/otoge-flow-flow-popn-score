@@ -30,6 +30,7 @@ const fumenFilter = (
   lv_type,
   arrow_target_score,
   target_percent,
+  count,
 ) => {
   const res = alasql(`MATRIX OF
 SELECT TBL1.[2] AS [0], TBL1.[1] AS [1], -- title/genre
@@ -194,6 +195,19 @@ FROM ? AS TBL1`, [res2]);
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [8] AND [8] <= ?';
     arg = arg.concat([target_percent[0], target_percent[1]]);
+  }
+  if (count[0] !== 0
+    || count[1] !== otoge.COUNT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+
+    if (count[1] === otoge.COUNT_DATA.length - 1) {
+      // ～∞
+      sql += ' ? <= [11]';
+      arg = arg.concat([count[0]]);
+    } else {
+      sql += ' ? <= [11] AND [11] <= ?';
+      arg = arg.concat([count[0], count[1]]);
+    }
   }
 
   const res4 = alasql(sql, arg);
@@ -591,6 +605,10 @@ function updateGrid2(filterSaveOnly) {
       (k) => otoge.TARGET_PERCENT_DATA[k] === val[1],
     )[0]];
 
+  skipSlider = document.getElementById('skipstep-count');
+  val = skipSlider.noUiSlider.get();
+  const key_count = [otoge.COUNT_DATA.indexOf(val[0]), otoge.COUNT_DATA.indexOf(val[1])];
+
   if (filterSaveOnly) {
     // save filter & sort
     const sortStatus = site.getCurrentSortStatus();
@@ -608,6 +626,7 @@ function updateGrid2(filterSaveOnly) {
       lv_type: [key_lv_type1, key_lv_type2],
       arrow_target_score: key_arrow_target_score,
       target_percent: key_target_percent,
+      count: key_count,
       sort: sortStatus,
     };
 
@@ -624,6 +643,7 @@ function updateGrid2(filterSaveOnly) {
       [key_lv_type1, key_lv_type2].map(Number),
       key_arrow_target_score.map(Number),
       key_target_percent.map(Number),
+      key_count.map(Number),
     );
 
     updateGrid(filteredData);
@@ -1372,6 +1392,83 @@ if (document.querySelector('h1.nologin') !== null) {
         } else if (values[0] === otoge.TARGET_PERCENT_DATA[0]
             && values[1] === otoge.TARGET_PERCENT_DATA[
               otoge.TARGET_PERCENT_DATA.length - 1]) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-count');
+      const defaultPos = [otoge.COUNT_DATA[0],
+        otoge.COUNT_DATA[otoge.COUNT_DATA.length - 1]];
+      const startPos = (prevFilter !== null
+        && prevFilter.count !== undefined
+        && prevFilter.count.length === 2)
+        ? [otoge.COUNT_DATA[prevFilter.count[0]],
+          otoge.COUNT_DATA[prevFilter.count[1]]]
+        : defaultPos;
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: otoge.COUNT_DATA.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        default: defaultPos,
+        matchingTable: otoge.COUNT_DATA,
+        step: 1,
+        margin: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => otoge.COUNT_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.COUNT_DATA).filter(
+            (key) => otoge.COUNT_DATA[key] === value,
+          )[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('count-lower'),
+        document.getElementById('count-upper'),
+        document.getElementById('count-hyphen'),
+        document.getElementById('count-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if (values[0] === otoge.COUNT_DATA[0]
+            && values[1] === otoge.COUNT_DATA[
+              otoge.COUNT_DATA.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
