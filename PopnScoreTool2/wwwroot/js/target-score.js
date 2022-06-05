@@ -194,7 +194,8 @@ FROM ? AS TBL1`, [res2]);
     || target_percent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [8] AND [8] <= ?';
-    arg = arg.concat([target_percent[0], target_percent[1]]);
+    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[target_percent[0]],
+      otoge.TARGET_PERCENT_DATA_R[target_percent[1]]]);
   }
   if (count[0] !== 0
     || count[1] !== otoge.COUNT_DATA.length - 1) {
@@ -203,10 +204,11 @@ FROM ? AS TBL1`, [res2]);
     if (count[1] === otoge.COUNT_DATA.length - 1) {
       // ～∞
       sql += ' ? <= [11]';
-      arg = arg.concat([count[0]]);
+      arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
     } else {
       sql += ' ? <= [11] AND [11] <= ?';
-      arg = arg.concat([count[0], count[1]]);
+      arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
+        otoge.COUNT_DATA_R[count[1]]]);
     }
   }
 

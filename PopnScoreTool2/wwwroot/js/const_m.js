@@ -263,6 +263,25 @@ export const TARGET_PERCENT_DATA = [
   '100',
 ];
 
+export const TARGET_PERCENT_DATA_R = [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90,
+  100,
+];
+
 export const COUNT_DATA = [
   '0',
   '1',
@@ -286,4 +305,29 @@ export const COUNT_DATA = [
   '500',
   '1000',
   '∞',
+];
+
+export const COUNT_DATA_R = [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90,
+  100,
+  200,
+  300,
+  400,
+  500,
+  1000,
+  99999,
 ];
