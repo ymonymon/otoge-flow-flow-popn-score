@@ -49,14 +49,14 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [4] AND [4] <= ?';
 
-    if (target[0] === otoge.TARGET_MEDAL_DATA_R.length - 1) {
+    if (target[0] === otoge.TARGET_MEDAL_DATA.length - 1) {
       // next
       arg = arg.concat([otoge.MEDAL_DATA_R[medal[0]], otoge.MEDAL_DATA_R[medal[1]]]);
     } else {
       // fix target/固定ターゲットの場合は終わっているものをフィルタする。
       arg = arg.concat([otoge.MEDAL_DATA_R[medal[0]],
-        otoge.MEDAL_DATA_R[medal[1]] < (otoge.TARGET_MEDAL_DATA_R_R[target[0]] - 1)
-          ? otoge.MEDAL_DATA_R[medal[1]] : (otoge.TARGET_MEDAL_DATA_R_R[target[0]] - 1),
+        otoge.MEDAL_DATA_R[medal[1]] < (otoge.TARGET_MEDAL_DATA_R[target[0]] - 1)
+          ? otoge.MEDAL_DATA_R[medal[1]] : (otoge.TARGET_MEDAL_DATA_R[target[0]] - 1),
       ]);
     }
   }
@@ -74,7 +74,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
   const res2 = alasql(sql, arg);
 
   let result;
-  if (target[0] === otoge.TARGET_MEDAL_DATA_R.length - 1) {
+  if (target[0] === otoge.TARGET_MEDAL_DATA.length - 1) {
     result = alasql(`MATRIX OF
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
 CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
@@ -88,10 +88,10 @@ ELSE 'score' END,
 TBL1.[12], TBL1.[13]
 FROM ? AS TBL1`, [res2]);
   } else {
-    // ${otoge.TARGET_MEDAL_DATA_R_R[target[0]] + 1} is column number
+    // ${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1} is column number
     const test = `MATRIX OF
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
-CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R_R[target[0]] + 1}]
+CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1}]
 ELSE 'score' END,
 TBL1.[12], TBL1.[13]
 FROM ? AS TBL1`;
@@ -185,8 +185,8 @@ const updateGrid = (data) => {
           id: '4',
           name: 'n→t',
           formatter: (_, row) => {
-            let next_medal = otoge.TARGET_MEDAL_DATA_R_R[target_medal_key];
-            if (target_medal_key === String(otoge.TARGET_MEDAL_DATA_R.length - 1)) {
+            let next_medal = otoge.TARGET_MEDAL_DATA_R[target_medal_key];
+            if (target_medal_key === String(otoge.TARGET_MEDAL_DATA.length - 1)) {
               if (row.cells[4].data < 4) {
                 next_medal = 4;
               } else {
@@ -322,8 +322,8 @@ function updateGrid2(filterSaveOnly) {
 
   skipSlider = document.getElementById('skipstep-target');
   val = skipSlider.noUiSlider.get();
-  const key_target = Object.keys(otoge.TARGET_MEDAL_DATA_R).filter(
-    (key) => otoge.TARGET_MEDAL_DATA_R[key] === val,
+  const key_target = Object.keys(otoge.TARGET_MEDAL_DATA).filter(
+    (key) => otoge.TARGET_MEDAL_DATA[key] === val,
   )[0];
 
   // for column
@@ -508,25 +508,25 @@ if (document.querySelector('h1.nologin') !== null) {
     }
     {
       const skipSlider = document.getElementById('skipstep-target');
-      const defaultPos = otoge.TARGET_MEDAL_DATA_R[otoge.TARGET_MEDAL_DATA_R.length - 1];
+      const defaultPos = otoge.TARGET_MEDAL_DATA[otoge.TARGET_MEDAL_DATA.length - 1];
       const startPos = (prevFilter !== null && prevFilter.target !== undefined)
-        ? otoge.TARGET_MEDAL_DATA_R[prevFilter.target]
+        ? otoge.TARGET_MEDAL_DATA[prevFilter.target]
         : defaultPos;
 
       noUiSlider.create(skipSlider, {
         range: {
           min: 0,
-          max: otoge.TARGET_MEDAL_DATA_R.length - 1,
+          max: otoge.TARGET_MEDAL_DATA.length - 1,
         },
         start: startPos,
         default: defaultPos,
-        matchingTable: otoge.TARGET_MEDAL_DATA_R,
+        matchingTable: otoge.TARGET_MEDAL_DATA,
         step: 1,
         tooltips: true,
         format: {
-          to: (key) => otoge.TARGET_MEDAL_DATA_R[Math.round(key)],
-          from: (value) => Object.keys(otoge.TARGET_MEDAL_DATA_R).filter(
-            (key) => otoge.TARGET_MEDAL_DATA_R[key] === value,
+          to: (key) => otoge.TARGET_MEDAL_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.TARGET_MEDAL_DATA).filter(
+            (key) => otoge.TARGET_MEDAL_DATA[key] === value,
           )[0],
         },
       });
