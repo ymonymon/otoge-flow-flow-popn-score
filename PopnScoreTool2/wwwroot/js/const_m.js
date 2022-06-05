@@ -243,3 +243,22 @@ export const ARROW_TARGET_SCORE_DATA = [
 export const ARROW_TARGET_SCORE_DATA_R = [
   4, 5, 6, 7, 8, 9, 10,
 ];
+
+export const TARGET_PERCENT_DATA = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '60',
+  '70',
+  '80',
+  '90',
+  '100',
+];

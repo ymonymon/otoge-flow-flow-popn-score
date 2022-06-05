@@ -29,6 +29,7 @@ const fumenFilter = (
   lv,
   lv_type,
   arrow_target_score,
+  target_percent,
 ) => {
   const res = alasql(`MATRIX OF
 SELECT TBL1.[2] AS [0], TBL1.[1] AS [1], -- title/genre
@@ -187,6 +188,12 @@ FROM ? AS TBL1`, [res2]);
     arg = arg.concat([otoge.ARROW_TARGET_SCORE_DATA_R[arrow_target_score[0]],
       otoge.ARROW_TARGET_SCORE_DATA_R[arrow_target_score[1]],
     ]);
+  }
+  if (target_percent[0] !== 0
+    || target_percent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [8] AND [8] <= ?';
+    arg = arg.concat([target_percent[0], target_percent[1]]);
   }
 
   const res4 = alasql(sql, arg);
@@ -574,6 +581,16 @@ function updateGrid2(filterSaveOnly) {
       (k) => otoge.ARROW_TARGET_SCORE_DATA[k] === val[1],
     )[0]];
 
+  skipSlider = document.getElementById('skipstep-target-percent');
+  val = skipSlider.noUiSlider.get();
+  const key_target_percent = [
+    Object.keys(otoge.TARGET_PERCENT_DATA).filter(
+      (k) => otoge.TARGET_PERCENT_DATA[k] === val[0],
+    )[0],
+    Object.keys(otoge.TARGET_PERCENT_DATA).filter(
+      (k) => otoge.TARGET_PERCENT_DATA[k] === val[1],
+    )[0]];
+
   if (filterSaveOnly) {
     // save filter & sort
     const sortStatus = site.getCurrentSortStatus();
@@ -590,6 +607,7 @@ function updateGrid2(filterSaveOnly) {
       lv: [key_lv1, key_lv2],
       lv_type: [key_lv_type1, key_lv_type2],
       arrow_target_score: key_arrow_target_score,
+      target_percent: key_target_percent,
       sort: sortStatus,
     };
 
@@ -605,6 +623,7 @@ function updateGrid2(filterSaveOnly) {
       [key_lv1, key_lv2].map(Number),
       [key_lv_type1, key_lv_type2].map(Number),
       key_arrow_target_score.map(Number),
+      key_target_percent.map(Number),
     );
 
     updateGrid(filteredData);
@@ -1276,6 +1295,83 @@ if (document.querySelector('h1.nologin') !== null) {
         } else if (values[0] === otoge.ARROW_TARGET_SCORE_DATA[0]
             && values[1] === otoge.ARROW_TARGET_SCORE_DATA[
               otoge.ARROW_TARGET_SCORE_DATA.length - 1]) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-target-percent');
+      const defaultPos = [otoge.TARGET_PERCENT_DATA[0],
+        otoge.TARGET_PERCENT_DATA[otoge.TARGET_PERCENT_DATA.length - 1]];
+      const startPos = (prevFilter !== null
+        && prevFilter.target_percent !== undefined
+        && prevFilter.target_percent.length === 2)
+        ? [otoge.TARGET_PERCENT_DATA[prevFilter.target_percent[0]],
+          otoge.TARGET_PERCENT_DATA[prevFilter.target_percent[1]]]
+        : defaultPos;
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: otoge.TARGET_PERCENT_DATA.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        default: defaultPos,
+        matchingTable: otoge.TARGET_PERCENT_DATA,
+        step: 1,
+        margin: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => otoge.TARGET_PERCENT_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.TARGET_PERCENT_DATA).filter(
+            (key) => otoge.TARGET_PERCENT_DATA[key] === value,
+          )[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('target-percent-lower'),
+        document.getElementById('target-percent-upper'),
+        document.getElementById('target-percent-hyphen'),
+        document.getElementById('target-percent-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if (values[0] === otoge.TARGET_PERCENT_DATA[0]
+            && values[1] === otoge.TARGET_PERCENT_DATA[
+              otoge.TARGET_PERCENT_DATA.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
