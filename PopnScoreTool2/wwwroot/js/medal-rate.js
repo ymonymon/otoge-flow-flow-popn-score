@@ -376,7 +376,7 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
           if (prevFilter === null) {
             skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default);
           } else {
-            const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replace('-', '_')];
+            const filter = prevFilter[skipSlider.id.replace('skipstep-', '').replaceAll('-', '_')];
             const table = skipSlider.noUiSlider.options.matchingTable;
             if (Array.isArray(filter)) {
               skipSlider.noUiSlider.set([table[filter[0]], table[filter[1]]]);
