@@ -35,7 +35,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
     a[4],
     a[11], a[12], a[13], a[14], a[15], a[16], a[17],
     a[8],
-    a[18], a[7],
+    a[18], a[7], a[5],
   ]);
 
   let sql = 'MATRIX OF SELECT * FROM ?';
@@ -85,7 +85,7 @@ WHEN TBL1.[4] < 8 THEN TBL1.[9]
 WHEN TBL1.[4] < 9 THEN TBL1.[10]
 WHEN TBL1.[4] < 10 THEN TBL1.[11]
 ELSE 'score' END,
-TBL1.[12], TBL1.[13]
+TBL1.[12], TBL1.[13], TBL1.[15]
 FROM ? AS TBL1`, [res2]);
   } else {
     // ${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1} is column number
@@ -93,7 +93,7 @@ FROM ? AS TBL1`, [res2]);
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
 CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1}]
 ELSE 'score' END,
-TBL1.[12], TBL1.[13]
+TBL1.[12], TBL1.[13], TBL1.[15]
 FROM ? AS TBL1`;
     result = alasql(test, [res2]);
   }
@@ -195,6 +195,7 @@ const updateGrid = (data) => {
             }
 
             return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                              + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" />`
                               + `→${(next_medal > 10) ? ('score')
                                 : (`<img src="/icon/medal_${next_medal}.png" alt="${next_medal}" width="18" height="18" />`)}`);
           },
@@ -243,7 +244,7 @@ const updateGrid = (data) => {
           attributes: (cell) => {
             if (cell === null) {
               return {
-                colspan: '2',
+                colspan: '3',
               };
             }
             return {
@@ -254,6 +255,15 @@ const updateGrid = (data) => {
         },
         {
           id: '7',
+          name: '',
+          sort: 0,
+          width: '1px',
+          attributes: {
+            style: 'display:none',
+          },
+        },
+        {
+          id: '8',
           name: '',
           sort: 0,
           width: '1px',
