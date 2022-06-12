@@ -78,20 +78,22 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
 
   const res2 = alasql(sql, arg);
 
-  let result;
+  let res3;
   if (target[0] === otoge.TARGET_MEDAL_DATA.length - 1) {
-    result = alasql(`MATRIX OF
-SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
-CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
-WHEN TBL1.[4] < 5 THEN TBL1.[6]
-WHEN TBL1.[4] < 6 THEN TBL1.[7]
-WHEN TBL1.[4] < 7 THEN TBL1.[8]
-WHEN TBL1.[4] < 8 THEN TBL1.[9]
-WHEN TBL1.[4] < 9 THEN TBL1.[10]
-WHEN TBL1.[4] < 10 THEN TBL1.[11]
-ELSE 'score' END,
-TBL1.[12], TBL1.[13], TBL1.[15]
-FROM ? AS TBL1`, [res2]);
+    const test = `MATRIX OF
+    SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
+    CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
+    WHEN TBL1.[4] < 5 THEN TBL1.[6]
+    WHEN TBL1.[4] < 6 THEN TBL1.[7]
+    WHEN TBL1.[4] < 7 THEN TBL1.[8]
+    WHEN TBL1.[4] < 8 THEN TBL1.[9]
+    WHEN TBL1.[4] < 9 THEN TBL1.[10]
+    WHEN TBL1.[4] < 10 THEN TBL1.[11]
+    ELSE 'score' END,
+    TBL1.[12], TBL1.[13], TBL1.[15]
+    FROM ? AS TBL1`;
+
+    res3 = alasql(test, [res2]);
   } else {
     // ${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1} is column number
     const test = `MATRIX OF
@@ -100,8 +102,13 @@ CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1}]
 ELSE 'score' END,
 TBL1.[12], TBL1.[13], TBL1.[15]
 FROM ? AS TBL1`;
-    result = alasql(test, [res2]);
+    res3 = alasql(test, [res2]);
   }
+
+  sql = 'MATRIX OF SELECT * FROM ?';
+  arg = [res3];
+
+  const result = alasql(sql, arg);
 
   return result;
 };

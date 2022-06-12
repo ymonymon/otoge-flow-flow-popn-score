@@ -230,20 +230,6 @@ export const LV_TYPE_DATA = [
   'EX',
 ];
 
-export const ARROW_TARGET_SCORE_DATA = [
-  '85k',
-  '90k',
-  '95k',
-  '98k',
-  '99k',
-  '99.4k',
-  '100k',
-];
-
-export const ARROW_TARGET_SCORE_DATA_R = [
-  4, 5, 6, 7, 8, 9, 10,
-];
-
 export const TARGET_PERCENT_DATA = [
   '0',
   '1',
