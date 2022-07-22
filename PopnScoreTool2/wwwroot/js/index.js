@@ -707,8 +707,8 @@ ELSE '-2' END`, [targetData]);
     }
   });
 
-  // item の 表示非表示処理
-  const nodelist = document.querySelectorAll('.item');
+  // accordion-item の 表示非表示処理
+  const nodelist = document.querySelectorAll('.accordion-item');
   const btns = Array.prototype.slice.call(nodelist, 0);
   btns.forEach((btn) => {
     btn.addEventListener('click', (element) => {
@@ -1180,7 +1180,7 @@ ELSE '-2' END`, [targetData]);
   {
     const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`));
     if (showStatus !== null) {
-      const nodelist2 = document.querySelectorAll('.item');
+        const nodelist2 = document.querySelectorAll('.accordion-item');
 
       Array.from(nodelist2).map((a) => {
         const { id } = a.parentNode;

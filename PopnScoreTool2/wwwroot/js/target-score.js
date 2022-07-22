@@ -28,7 +28,6 @@ const fumenFilter = (
   version,
   lv,
   lv_type,
-  arrow_target_score,
   target_percent,
   count,
 ) => {
@@ -181,14 +180,6 @@ FROM ? AS TBL1`, [res2]);
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
-  }
-  if (arrow_target_score[0] !== 0
-    || arrow_target_score[1] !== otoge.ARROW_TARGET_SCORE_DATA.length - 1) {
-    sql += (arg.length === 1) ? ' WHERE' : ' AND';
-    sql += ' ? <= [9] AND [9] <= ?';
-    arg = arg.concat([otoge.ARROW_TARGET_SCORE_DATA_R[arrow_target_score[0]],
-      otoge.ARROW_TARGET_SCORE_DATA_R[arrow_target_score[1]],
-    ]);
   }
   if (target_percent[0] !== 0
     || target_percent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
@@ -587,16 +578,6 @@ function updateGrid2(filterSaveOnly) {
     (key) => otoge.LV_TYPE_DATA[key] === val[1],
   )[0];
 
-  skipSlider = document.getElementById('skipstep-arrow-target-score');
-  val = skipSlider.noUiSlider.get();
-  const key_arrow_target_score = [
-    Object.keys(otoge.ARROW_TARGET_SCORE_DATA).filter(
-      (k) => otoge.ARROW_TARGET_SCORE_DATA[k] === val[0],
-    )[0],
-    Object.keys(otoge.ARROW_TARGET_SCORE_DATA).filter(
-      (k) => otoge.ARROW_TARGET_SCORE_DATA[k] === val[1],
-    )[0]];
-
   skipSlider = document.getElementById('skipstep-target-percent');
   val = skipSlider.noUiSlider.get();
   const key_target_percent = [
@@ -626,7 +607,6 @@ function updateGrid2(filterSaveOnly) {
       version: key_version,
       lv: [key_lv1, key_lv2],
       lv_type: [key_lv_type1, key_lv_type2],
-      arrow_target_score: key_arrow_target_score,
       target_percent: key_target_percent,
       count: key_count,
       sort: sortStatus,
@@ -643,7 +623,6 @@ function updateGrid2(filterSaveOnly) {
       [key_version].map(Number),
       [key_lv1, key_lv2].map(Number),
       [key_lv_type1, key_lv_type2].map(Number),
-      key_arrow_target_score.map(Number),
       key_target_percent.map(Number),
       key_count.map(Number),
     );
@@ -1241,82 +1220,6 @@ if (document.querySelector('h1.nologin') !== null) {
         } else if (skipValues[0].innerText === otoge.LV_TYPE_DATA[0]
                   && skipValues[1].innerText === otoge.LV_TYPE_DATA[
                     otoge.LV_TYPE_DATA.length - 1]) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          skipValues[3].style.display = 'none';
-        }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-          }, 1000);
-        }
-      });
-    }
-    {
-      const skipSlider = document.getElementById('skipstep-arrow-target-score');
-      const defaultPos = [otoge.ARROW_TARGET_SCORE_DATA[0],
-        otoge.ARROW_TARGET_SCORE_DATA[otoge.ARROW_TARGET_SCORE_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.arrow_target_score !== undefined
-        && prevFilter.arrow_target_score.length === 2)
-        ? [otoge.ARROW_TARGET_SCORE_DATA[prevFilter.arrow_target_score[0]],
-          otoge.ARROW_TARGET_SCORE_DATA[prevFilter.arrow_target_score[1]]]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.ARROW_TARGET_SCORE_DATA.length - 1,
-        },
-        connect: true,
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.ARROW_TARGET_SCORE_DATA,
-        step: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.ARROW_TARGET_SCORE_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.ARROW_TARGET_SCORE_DATA).filter(
-            (key) => otoge.ARROW_TARGET_SCORE_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('arrow-target-score-lower'),
-        document.getElementById('arrow-target-score-upper'),
-        document.getElementById('arrow-target-score-hyphen'),
-        document.getElementById('arrow-target-score-same'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-
-        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-          skipValues[3].innerHTML = values[handle];
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else if (values[0] === otoge.ARROW_TARGET_SCORE_DATA[0]
-            && values[1] === otoge.ARROW_TARGET_SCORE_DATA[
-              otoge.ARROW_TARGET_SCORE_DATA.length - 1]) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';

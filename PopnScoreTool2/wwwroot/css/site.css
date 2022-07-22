@@ -105,3 +105,7 @@ body {
 .gridjs-pages button {
     width: 33px;
 }
+
+div.accordion-item {
+    font-weight: bold;
+}

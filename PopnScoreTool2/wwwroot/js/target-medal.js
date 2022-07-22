@@ -17,7 +17,7 @@ let sort_target;
 
 let initializing = true;
 
-const fumenFilter = (version, target, medal, lv, lv_type) => {
+const fumenFilter = (version, target, medal, rank, lv, lv_type) => {
   const res = alasql(`MATRIX OF
 SELECT TBL1.[1] AS [0], TBL1.[2] AS [1], -- genre/title
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
@@ -35,7 +35,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
     a[4],
     a[11], a[12], a[13], a[14], a[15], a[16], a[17],
     a[8],
-    a[18], a[7],
+    a[18], a[7], a[5],
   ]);
 
   let sql = 'MATRIX OF SELECT * FROM ?';
@@ -60,6 +60,11 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
       ]);
     }
   }
+  if (rank[0] !== 0 || rank[1] !== otoge.RANK_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [15] AND [15] <= ?';
+    arg = arg.concat([otoge.RANK_DATA_R[rank[0]], otoge.RANK_DATA_R[rank[1]]]);
+  }
   if (lv[0] !== 0 || lv[1] !== otoge.LV_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [3] AND [3] <= ?';
@@ -73,30 +78,37 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
 
   const res2 = alasql(sql, arg);
 
-  let result;
+  let res3;
   if (target[0] === otoge.TARGET_MEDAL_DATA.length - 1) {
-    result = alasql(`MATRIX OF
-SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
-CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
-WHEN TBL1.[4] < 5 THEN TBL1.[6]
-WHEN TBL1.[4] < 6 THEN TBL1.[7]
-WHEN TBL1.[4] < 7 THEN TBL1.[8]
-WHEN TBL1.[4] < 8 THEN TBL1.[9]
-WHEN TBL1.[4] < 9 THEN TBL1.[10]
-WHEN TBL1.[4] < 10 THEN TBL1.[11]
-ELSE 'score' END,
-TBL1.[12], TBL1.[13]
-FROM ? AS TBL1`, [res2]);
+    const test = `MATRIX OF
+    SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
+    CASE WHEN TBL1.[4] < 4 THEN TBL1.[5]
+    WHEN TBL1.[4] < 5 THEN TBL1.[6]
+    WHEN TBL1.[4] < 6 THEN TBL1.[7]
+    WHEN TBL1.[4] < 7 THEN TBL1.[8]
+    WHEN TBL1.[4] < 8 THEN TBL1.[9]
+    WHEN TBL1.[4] < 9 THEN TBL1.[10]
+    WHEN TBL1.[4] < 10 THEN TBL1.[11]
+    ELSE 'score' END,
+    TBL1.[12], TBL1.[13], TBL1.[15]
+    FROM ? AS TBL1`;
+
+    res3 = alasql(test, [res2]);
   } else {
     // ${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1} is column number
     const test = `MATRIX OF
 SELECT TBL1.[0], TBL1.[1], TBL1.[2], TBL1.[3], TBL1.[4],
 CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1}]
 ELSE 'score' END,
-TBL1.[12], TBL1.[13]
+TBL1.[12], TBL1.[13], TBL1.[15]
 FROM ? AS TBL1`;
-    result = alasql(test, [res2]);
+    res3 = alasql(test, [res2]);
   }
+
+  sql = 'MATRIX OF SELECT * FROM ?';
+  arg = [res3];
+
+  const result = alasql(sql, arg);
 
   return result;
 };
@@ -195,6 +207,7 @@ const updateGrid = (data) => {
             }
 
             return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                              + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" />`
                               + `→${(next_medal > 10) ? ('score')
                                 : (`<img src="/icon/medal_${next_medal}.png" alt="${next_medal}" width="18" height="18" />`)}`);
           },
@@ -243,7 +256,7 @@ const updateGrid = (data) => {
           attributes: (cell) => {
             if (cell === null) {
               return {
-                colspan: '2',
+                colspan: '3',
               };
             }
             return {
@@ -254,6 +267,15 @@ const updateGrid = (data) => {
         },
         {
           id: '7',
+          name: '',
+          sort: 0,
+          width: '1px',
+          attributes: {
+            style: 'display:none',
+          },
+        },
+        {
+          id: '8',
           name: '',
           sort: 0,
           width: '1px',
@@ -338,6 +360,15 @@ function updateGrid2(filterSaveOnly) {
     (key) => otoge.MEDAL_DATA[key] === val[1],
   )[0];
 
+  skipSlider = document.getElementById('skipstep-rank');
+  val = skipSlider.noUiSlider.get();
+  const key_rank1 = Object.keys(otoge.RANK_DATA).filter(
+    (key) => otoge.RANK_DATA[key] === val[0],
+  )[0];
+  const key_rank2 = Object.keys(otoge.RANK_DATA).filter(
+    (key) => otoge.RANK_DATA[key] === val[1],
+  )[0];
+
   skipSlider = document.getElementById('skipstep-lv');
   val = skipSlider.noUiSlider.get();
   const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
@@ -362,6 +393,7 @@ function updateGrid2(filterSaveOnly) {
       version: key_version,
       target: key_target,
       medal: [key_medal1, key_medal2],
+      rank: [key_rank1, key_rank2],
       lv: [key_lv1, key_lv2],
       lv_type: [key_lv_type1, key_lv_type2],
       sort: sortStatus,
@@ -373,6 +405,7 @@ function updateGrid2(filterSaveOnly) {
       [key_version].map(Number),
       [key_target].map(Number),
       [key_medal1, key_medal2].map(Number),
+      [key_rank1, key_rank2].map(Number),
       [key_lv1, key_lv2].map(Number),
       [key_lv_type1, key_lv_type2].map(Number),
     );
@@ -602,6 +635,80 @@ if (document.querySelector('h1.nologin') !== null) {
                   && (skipValues[1].innerText === otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 1]
                       || skipValues[1].innerHTML === otoge.MEDAL_DATA[
                         otoge.MEDAL_DATA.length - 1])) {
+          skipValues[3].innerHTML = 'ALL';
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else {
+          skipValues[0].style.display = 'inline';
+          skipValues[1].style.display = 'inline';
+          skipValues[2].style.display = 'inline';
+          skipValues[3].style.display = 'none';
+        }
+      });
+
+      skipSlider.noUiSlider.on('start', () => {
+        clearTimeout(updateFilterTimer);
+      });
+
+      skipSlider.noUiSlider.on('set', () => {
+        if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+          updateGrid2(true);
+          clearTimeout(updateFilterTimer);
+          updateFilterTimer = setTimeout(() => {
+            updateGrid2();
+          }, 1000);
+        }
+      });
+    }
+    {
+      const skipSlider = document.getElementById('skipstep-rank');
+      const defaultPos = [otoge.RANK_DATA[0], otoge.RANK_DATA[otoge.RANK_DATA.length - 1]];
+      const startPos = (prevFilter !== null
+        && prevFilter.rank !== undefined && prevFilter.rank.length === 2)
+        ? [otoge.RANK_DATA[prevFilter.rank[0]], otoge.RANK_DATA[prevFilter.rank[1]]]
+        : defaultPos;
+
+      noUiSlider.create(skipSlider, {
+        range: {
+          min: 0,
+          max: otoge.RANK_DATA.length - 1,
+        },
+        connect: true,
+        start: startPos,
+        default: defaultPos,
+        matchingTable: otoge.RANK_DATA,
+        step: 1,
+        tooltips: [true, true],
+        format: {
+          to: (key) => otoge.RANK_DATA[Math.round(key)],
+          from: (value) => Object.keys(otoge.RANK_DATA).filter(
+            (key) => otoge.RANK_DATA[key] === value,
+          )[0],
+        },
+      });
+
+      const skipValues = [
+        document.getElementById('rank-lower'),
+        document.getElementById('rank-upper'),
+        document.getElementById('rank-hyphen'),
+        document.getElementById('rank-same'),
+      ];
+
+      skipSlider.noUiSlider.on('update', (values, handle) => {
+        skipValues[handle].innerHTML = values[handle];
+
+        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+          skipValues[3].innerHTML = values[handle];
+          skipValues[0].style.display = 'none';
+          skipValues[1].style.display = 'none';
+          skipValues[2].style.display = 'none';
+          skipValues[3].style.display = 'inline';
+        } else if ((skipValues[0].innerText === otoge.RANK_DATA[0]
+                  || skipValues[0].innerHTML === otoge.RANK_DATA[0])
+                  && (skipValues[1].innerText === otoge.RANK_DATA[otoge.RANK_DATA.length - 1]
+                      || skipValues[1].innerHTML === otoge.RANK_DATA[otoge.RANK_DATA.length - 1])) {
           skipValues[3].innerHTML = 'ALL';
           skipValues[0].style.display = 'none';
           skipValues[1].style.display = 'none';
