@@ -14,10 +14,10 @@
 - Microsoft Visual Studio Community 2022 Version 17.2.1
   - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0）
   - .NET デスクトップ開発
-- Microsoft Visual Studio Code 1.67.1
+- Microsoft Visual Studio Code 1.67.2
   - markdown書き。
   - js書き。
-- Docker Desktop 4.8.2 (79419)
+- Docker Desktop 4.10.1 (82475)
   - [Linux カーネル更新プログラム パッケージ](https://docs.microsoft.com/ja-jp/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package)
 - [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  18.11.1 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
 - WSL2(Ubuntu)
