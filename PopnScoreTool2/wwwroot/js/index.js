@@ -1185,8 +1185,9 @@ ELSE '-2' END`, [targetData]);
       Array.from(nodelist2).map((a) => {
         const { id } = a.parentNode;
         // ls の結果から表示非表示初期対応
-        document.querySelector(`#${id} .content`).style.display = (showStatus[id] === '1') ? '' : 'none';
-
+        if (showStatus[id]) {
+          document.querySelector(`#${id} .content`).style.display = (showStatus[id] === '1') ? '' : 'none';
+        }
         return undefined;
       });
     }
