@@ -3,10 +3,11 @@
 ## ログイン
 
     sudo su - ec2-user
-    docker container ls -a
-    # docker container logs <CONTAINER_ID>
-    # docker container exec -it {CONTAINER ID} /bin/bash
-    docker container exec -it --user root {CONTAINER ID} /bin/sh
+    # docker container ls -a -f name=proxy -q
+    ## docker container logs <CONTAINER_ID>
+    ## docker container exec -it {CONTAINER ID} /bin/bash
+    # docker container exec -it --user root {CONTAINER ID} /bin/sh
+    docker container exec -it --user root `docker container ls -a -f name=proxy -q` /bin/sh
 
     apk add certbot
     certbot certonly --webroot -w /usr/share/nginx/html/ssl-proof -d otoge-flow-flow.com -m {mail_address}

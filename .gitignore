@@ -367,3 +367,4 @@ FodyWeavers.xsd
 *.user.md
 *.user.bat
 /*.code-workspace
+/.vscode

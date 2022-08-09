@@ -11,10 +11,10 @@
 方針：なるべく最新。日本語版があれば利用しているが言語の設定は問わない。
 
 - Windows 10 (21H1)
-- Microsoft Visual Studio Community 2022 Version 17.2.1
+- Microsoft Visual Studio Community 2022 Version 17.2.6
   - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0）
   - .NET デスクトップ開発
-- Microsoft Visual Studio Code 1.67.2
+- Microsoft Visual Studio Code 1.69.2
   - markdown書き。
   - js書き。
 - Docker Desktop 4.10.1 (82475)
@@ -23,9 +23,9 @@
 - WSL2(Ubuntu)
 - Google Chrome
 - Hosts File Manager 2.0.327.0
-- Git for Windows 2.36.1 64bit
+- Git for Windows 2.37.1 64bit
 - TortoiseGit 2.13.0.1
-- PowerShell 7.2.4
+- PowerShell 7.2.5
 
 ### clone
 
