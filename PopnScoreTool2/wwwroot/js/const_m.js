@@ -67,6 +67,7 @@ export const VERSION_DATA = [
   'pop\'n うさぎと猫と少年の夢',
   'pop\'n peace',
   'pop\'n 解明リドルズ',
+  'pop\'n UniLab',
   'TV･ｱﾆﾒ',
   'CS',
   'BEMANI',
@@ -74,7 +75,7 @@ export const VERSION_DATA = [
 
 export const VERSION_DATA_R = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-  16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 23, 24, 25,
+  16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 30, 23, 24, 25,
 ];
 
 export const TARGET_MEDAL_DATA = [
