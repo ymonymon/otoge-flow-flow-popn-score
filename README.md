@@ -7,14 +7,14 @@
 ## 開発用ドキュメント
 
 - [全体](./README.Development.md)
-- [DB](./Database/Doc/Development/README.md)
+- [DB](./Database/doc/Development/README.md)
 - [Web](./PopnScoreTool2/doc/Development/README.md)
 - [Proxy](./PopnScoreTool2/Proxy1/README.md)
 
 ## 本番用ドキュメント
 
 - [全体](./README.Production.md)
-- [DB](./Database/Doc/Production/README.md)
+- [DB](./Database/doc/Production/README-makeCluster.md)
 - [Web](./PopnScoreTool2/doc/Production/README.md)
 - [Proxy](./PopnScoreTool2/Proxy1/README.md)
 
