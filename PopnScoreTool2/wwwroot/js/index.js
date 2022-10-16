@@ -205,7 +205,6 @@ const updateGrid = (data) => {
         limit: 20,
       },
       fixedHeader: true,
-      height: '400px',
       style: {
         table: {
           width: '100%',
