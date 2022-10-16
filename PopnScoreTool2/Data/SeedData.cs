@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using PopnScoreTool2.Models;
 
 namespace PopnScoreTool2.Data
 {

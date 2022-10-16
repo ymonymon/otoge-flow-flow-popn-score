@@ -1,28 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
 
 using PopnScoreTool2.Data;
 using PopnScoreTool2.Models;
-using PopnScoreTool2.Utilities;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
 
 namespace PopnScoreTool2.Pages
