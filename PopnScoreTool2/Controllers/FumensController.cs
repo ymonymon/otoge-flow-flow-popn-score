@@ -21,17 +21,10 @@ namespace PopnScoreTool2.Controllers
         [HttpGet]
         public async Task<ActionResult<object[]>> GetValues()
         {
-            var item = await _context.Musics.Where(w => w.Deleted == false)
+            return await _context.Musics.Where(w => w.Deleted == false)
                 .Select(a => new object[]{ a.Id, a.Name, a.Genre + (a.Position == 1 ? "UPPER": ""), a.LevelId, a.Level,
                     a.Version })
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }

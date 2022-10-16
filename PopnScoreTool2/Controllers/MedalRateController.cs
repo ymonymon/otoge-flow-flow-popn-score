@@ -78,7 +78,7 @@ namespace PopnScoreTool2.Controllers
                 .Select(a => new object[]{ a.Id, a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.PlayerCount, a.AverageScore, a.Medal4, a.Medal5, a.Medal6, a.Medal7, a.Medal8, a.Medal9, a.Medal10, a.PlayerCountNow })
                 .ToArrayAsync();
             */
-            var item = await _context.Musics.Where(w => w.Deleted == false)
+            return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.MusicScores.Where(w => w.UserIntId == userIntId), a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
                 .GroupJoin(_context.OldStatses, c => c.a.a.Id, d => d.FumenId, (c, d) => new { c, d })
@@ -115,13 +115,6 @@ namespace PopnScoreTool2.Controllers
                 })
                 .Select(a => new object[] { a.Id, a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.PlayerCount, a.AverageScore, a.Medal4, a.Medal5, a.Medal6, a.Medal7, a.Medal8, a.Medal9, a.Medal10, a.PlayerCountNow })
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }

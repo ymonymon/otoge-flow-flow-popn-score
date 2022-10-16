@@ -22,7 +22,7 @@ namespace PopnScoreTool2.Controllers
         public async Task<ActionResult<object[]>> GetValues()
         {
             // ログイン不要API。
-            var item = await _context.Musics.Where(w => w.Deleted == false)
+            return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new {
                     a.a.Id,
@@ -30,13 +30,6 @@ namespace PopnScoreTool2.Controllers
                 })
                 .Select(a => new object[] { a.Id, a.TopScore })
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }

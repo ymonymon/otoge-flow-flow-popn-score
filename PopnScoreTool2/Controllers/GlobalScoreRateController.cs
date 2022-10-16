@@ -56,7 +56,7 @@ namespace PopnScoreTool2.Controllers
                 .ToArrayAsync();
             */
 
-            var item = await _context.Musics.Where(w => w.Deleted == false)
+            return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.MusicScores.GroupBy(g => g.FumenId).Select(h => new
                 {
                     FumenId = (int?)h.Key,
@@ -85,13 +85,6 @@ namespace PopnScoreTool2.Controllers
                 })
                 .Select(a => new object[] { a.Id, a.Score4, a.Score5, a.Score6, a.Score7, a.Score8, a.Score9, a.Score10, a.Score10n, a.PlayerCount })
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }
