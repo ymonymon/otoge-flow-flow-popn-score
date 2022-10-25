@@ -4,7 +4,7 @@
 
 一度 Docker Desktop 上で該当 Container を削除
 
-開発者用 PowerShell 上で作業フォルダを \repos\PopnScoreTool2 にする。
+開発者用 PowerShell 上で作業フォルダを \repos\otoge-flow-flow-popn-score にする。
 
     > docker compose build
 
