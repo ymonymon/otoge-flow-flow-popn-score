@@ -322,7 +322,7 @@
 	*/
 	const loadProfile = () => {
 
-		const url = 'https://p.eagate.573.jp/game/popn/riddles/playdata/';
+		const url = 'https://p.eagate.573.jp/game/popn/unilab/playdata/';
 
 		return fetch(url, {
 				credentials: 'include'
@@ -343,7 +343,7 @@
 
 	const loadScoreOfPage = async (initial, page) => {
 
-		const url = 'https://p.eagate.573.jp/game/popn/riddles/playdata/mu_top.html?page=' + page + '&genre=' + initial;
+		const url = 'https://p.eagate.573.jp/game/popn/unilab/playdata/mu_top.html?page=' + page + '&genre=' + initial;
 
 		await sleep(10);
 
