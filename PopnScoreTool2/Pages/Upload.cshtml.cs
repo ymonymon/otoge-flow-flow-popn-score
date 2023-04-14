@@ -14,6 +14,10 @@ using System.Text.Unicode;
 using System.Security.Claims;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using System.Net.Http;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PopnScoreTool2.Pages
 {
@@ -32,10 +36,12 @@ namespace PopnScoreTool2.Pages
     public class UploadModel : PageModel
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UploadModel(AppDbContext context)
+        public UploadModel(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // [BindProperty]
@@ -266,6 +272,7 @@ namespace PopnScoreTool2.Pages
             {
                 fumen = basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId && a.GenreIndexCompareForPosition == indexCompare);
             }
+
             if (!fumen.Any())
             {
                 Debug.WriteLine("not found: {0}, {1}, {2}", title, genre, levelId);
@@ -280,11 +287,31 @@ namespace PopnScoreTool2.Pages
                 try
                 {
                     _context.NotFoundMusics.Add(notFoundMusic);
+
+                    var webhookUrl = _configuration["Discord:WebHook:NotFoundMusicHookURL"];
+
+                    if (webhookUrl != null)
+                    {
+                        var profileQuery = _context.Profiles.Where(a => a.UserIntId == userIntId);
+                        var pro = profileQuery.FirstOrDefault();
+                        var userName = userIntId.ToString();
+                        if (pro != null)
+                        {
+                            userName = pro.PlayerName;
+                        }
+
+                        var jsonPayload = $@"{{""content"": ""NotFound:{title}\t{genre}\t{levelId}\tfrom {userName}""}}";
+
+                        var httpClient = new HttpClient();
+                        var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                        var response = httpClient.PostAsync(webhookUrl, httpContent).Result;
+                    }
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message);
                 }
+
                 return 1;
             }
 
