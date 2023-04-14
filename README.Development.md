@@ -11,21 +11,22 @@
 方針：なるべく最新。日本語版があれば利用しているが言語の設定は問わない。
 
 - Windows 10 (21H1)
-- Microsoft Visual Studio Community 2022 Version 17.3.6
-  - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0）
+- Microsoft Visual Studio Community 2022 Version 17.5.4
+  - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0 -> .NET 7.0）
   - .NET デスクトップ開発
-- Microsoft Visual Studio Code 1.69.2
+- Microsoft Visual Studio Code 1.77.3
   - markdown書き。
   - js書き。
-- Docker Desktop 4.12.0 (85629)
+- Docker Desktop 4.18.0 (104112)
   - [Linux カーネル更新プログラム パッケージ](https://docs.microsoft.com/ja-jp/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package)
-- [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  18.11.1 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
+- [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  19.0.1 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
 - WSL2(Ubuntu)
 - Google Chrome
+- Git for Windows 2.39.2.windows.1 64bit
+- TortoiseGit 2.14.0.0 64bit
+- PowerShell 7.3.3
 - Hosts File Manager 2.0.327.0
-- Git for Windows 2.37.3 64bit
-- TortoiseGit 2.13.0.1
-- PowerShell 7.2.7
+- Discord WebHook
 
 ### clone
 
