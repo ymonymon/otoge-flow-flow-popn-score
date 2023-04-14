@@ -33,7 +33,9 @@ namespace PopnScoreTool2
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection") + Configuration["Authentication:MSSQL:UserPST2Password"]));
+                    Configuration.GetConnectionString("DefaultConnection") + Configuration["Authentication:MSSQL:UserPST2Password"]
+                    // ));
+                    + ";" + "TrustServerCertificate=True"));
             services.AddDefaultIdentity<IdentityUser>(/* options => options.SignIn.RequireConfirmedAccount = true */)
                 .AddEntityFrameworkStores<AppDbContext>();
             services.AddRazorPages();
