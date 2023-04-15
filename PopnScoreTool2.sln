@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{55964116-477
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{F6334C6A-67AF-4737-A3E1-A57860BCA090}"
 	ProjectSection(SolutionItems) = preProject
+		Database\doc\Development\CreateMergeMusicProcedure.sql = Database\doc\Development\CreateMergeMusicProcedure.sql
+		Database\doc\Development\GrantMergeMusicProcedure.sql = Database\doc\Development\GrantMergeMusicProcedure.sql
 		Database\doc\Development\README.md = Database\doc\Development\README.md
 	EndProjectSection
 EndProject
