@@ -1,6 +1,6 @@
 # 証明書手動更新手順
 
-## ログイン
+## セッションマネージャー等でproxyのインスタンスにログイン
 
     sudo su - ec2-user
     # docker container ls -a -f name=proxy -q
