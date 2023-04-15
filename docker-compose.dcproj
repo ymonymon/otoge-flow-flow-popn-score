@@ -9,6 +9,7 @@
     <DockerServiceName>web.pst2</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose-prod.yml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>

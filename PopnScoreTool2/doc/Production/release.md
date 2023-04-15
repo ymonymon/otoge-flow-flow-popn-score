@@ -6,9 +6,9 @@
 
 開発者用 PowerShell 上で作業フォルダを \repos\otoge-flow-flow-popn-score にする。
 
-    > docker compose build
+    > docker compose -f docker-compose-prod.yml build
 
-    > docker compose up -d
+    > docker compose -f docker-compose-prod.yml up -d
 
 テスト
 
@@ -17,12 +17,12 @@
 ### arm 用ビルドとタグ付け
 
     > cd PopnScoreTool2\
-    > docker buildx build --platform linux/arm64 .　-t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2:latest --no-cache
+    > docker buildx build --platform linux/arm64 . -t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2:latest --no-cache
 
     ※現在 .NET 7.0 の arm64 環境で buildx 失敗しているので問題が解決するまで amd64 環境で動かしている。
 
     > cd PopnScoreTool2\Proxy1
-    > docker buildx build --platform linux/arm64 .　-t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2:latest
+    > docker buildx build --platform linux/arm64 -f Dockerfile.prod . -t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2:latest
 
 ### まずは認証
 
