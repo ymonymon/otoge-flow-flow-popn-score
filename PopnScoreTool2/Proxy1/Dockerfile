@@ -17,7 +17,7 @@ COPY ["nginx/certs/privkey.pem", "/etc/letsencrypt/live/otoge-flow-flow.com/priv
 # COPY ["nginx/certs/nginx-certificate.crt", "/etc/letsencrypt/live/otoge-flow-flow.com/nginx-certificate.crt"]
 COPY ["nginx/proxy.conf", "/etc/nginx/proxy.conf"]
 COPY ["nginx/nginx.conf", "/etc/nginx/nginx.conf"]
-COPY ["nginx/otoge-flow-flow.com.dev", "/etc/nginx/sites-available/otoge-flow-flow.com"]
+COPY ["nginx/otoge-flow-flow.com", "/etc/nginx/sites-available/otoge-flow-flow.com"]
 RUN mkdir /etc/nginx/sites-enabled/
 RUN ln -s /etc/nginx/sites-available/otoge-flow-flow.com /etc/nginx/sites-enabled/otoge-flow-flow.com
 
