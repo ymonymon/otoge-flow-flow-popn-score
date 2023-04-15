@@ -1,8 +1,10 @@
 # 開発用ドキュメント
 
+ローカルのWindowsデスクトップ環境(Docker)でテストし、何らかのクラウドサービス上で動かす想定で開発している。
+
 ## 構成
 
-- nginx reverse proxy(SSL) - kestrel(on linux) - db(sql server on linux)
+- reverse proxy(TLS,nginx) - web(kestrel on linux) - db(sql server on linux)
 
 今回は不要ではあるが、アクセス増を考慮した構成にしている。
 
@@ -19,12 +21,12 @@
   - js書き。
 - Docker Desktop 4.18.0 (104112)
   - [Linux カーネル更新プログラム パッケージ](https://docs.microsoft.com/ja-jp/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package)
-- [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  19.0.1 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
+- [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  19.0.20209.0 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
 - WSL2(Ubuntu)
 - Google Chrome
 - Git for Windows 2.39.2.windows.1 64bit
 - TortoiseGit 2.14.0.0 64bit
-- PowerShell 7.3.3
+- PowerShell 7.3.4
 - Hosts File Manager 2.0.327.0
 - Discord WebHook
 

@@ -63,3 +63,12 @@ SSMSなどで127.0.0.1(127.0.0.1,1433)で接続する。
 ログインはsa
 
 テスト環境のパスワードは環境変数を設定していなければ<YourStrong!Passw0rd>
+
+## 譜面データの更新
+
+譜面データのGoogle Spredsheet(TODO: URL)からmergesql列をすべてコピーし実行する事で
+削除レコードがないかぎり冪等性を担保した更新が行える。
+Musicsテーブルは誤操作が無い限りレコードの削除は行わない。譜面の削除があった場合は削除フラグ。
+
+（MergeMusicストアドプロシージャがDB上に無い場合はCreateMergeMusicProcedure.sqlを実行。）
+

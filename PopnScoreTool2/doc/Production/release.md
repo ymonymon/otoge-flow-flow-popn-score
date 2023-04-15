@@ -18,6 +18,9 @@
 
     > cd PopnScoreTool2\
     > docker buildx build --platform linux/arm64 .　-t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_web_pst2:latest --no-cache
+
+    ※現在 .NET 7.0 の arm64 環境で buildx 失敗しているので問題が解決するまで amd64 環境で動かしている。
+
     > cd PopnScoreTool2\Proxy1
     > docker buildx build --platform linux/arm64 .　-t {aws_account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/ym_proxy_pst2:latest
 
