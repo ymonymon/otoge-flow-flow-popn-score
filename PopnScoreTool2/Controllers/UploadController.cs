@@ -227,7 +227,7 @@ public class UploadController : Controller
         // MusicScoreBasisテーブルに存在し、MusicScoreテーブルに存在し、変更があればUpdate
         // MusicScoreBasisテーブルに存在し、MusicScoreテーブルに存在しなければInsert
 
-        IEnumerable<MusicScoreBasis> fumen = forceUnUpper
+        var fumen = forceUnUpper
             ? basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId && a.Position == 0)
             : indexCompare == 0
             ? basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId)
