@@ -10,7 +10,10 @@ namespace PopnScoreTool2.Data
         {
             await context.Database.EnsureCreatedAsync();
             if (await context.Musics.AnyAsync())
+            {
                 return;
+            }
+
             await context.SaveChangesAsync();
         }
     }

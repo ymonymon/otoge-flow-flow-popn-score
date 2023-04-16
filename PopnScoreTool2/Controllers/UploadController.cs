@@ -58,7 +58,10 @@ public class UploadController : Controller
     {
         userIntId = -1;
         // ログインしているか確認。
-        if (!User.Identity.IsAuthenticated) return false;
+        if (!User.Identity.IsAuthenticated)
+        {
+            return false;
+        }
 
         // IDを特定する
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -79,8 +82,10 @@ public class UploadController : Controller
             userInt = _context.UserInts.Where(a => a.AspNetUsersFK == userId);
 
             if (!userInt.Any())
+            {
                 // fail
                 return false;
+            }
         }
 
         userIntId = userInt.First().Id;
@@ -92,7 +97,10 @@ public class UploadController : Controller
         var profileQuery = _context.Profiles.Where(a => a.UserIntId == userIntId);
 
         var uploadProfile = new Profile(userIntId);
-        if (!uploadProfile.VerifyUploadedData(profile)) return;
+        if (!uploadProfile.VerifyUploadedData(profile))
+        {
+            return;
+        }
 
         if (!profileQuery.Any())
         {
@@ -102,7 +110,10 @@ public class UploadController : Controller
         {
             var nowProfile = profileQuery.First();
 
-            if (!Profile.EqualsUploadedData(nowProfile, uploadProfile)) nowProfile.ApplyUploadedData(uploadProfile);
+            if (!Profile.EqualsUploadedData(nowProfile, uploadProfile))
+            {
+                nowProfile.ApplyUploadedData(uploadProfile);
+            }
 
             // アップロードしたら必ず更新
             nowProfile.LastUpdateTime = DateTime.Now;
@@ -141,6 +152,7 @@ public class UploadController : Controller
                 insertUpdateCount += result;
 
                 if (result == 0)
+                {
                     // upper fumen
                     if (basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId).Count() == 2)
                     {
@@ -169,6 +181,7 @@ public class UploadController : Controller
                                     index < otherIndex ? -1 : 1);
                         }
                     }
+                }
             }
         }
 
@@ -217,11 +230,17 @@ public class UploadController : Controller
         int indexCompare = 0, bool forceUnUpper = false)
     {
         // score == -1はそもそも譜面が無いパターン。
-        if (score == -1) return 0;
+        if (score == -1)
+        {
+            return 0;
+        }
 
         // スコア 0,medal == -1はアップロードしない。
         // medal != -1,score0はありうるが、意図的なfailメダル。またはスコアが記録されていない昔のデータ。平均等の集計からは除外する。
-        if (score == 0 && medal == -1) return 0;
+        if (score == 0 && medal == -1)
+        {
+            return 0;
+        }
 
         // TODO : MusicScoreBasisテーブルに存在しなければどこかに保存しておく
         // MusicScoreBasisテーブルに存在し、MusicScoreテーブルに存在し、変更があればUpdate
@@ -278,8 +297,10 @@ public class UploadController : Controller
         }
 
         if (1 < fumen.Count())
+        {
             // Debug.WriteLine("upper fumen: {0}, {1}, {2}", title, genre, levelId);
             return 0;
+        }
 
         var fumenId = fumen.First().Id;
         var fumenScore = scores.Where(a => a.FumenId == fumenId);
