@@ -22,7 +22,7 @@ public class UploadController : Controller
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
-    private readonly HashSet<(string, string)> decresedScoreFumen = new HashSet<(string, string)>();
+    private readonly HashSet<(string, string)> decresedScoreFumen = new();
 
 
     public UploadController(AppDbContext context, IConfiguration configuration)
