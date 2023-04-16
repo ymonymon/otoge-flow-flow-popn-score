@@ -18,6 +18,7 @@ using System.Net.Http;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Specialized;
 
 namespace PopnScoreTool2.Pages
 {
@@ -37,6 +38,7 @@ namespace PopnScoreTool2.Pages
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private HashSet<(string, string)> decresedScoreFumen = new HashSet<(string, string)>();
 
         public UploadModel(AppDbContext context, IConfiguration configuration)
         {
@@ -230,6 +232,30 @@ namespace PopnScoreTool2.Pages
                 Debug.WriteLine(ex.Message);
             }
 
+            if (0 < decresedScoreFumen.Count)
+            {
+                // Notify.
+                var webhookUrl = _configuration["Discord:WebHook:DecreasedScoreWarningHookURL"];
+                if (webhookUrl != null)
+                {
+                    var profileQuery = _context.Profiles.Where(a => a.UserIntId == userIntId);
+                    var pro = profileQuery.FirstOrDefault();
+                    var userName = userIntId.ToString();
+                    if (pro != null)
+                    {
+                        userName = pro.PlayerName;
+                    }
+
+                    var representative = decresedScoreFumen.First();
+                    var jsonPayload = $@"{{""content"": ""DecresedScore\tcount:{decresedScoreFumen.Count}\t{representative.Item1}\t{representative.Item2}\tfrom {userName}""}}";
+
+                    var httpClient = new HttpClient();
+                    var httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    var response = httpClient.PostAsync(webhookUrl, httpContent).Result;
+                }
+            }
+
+
             // 入れる。
             if (0 < insertUpdateCount)
             {
@@ -288,8 +314,8 @@ namespace PopnScoreTool2.Pages
                 {
                     _context.NotFoundMusics.Add(notFoundMusic);
 
+                    // Notify if an non-existent fumen data is uploaded."
                     var webhookUrl = _configuration["Discord:WebHook:NotFoundMusicHookURL"];
-
                     if (webhookUrl != null)
                     {
                         var profileQuery = _context.Profiles.Where(a => a.UserIntId == userIntId);
@@ -350,6 +376,12 @@ namespace PopnScoreTool2.Pages
             {
                 var updateFumenScore = fumenScore.First();
 
+                // If the score decreases. This is usually not expected.
+                if (score < updateFumenScore.Score)
+                {
+                    decresedScoreFumen.Add((title, genre));
+                }
+
                 if (updateFumenScore.MedalOrdinalScale != medal ||
                     updateFumenScore.RankOrdinalScale != rank ||
                     updateFumenScore.Score != score)
@@ -367,6 +399,7 @@ namespace PopnScoreTool2.Pages
                     }
                     return 1;
                 }
+
             }
 
             return 0;
