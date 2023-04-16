@@ -8,13 +8,13 @@ namespace PopnScoreTool2.Data
         // internal static async Task SeedingAsync(MusicScoreBasis context)
         public static async Task SeedingAsync(AppDbContext context)
         {
-            await context.Database.EnsureCreatedAsync();
+            _ = await context.Database.EnsureCreatedAsync();
             if (await context.Musics.AnyAsync())
             {
                 return;
             }
 
-            await context.SaveChangesAsync();
+            _ = await context.SaveChangesAsync();
         }
     }
 }

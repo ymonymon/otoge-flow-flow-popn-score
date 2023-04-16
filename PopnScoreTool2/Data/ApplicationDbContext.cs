@@ -29,32 +29,32 @@ namespace PopnScoreTool2.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserInt>()
+            _ = modelBuilder.Entity<UserInt>()
                 .HasOne<IdentityUser>()
                 .WithOne()
                 .HasForeignKey<UserInt>(b => b.AspNetUsersFK);
 
-            modelBuilder.Entity<Profile>()
+            _ = modelBuilder.Entity<Profile>()
             .HasOne<UserInt>()
             .WithOne()
             .HasForeignKey<Profile>(a => a.UserIntId);
 
-            modelBuilder.Entity<MusicScore>()
+            _ = modelBuilder.Entity<MusicScore>()
                 .HasKey(o => new { o.UserIntId, o.FumenId });
 
-            modelBuilder.Entity<OldStats>()
+            _ = modelBuilder.Entity<OldStats>()
                 .HasOne<MusicScoreBasis>()
                 .WithOne()
                 .HasForeignKey<OldStats>(b => b.FumenId);
 
-            modelBuilder
+            _ = modelBuilder
                 .Entity<PercentileScore>(eb =>
                 {
-                    eb.HasNoKey();
-                    eb.ToView("PercentileScore");
+                    _ = eb.HasNoKey();
+                    _ = eb.ToView("PercentileScore");
                 });
 
-            modelBuilder.Entity<NotFoundMusic>()
+            _ = modelBuilder.Entity<NotFoundMusic>()
                 .HasOne<UserInt>()
                 .WithMany()
                 .HasForeignKey(a => a.UserIntId);

@@ -27,13 +27,13 @@ namespace PopnScoreTool2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
+            _ = services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedProto;
             });
 
-            services.AddDbContext<AppDbContext>(options =>
+            _ = services.AddDbContext<AppDbContext>(options =>
             {
                 var connectionStringBuilder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("DefaultConnection"))
                 {
@@ -41,17 +41,17 @@ namespace PopnScoreTool2
                     TrustServerCertificate = true
                 };
 
-                options.UseSqlServer(connectionStringBuilder.ConnectionString);
+                _ = options.UseSqlServer(connectionStringBuilder.ConnectionString);
             });
 
-            services.AddHealthChecks()
+            _ = services.AddHealthChecks()
                 .AddDbContextCheck<AppDbContext>("database");
 
-            services.AddDefaultIdentity<IdentityUser>(/* options => options.SignIn.RequireConfirmedAccount = true */)
+            _ = services.AddDefaultIdentity<IdentityUser>(/* options => options.SignIn.RequireConfirmedAccount = true */)
                 .AddEntityFrameworkStores<AppDbContext>();
-            services.AddRazorPages();
+            _ = services.AddRazorPages();
 
-            services.AddAuthentication().AddTwitter(twitterOptions =>
+            _ = services.AddAuthentication().AddTwitter(twitterOptions =>
             {
                 twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
                 twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
@@ -60,20 +60,20 @@ namespace PopnScoreTool2
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseForwardedHeaders();
+            _ = app.UseForwardedHeaders();
 
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                _ = app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                _ = app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                _ = app.UseHsts();
             }
 
-            app.Use(async (context, next) =>
+            _ = app.Use(async (context, next) =>
             {
                 var config = context.RequestServices.GetService<IConfiguration>();
                 if (config["Authentication:MSSQL:UserPST2Password"] == null)
@@ -87,27 +87,27 @@ namespace PopnScoreTool2
                 }
             });
 
-            app.UseHttpsRedirection();
+            _ = app.UseHttpsRedirection();
 
             var provider = new FileExtensionContentTypeProvider();
             // Add new mappings
             provider.Mappings[".js"] = "application/javascript; charset=utf-8";
 
-            app.UseStaticFiles(new StaticFileOptions
+            _ = app.UseStaticFiles(new StaticFileOptions
             {
                 ContentTypeProvider = provider
             });
 
-            app.UseRouting();
+            _ = app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            _ = app.UseAuthentication();
+            _ = app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            _ = app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-                endpoints.MapHealthChecks("/health");
+                _ = endpoints.MapControllers();
+                _ = endpoints.MapRazorPages();
+                _ = endpoints.MapHealthChecks("/health");
             });
 
             // app.UseCors(MyAllowSpecificOrigins);

@@ -76,8 +76,8 @@ public class UploadController : Controller
                 AspNetUsersFK = userId
             };
 
-            _context.UserInts.Add(newUserInt);
-            _context.SaveChanges();
+            _ = _context.UserInts.Add(newUserInt);
+            _ = _context.SaveChanges();
 
             userInt = _context.UserInts.Where(a => a.AspNetUsersFK == userId);
 
@@ -104,7 +104,7 @@ public class UploadController : Controller
 
         if (!profileQuery.Any())
         {
-            _context.Profiles.Add(uploadProfile);
+            _ = _context.Profiles.Add(uploadProfile);
         }
         else
         {
@@ -118,11 +118,11 @@ public class UploadController : Controller
             // アップロードしたら必ず更新
             nowProfile.LastUpdateTime = DateTime.Now;
 
-            _context.Profiles.Update(nowProfile);
+            _ = _context.Profiles.Update(nowProfile);
         }
 
         // 入れる。
-        _context.SaveChanges();
+        _ = _context.SaveChanges();
     }
 
     private void UpdateScore(int userIntId, List<object[]> obj4)
@@ -220,7 +220,7 @@ public class UploadController : Controller
         if (0 < insertUpdateCount)
         {
             Debug.WriteLine("insertUpdateCount:{0}", insertUpdateCount);
-            _context.SaveChanges();
+            _ = _context.SaveChanges();
         }
     }
 
@@ -264,7 +264,7 @@ public class UploadController : Controller
                 LastUpdateTime = DateTime.Now
             };
 
-            _context.NotFoundMusics.Add(notFoundMusic);
+            _ = _context.NotFoundMusics.Add(notFoundMusic);
 
             try
             {
@@ -318,7 +318,7 @@ public class UploadController : Controller
 
             try
             {
-                _context.MusicScores.Add(firstScore);
+                _ = _context.MusicScores.Add(firstScore);
             }
             catch (Exception ex)
             {
@@ -333,7 +333,7 @@ public class UploadController : Controller
         // If the score decreases. This is usually not expected.
         if (score < updateFumenScore.Score)
         {
-            decresedScoreFumen.Add((title, genre));
+            _ = decresedScoreFumen.Add((title, genre));
         }
 
         if (updateFumenScore.MedalOrdinalScale != medal ||
@@ -344,7 +344,7 @@ public class UploadController : Controller
             updateFumenScore.RankOrdinalScale = rank;
             updateFumenScore.Score = score;
 
-            _context.MusicScores.Update(updateFumenScore);
+            _ = _context.MusicScores.Update(updateFumenScore);
 
             return 1;
         }
