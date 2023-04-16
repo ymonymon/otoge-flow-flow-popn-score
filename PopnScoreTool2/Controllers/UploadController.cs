@@ -227,13 +227,11 @@ public class UploadController : Controller
         // MusicScoreBasisテーブルに存在し、MusicScoreテーブルに存在し、変更があればUpdate
         // MusicScoreBasisテーブルに存在し、MusicScoreテーブルに存在しなければInsert
 
-        IEnumerable<MusicScoreBasis> fumen;
-        if (forceUnUpper)
-            fumen = basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId && a.Position == 0);
-        else if (indexCompare == 0)
-            fumen = basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId);
-        else
-            fumen = basis.Where(a =>
+        IEnumerable<MusicScoreBasis> fumen = forceUnUpper
+            ? basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId && a.Position == 0)
+            : indexCompare == 0
+            ? basis.Where(a => a.Name == title && a.Genre == genre && a.LevelId == levelId)
+            : basis.Where(a =>
                 a.Name == title && a.Genre == genre && a.LevelId == levelId &&
                 a.GenreIndexCompareForPosition == indexCompare);
         if (!fumen.Any())
