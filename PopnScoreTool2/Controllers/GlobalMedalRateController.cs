@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopnScoreTool2.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PopnScoreTool2.Controllers
 {
@@ -60,7 +60,8 @@ namespace PopnScoreTool2.Controllers
             return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.OldStatses, c => c.Id, d => d.FumenId, (c, d) => new { c, d })
                 .SelectMany(cd => cd.d.DefaultIfEmpty(), (c, d) => new { c, d })
-                .GroupJoin(_context.MusicScores.GroupBy(g => g.FumenId).Select(h => new {
+                .GroupJoin(_context.MusicScores.GroupBy(g => g.FumenId).Select(h => new
+                {
                     FumenId = (int?)h.Key,
                     PlayerCount = (int?)h.Count(),
                     AverageScore = (int?)h.Average(i => i.Score),
@@ -86,7 +87,7 @@ namespace PopnScoreTool2.Controllers
                     Medal10 = Math.Round(((e.e.d == null ? 0 : e.e.d.MedalRate10 * e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.AverageMedal10.Value * f.PlayerCount.Value)) / ((e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value) == 0 ? 1 : (e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value)), 2),
                     PlayerCountNow = (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value),
                 })
-                .Select(a => new object[]{ a.Id, a.PlayerCount, a.AverageScore, a.Medal4, a.Medal5, a.Medal6, a.Medal7, a.Medal8, a.Medal9, a.Medal10, a.PlayerCountNow })
+                .Select(a => new object[] { a.Id, a.PlayerCount, a.AverageScore, a.Medal4, a.Medal5, a.Medal6, a.Medal7, a.Medal8, a.Medal9, a.Medal10, a.PlayerCountNow })
                 .ToArrayAsync();
         }
     }

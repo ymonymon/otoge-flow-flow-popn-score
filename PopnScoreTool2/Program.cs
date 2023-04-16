@@ -1,10 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PopnScoreTool2.Data;
+using System;
+using System.Threading.Tasks;
 
 // TODO : minimal api
 namespace PopnScoreTool2

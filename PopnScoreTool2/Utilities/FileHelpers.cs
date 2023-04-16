@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,10 +10,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Net.Http.Headers;
 
 namespace PopnScoreTool2.Utilities
 {
@@ -38,9 +38,9 @@ namespace PopnScoreTool2.Utilities
                     new byte[] { 0xFF, 0xD8, 0xFF, 0xE8 },
                 }
             },
-            { ".zip", new List<byte[]> 
+            { ".zip", new List<byte[]>
                 {
-                    new byte[] { 0x50, 0x4B, 0x03, 0x04 }, 
+                    new byte[] { 0x50, 0x4B, 0x03, 0x04 },
                     new byte[] { 0x50, 0x4B, 0x4C, 0x49, 0x54, 0x45 },
                     new byte[] { 0x50, 0x4B, 0x53, 0x70, 0x58 },
                     new byte[] { 0x50, 0x4B, 0x05, 0x06 },
@@ -57,8 +57,8 @@ namespace PopnScoreTool2.Utilities
         // systems. For more information, see the topic that accompanies this sample
         // app.
 
-        public static async Task<byte[]> ProcessFormFile<T>(IFormFile formFile, 
-            ModelStateDictionary modelState, string[] permittedExtensions, 
+        public static async Task<byte[]> ProcessFormFile<T>(IFormFile formFile,
+            ModelStateDictionary modelState, string[] permittedExtensions,
             long sizeLimit)
         {
             var fieldDisplayName = string.Empty;
@@ -90,12 +90,12 @@ namespace PopnScoreTool2.Utilities
             // a BOM as their content.
             if (formFile.Length == 0)
             {
-                modelState.AddModelError(formFile.Name, 
+                modelState.AddModelError(formFile.Name,
                     $"{fieldDisplayName}({trustedFileNameForDisplay}) is empty.");
 
                 return new byte[0];
             }
-            
+
             if (formFile.Length > sizeLimit)
             {
                 var megabyteSizeLimit = sizeLimit / 1048576;
@@ -145,7 +145,7 @@ namespace PopnScoreTool2.Utilities
         }
 
         public static async Task<byte[]> ProcessStreamedFile(
-            MultipartSection section, ContentDispositionHeaderValue contentDisposition, 
+            MultipartSection section, ContentDispositionHeaderValue contentDisposition,
             ModelStateDictionary modelState, string[] permittedExtensions, long sizeLimit)
         {
             try

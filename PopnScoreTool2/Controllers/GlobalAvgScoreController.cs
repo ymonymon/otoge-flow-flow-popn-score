@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopnScoreTool2.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PopnScoreTool2.Controllers
 {
@@ -56,7 +56,8 @@ namespace PopnScoreTool2.Controllers
                 .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
                 // != 0 重要
-                .GroupJoin(_context.MusicScores.Where(w => w.Score != 0).GroupBy(g => g.FumenId).Select(h => new {
+                .GroupJoin(_context.MusicScores.Where(w => w.Score != 0).GroupBy(g => g.FumenId).Select(h => new
+                {
                     FumenId = (int?)h.Key,
                     PlayerCount = (int?)h.Count(),
                     AverageScore = (double?)h.Average(i => i.Score),

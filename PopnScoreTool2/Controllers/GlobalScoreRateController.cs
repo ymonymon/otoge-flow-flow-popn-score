@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopnScoreTool2.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PopnScoreTool2.Controllers
 {

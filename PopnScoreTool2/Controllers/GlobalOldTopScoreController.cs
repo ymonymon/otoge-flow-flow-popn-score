@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopnScoreTool2.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PopnScoreTool2.Controllers
 {
@@ -24,7 +24,8 @@ namespace PopnScoreTool2.Controllers
             // ログイン不要API。
             return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
-                .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new {
+                .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new
+                {
                     a.a.Id,
                     TopScore = b == null ? 0 : b.TopScore,
                 })

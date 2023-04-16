@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using PopnScoreTool2.Data;
+using PopnScoreTool2.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -10,11 +15,6 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using PopnScoreTool2.Data;
-using PopnScoreTool2.Models;
 
 namespace PopnScoreTool2.Controllers;
 
@@ -115,7 +115,7 @@ public class UploadController : Controller
     }
 
     private void UpdateScore(int userIntId, List<object[]> obj4)
-        // private void UpdateScore(int userIntId, List<MusicScore> obj4)
+    // private void UpdateScore(int userIntId, List<MusicScore> obj4)
     {
         // 入れるかどうかを判定する。
         var scores = _context.MusicScores.Where(a => a.UserIntId == userIntId).ToList();
@@ -344,6 +344,6 @@ public class UploadController : Controller
 
     public class BufferedSingleFileUploadDb
     {
-        [Required] [Display(Name = "File")] public IFormFile FormFile { get; set; }
+        [Required][Display(Name = "File")] public IFormFile FormFile { get; set; }
     }
 }

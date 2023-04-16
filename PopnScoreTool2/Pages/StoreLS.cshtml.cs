@@ -15,7 +15,8 @@ namespace PopnScoreTool2.Pages
 
             var origin = "https://p.eagate.573.jp";
 
-            if (HttpContext.Request.Headers["origin"] == origin) {
+            if (HttpContext.Request.Headers["origin"] == origin)
+            {
                 ViewData["value"] = HttpContext.Request.Form["datalist"];
             }
             return Page();

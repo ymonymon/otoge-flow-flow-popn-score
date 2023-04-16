@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PopnScoreTool2.Data;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PopnScoreTool2.Data;
 
 namespace PopnScoreTool2.Controllers
 {
@@ -83,7 +83,8 @@ namespace PopnScoreTool2.Controllers
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
                 .GroupJoin(_context.OldStatses, c => c.a.a.Id, d => d.FumenId, (c, d) => new { c, d })
                 .SelectMany(cd => cd.d.DefaultIfEmpty(), (c, d) => new { c, d })
-                .GroupJoin(_context.MusicScores.GroupBy(g => g.FumenId).Select(h => new {
+                .GroupJoin(_context.MusicScores.GroupBy(g => g.FumenId).Select(h => new
+                {
                     FumenId = (int?)h.Key,
                     PlayerCount = (int?)h.Count(),
                     AverageScore = (int?)h.Average(i => i.Score),

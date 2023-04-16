@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PopnScoreTool2.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PopnScoreTool2.Controllers
 {
@@ -22,9 +22,9 @@ namespace PopnScoreTool2.Controllers
         public async Task<ActionResult<object[]>> GetValues()
         {
             // ログイン不要API。
-           return await _context.PercentileScores
-                .Select(a => new object[] { a.FumenId, a.No75, a.No50, a.No25, a.No1 } )
-                .ToArrayAsync();
+            return await _context.PercentileScores
+                 .Select(a => new object[] { a.FumenId, a.No75, a.No50, a.No25, a.No1 })
+                 .ToArrayAsync();
         }
     }
 }
