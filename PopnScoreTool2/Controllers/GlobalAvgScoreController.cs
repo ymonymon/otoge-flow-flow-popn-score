@@ -52,7 +52,7 @@ namespace PopnScoreTool2.Controllers
                 .Select(a => new object[] { a.Id, a.PlayerCount, a.AverageScore, a.PlayerCountNow })
                 .ToArrayAsync();
             */
-            var item = await _context.Musics.Where(w => w.Deleted == false)
+            return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
                 // != 0 重要
@@ -79,13 +79,6 @@ namespace PopnScoreTool2.Controllers
                 })
                 .Select(a => new object[] { a.Id, a.PlayerCount, a.AverageScore, a.PlayerCountNow })
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }

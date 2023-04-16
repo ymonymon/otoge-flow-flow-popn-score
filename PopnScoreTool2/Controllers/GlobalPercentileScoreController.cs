@@ -22,16 +22,9 @@ namespace PopnScoreTool2.Controllers
         public async Task<ActionResult<object[]>> GetValues()
         {
             // ログイン不要API。
-            var item = await _context.PercentileScores
+           return await _context.PercentileScores
                 .Select(a => new object[] { a.FumenId, a.No75, a.No50, a.No25, a.No1 } )
                 .ToArrayAsync();
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return item;
         }
     }
 }
