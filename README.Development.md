@@ -30,6 +30,10 @@
 - Hosts File Manager 2.0.327.0
 - Discord WebHook
 
+### code cleanup
+
+いちおう全て適用している。Code Analysisの基準を上げるのは今後。
+
 ### clone
 
 <https://github.com/ymonymon/otoge-flow-flow-popn-score.git> をC:\Users\\{user_name}\source\repos\otoge-flow-flow-popn-score などに clone.
