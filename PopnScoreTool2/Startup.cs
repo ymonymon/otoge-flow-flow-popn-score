@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using PopnScoreTool2.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Http;
+using PopnScoreTool2.Data;
 
 namespace PopnScoreTool2
 {
@@ -33,10 +34,19 @@ namespace PopnScoreTool2
             });
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection") + Configuration["Authentication:MSSQL:UserPST2Password"]
-                    // ));
-                    + ";" + "TrustServerCertificate=True"));
+            {
+                var connectionStringBuilder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("DefaultConnection"))
+                {
+                    Password = Configuration["Authentication:MSSQL:UserPST2Password"],
+                    TrustServerCertificate = true
+                };
+
+                options.UseSqlServer(connectionStringBuilder.ConnectionString);
+            });
+
+            services.AddHealthChecks()
+                .AddDbContextCheck<AppDbContext>("database");
+
             services.AddDefaultIdentity<IdentityUser>(/* options => options.SignIn.RequireConfirmedAccount = true */)
                 .AddEntityFrameworkStores<AppDbContext>();
             services.AddRazorPages();
@@ -97,6 +107,7 @@ namespace PopnScoreTool2
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHealthChecks("/health");
             });
 
             // app.UseCors(MyAllowSpecificOrigins);
