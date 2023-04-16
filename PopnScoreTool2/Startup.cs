@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Http;
 
 namespace PopnScoreTool2
 {
@@ -61,6 +62,20 @@ namespace PopnScoreTool2
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.Use(async (context, next) =>
+            {
+                var config = context.RequestServices.GetService<IConfiguration>();
+                if (config["Authentication:MSSQL:UserPST2Password"] == null)
+                {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync("Secrets.json or environment variables are not configured. Please configure them.");
+                }
+                else
+                {
+                    await next();
+                }
+            });
 
             app.UseHttpsRedirection();
 
