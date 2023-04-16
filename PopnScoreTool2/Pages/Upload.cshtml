@@ -14,9 +14,9 @@
         <li>カードネーム：<span id="card-name"></span></li>
         <li>取得曲数：<span id="music-num"></span></li>
     </ul>
-    <form enctype="multipart/form-data" method="post">
+    <form enctype="multipart/form-data" method="post" action="/api/Upload">
         <input id="datalist" type="hidden" name="datalist" />
-        <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" style="background-color: #3e68ff; color: #fff" />
+        <input class="btn" type="submit" value="Upload" style="background-color: #3e68ff; color: #fff" />
     </form>
 
     <p class="result">
