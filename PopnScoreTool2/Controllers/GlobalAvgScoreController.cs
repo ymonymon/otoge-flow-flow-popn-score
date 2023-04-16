@@ -76,7 +76,7 @@ namespace PopnScoreTool2.Controllers
                     ((c.c.b == null ? 0 : c.c.b.PlayerCount) + (!d.FumenId.HasValue ? 0 : d.PlayerCount.Value))
 
                     ), 0),
-                    PlayerCountNow = (!d.FumenId.HasValue ? 0 : d.PlayerCount.Value),
+                    PlayerCountNow = !d.FumenId.HasValue ? 0 : d.PlayerCount.Value,
                 })
                 .Select(a => new object[] { a.Id, a.PlayerCount, a.AverageScore, a.PlayerCountNow })
                 .ToArrayAsync();

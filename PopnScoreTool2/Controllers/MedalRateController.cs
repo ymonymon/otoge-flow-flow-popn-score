@@ -112,7 +112,7 @@ namespace PopnScoreTool2.Controllers
                     Medal8 = Math.Round(((e.e.d == null ? 0 : e.e.d.MedalCumulativeRate8 * e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.AverageMedal8.Value * f.PlayerCount.Value)) / ((e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value) == 0 ? 1 : (e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value)), 2),
                     Medal9 = Math.Round(((e.e.d == null ? 0 : e.e.d.MedalCumulativeRate9 * e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.AverageMedal9.Value * f.PlayerCount.Value)) / ((e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value) == 0 ? 1 : (e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value)), 2),
                     Medal10 = Math.Round(((e.e.d == null ? 0 : e.e.d.MedalRate10 * e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.AverageMedal10.Value * f.PlayerCount.Value)) / ((e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value) == 0 ? 1 : (e.e.d == null ? 0 : e.e.d.PlayerCount) + (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value)), 2),
-                    PlayerCountNow = (!f.FumenId.HasValue ? 0 : f.PlayerCount.Value),
+                    PlayerCountNow = !f.FumenId.HasValue ? 0 : f.PlayerCount.Value,
                 })
                 .Select(a => new object[] { a.Id, a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.PlayerCount, a.AverageScore, a.Medal4, a.Medal5, a.Medal6, a.Medal7, a.Medal8, a.Medal9, a.Medal10, a.PlayerCountNow })
                 .ToArrayAsync();
