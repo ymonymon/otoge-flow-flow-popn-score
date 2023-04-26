@@ -3,13 +3,6 @@
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
-/*
-import {
-    Grid,
-    html
-} from "https://unpkg.com/gridjs?module";
-*/
-
 const PAGE_NAME = 'index';
 
 let mainGrid;
@@ -74,8 +67,28 @@ const onReady = () => {
   const test = site.getCurrentSortStatus();
   // console.log(test);
   if (test[0]) {
-    updateGrid2(true);
+    saveFilterAndSort();
   }
+
+  const tableWrapper = document.querySelector('#wrapper');
+  const table = tableWrapper.querySelector('table');
+
+  table.style.tableLayout = 'auto';
+
+  const view = JSON.parse(window.localStorage.getItem('view'));
+
+  if (view?.name === '0' || view?.name === '1') {
+    table.querySelector('thead tr th:first-child').style.width = '100%';
+    table.querySelector('thead tr th:nth-child(4)').style.width = '22px';
+    table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+  } else {
+    table.querySelector('thead tr th:nth-child(1)').style.width = '50%';
+    table.querySelector('thead tr th:nth-child(2)').style.width = '50%';
+    table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+    table.querySelector('thead tr th:nth-child(6)').style.width = '22px';
+  }
+
+  table.style.tableLayout = 'fixed';
 };
 
 // const storeSort = (...args) => {
@@ -91,113 +104,232 @@ const storeSort = () => {
 
 const updateGrid = (data) => {
   if (mainGrid === undefined) {
+    const view = JSON.parse(window.localStorage.getItem('view'));
+
+    let nameStyle = 'padding: 0ch 1ch;';
+
+    if (view?.align === '1') {
+      nameStyle += `
+        text-align: left;
+      `;
+    } else if (view?.align === '2') {
+      nameStyle += `
+        text-align: right;
+      `;
+    }
+
+    if (view?.wrap === '1') {
+      nameStyle += `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      `;
+    }
+
+    const br = (view?.break !== '1') ? '<br />' : ' ';
+
+    let nameColumns = [];
+
+    if (view.name === '0') {
+      nameColumns = [{
+        id: '0',
+        name: 'title',
+        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}</span>`),
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '1',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: 'genre',
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+        hidden: true,
+      }];
+    } else if (view.name === '1') {
+      nameColumns = [{
+        id: '0',
+        name: 'title',
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+        hidden: true,
+      },
+      {
+        id: '1',
+        name: 'genre',
+        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[1].data}</span>`),
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '1',
+          };
+        },
+      }];
+    } else if (view.name === '3') {
+      nameColumns = [{
+        id: '0',
+        name: 'title',
+        formatter: (_, row) => {
+          const cell0Data = row.cells[0].data;
+          const cell1Data = row.cells[1].data;
+          const displayData = cell0Data === cell1Data ? cell0Data : `<span style="${nameStyle}">${cell0Data}${br}${cell1Data}</span>`;
+          return gridjs.html(displayData);
+        },
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '2',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: 'genre',
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+      }];
+    } else {
+      nameColumns = [{
+        id: '0',
+        name: 'title',
+        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}${br}${row.cells[1].data}</span>`),
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '2',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: 'genre',
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+      }];
+    }
+
+    const otherColumns = [{
+      id: '2',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    },
+    {
+      id: '3',
+      name: 'lv',
+      width: '3ch',
+      attributes: (cell, row) => {
+        if (cell === null) {
+          return {
+            colspan: '2',
+          };
+        }
+        return {
+          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+          colspan: '2',
+        };
+      },
+    },
+    {
+      id: '4',
+      name: 'm',
+      width: '45px',
+      formatter: (cell, row) => {
+        if (cell === null) {
+          return undefined;
+        }
+        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                            + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
+      },
+      attributes: (cell) => {
+        if (cell === null) {
+          return undefined;
+        }
+        return {
+          colspan: '2',
+        };
+      },
+    },
+    {
+      id: '5',
+      name: 'r',
+      attributes: (cell) => {
+        if (cell === null) {
+          return undefined;
+        }
+        return {
+          style: 'display:none',
+        };
+      },
+    },
+    {
+      id: '6',
+      name: 'score',
+      width: '6ch',
+      formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
+      attributes: (cell) => {
+        if (cell === null) {
+          return {
+            colspan: '2',
+          };
+        }
+        return {
+          style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
+          colspan: '2',
+        };
+      },
+    },
+    {
+      id: '7',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    }];
+
     mainGrid = new gridjs.Grid({
-      columns: [
-        {
-          id: '0',
-          name: 'title',
-          formatter: (_, row) => gridjs.html(`${row.cells[0].data}<br />${row.cells[1].data}`),
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '1',
-          name: 'genre',
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              style: 'display:none',
-            };
-          },
-        },
-        {
-          id: '2',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        },
-        {
-          id: '3',
-          name: 'lv',
-          attributes: (cell, row) => {
-            if (cell === null) {
-              return {
-                colspan: '2',
-              };
-            }
-            return {
-              style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '4',
-          name: 'm',
-          formatter: (cell, row) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                                + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
-          },
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '5',
-          name: 'r',
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              style: 'display:none',
-            };
-          },
-        },
-        {
-          id: '6',
-          name: 'score',
-          formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
-          attributes: (cell) => {
-            if (cell === null) {
-              return {
-                colspan: '2',
-              };
-            }
-            return {
-              style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '7',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        }],
+      columns: [...nameColumns, ...otherColumns],
       sort: true,
       search: true,
       pagination: {
@@ -227,9 +359,10 @@ const updateGrid = (data) => {
         },
       },
       data,
-    }).render(document.getElementById('wrapper'));
+    });
 
     mainGrid.on('ready', onReady);
+    mainGrid.render(document.getElementById('wrapper'));
 
     // 1st sort.
     [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
@@ -250,87 +383,424 @@ const updateGrid = (data) => {
   }
 };
 
-function updateGrid2(filterSaveOnly) {
-  let skipSlider;
-  let val;
+function getKeyNames(sliderId, dataObject) {
+  const skipStepSlider = document.getElementById(sliderId);
 
-  skipSlider = document.getElementById('skipstep-version');
-  val = skipSlider.noUiSlider.get();
-  const key_version = Object.keys(otoge.VERSION_DATA).filter(
-    (key) => otoge.VERSION_DATA[key] === val,
-  )[0];
+  const sliderValues = skipStepSlider.noUiSlider.get();
+  const isArray = Array.isArray(sliderValues);
 
-  skipSlider = document.getElementById('skipstep-medal');
-  val = skipSlider.noUiSlider.get();
-  const key_medal1 = Object.keys(otoge.MEDAL_DATA).filter(
-    (key) => otoge.MEDAL_DATA[key] === val[0],
-  )[0];
-  const key_medal2 = Object.keys(otoge.MEDAL_DATA).filter(
-    (key) => otoge.MEDAL_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-rank');
-  val = skipSlider.noUiSlider.get();
-  const key_rank1 = Object.keys(otoge.RANK_DATA).filter(
-    (key) => otoge.RANK_DATA[key] === val[0],
-  )[0];
-  const key_rank2 = Object.keys(otoge.RANK_DATA).filter(
-    (key) => otoge.RANK_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-score');
-  val = skipSlider.noUiSlider.get();
-  const key_score1 = Object.keys(otoge.SCORE_DATA).filter(
-    (key) => otoge.SCORE_DATA[key] === val[0],
-  )[0];
-  const key_score2 = Object.keys(otoge.SCORE_DATA).filter(
-    (key) => otoge.SCORE_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-lv');
-  val = skipSlider.noUiSlider.get();
-  const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
-  const key_lv2 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[1])[0];
-
-  skipSlider = document.getElementById('skipstep-lv-type');
-  val = skipSlider.noUiSlider.get();
-  const key_lv_type1 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[0],
-  )[0];
-  const key_lv_type2 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[1],
-  )[0];
-
-  if (filterSaveOnly) {
-    // save filter & sort
-    const sortStatus = site.getCurrentSortStatus();
-
-    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
-    prevFilters[selectedFilter] = {
-      version: key_version,
-      medal: [key_medal1, key_medal2],
-      rank: [key_rank1, key_rank2],
-      score: [key_score1, key_score2],
-      lv: [key_lv1, key_lv2],
-      lv_type: [key_lv_type1, key_lv_type2],
-      sort: sortStatus,
-    };
-
-    window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-  } else {
-    filteredData = fumenFilter(
-      allData,
-      [key_version].map(Number),
-      [key_medal1, key_medal2].map(Number),
-      [key_rank1, key_rank2].map(Number),
-      [key_score1, key_score2].map(Number),
-      [key_lv1, key_lv2].map(Number),
-      [key_lv_type1, key_lv_type2].map(Number),
+  // スライダーの値が1つの場合
+  if (!isArray) {
+    const keyName = Object.keys(dataObject).find(
+      (key) => dataObject[key] === sliderValues,
     );
-
-    updateGrid(filteredData);
+    return keyName;
   }
+
+  // スライダーの値が2つの場合
+  const keyName1 = Object.keys(dataObject).find(
+    (key) => dataObject[key] === sliderValues[0],
+  );
+  const keyName2 = Object.keys(dataObject).find(
+    (key) => dataObject[key] === sliderValues[1],
+  );
+
+  return [keyName1, keyName2];
+}
+
+function saveView() {
+  const key_name = getKeyNames('skipstep-name', otoge.NAME_DATA);
+  const key_align = getKeyNames('skipstep-align', otoge.ALIGN_DATA);
+  const key_wrap = getKeyNames('skipstep-wrap', otoge.WRAP_DATA);
+  const key_break = getKeyNames('skipstep-break', otoge.BREAK_DATA);
+
+  const prevView = {
+    name: key_name,
+    align: key_align,
+    wrap: key_wrap,
+    break: key_break,
+  };
+
+  window.localStorage.setItem('view', JSON.stringify(prevView));
+}
+
+function saveFilterAndSort() {
+  const key_version = getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_medal1, key_medal2] = getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [key_lv1, key_lv2] = getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+
+  const sortStatus = site.getCurrentSortStatus();
+
+  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
+  prevFilters[selectedFilter] = {
+    version: key_version,
+    medal: [key_medal1, key_medal2],
+    rank: [key_rank1, key_rank2],
+    score: [key_score1, key_score2],
+    lv: [key_lv1, key_lv2],
+    lv_type: [key_lv_type1, key_lv_type2],
+    sort: sortStatus,
+  };
+
+  window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
+}
+
+function updateGrid2() {
+  const key_version = getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_medal1, key_medal2] = getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [key_lv1, key_lv2] = getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+
+  filteredData = fumenFilter(
+    allData,
+    [key_version].map(Number),
+    [key_medal1, key_medal2].map(Number),
+    [key_rank1, key_rank2].map(Number),
+    [key_score1, key_score2].map(Number),
+    [key_lv1, key_lv2].map(Number),
+    [key_lv_type1, key_lv_type2].map(Number),
+  );
+
+  updateGrid(filteredData);
+}
+
+function updateStats() {
+  const targetData = filteredData === undefined ? allData : filteredData;
+  const res = alasql('MATRIX OF SELECT [4] AS medal, [2] AS levelType, COUNT(*) AS c FROM ? GROUP BY [4], [2]', [targetData]);
+  const medalOrder = [10, 9, 8, 7, 6, 5, 4, 0, 3, 2, 1, -2];
+  const levelTypeOrder = [1, 2, 3, 4];
+  const statsData = [];
+  const clearStats = [undefined, 0, 0, 0, 0];
+  const totalStats = [undefined, 0, 0, 0, 0];
+
+  // for (const element1 of medalOrder) {
+  medalOrder.map((element1) => {
+    let medalSum = 0;
+    const row = [element1];
+
+    // for (const element2 of levelTypeOrder) {
+    levelTypeOrder.map((element2) => {
+      const filterResult = res.filter((a) => a[0] === element1 && a[1] === element2);
+      const c = filterResult.length === 0 ? 0 : filterResult[0][2];
+      if (element1 === 0 || element1 >= 4) {
+        clearStats[element2] += c;
+      }
+      totalStats[element2] += c;
+      row.push(c);
+      medalSum += c;
+
+      return undefined;
+    });
+
+    row.push(medalSum);
+    statsData.push(row);
+    return undefined;
+  });
+
+  clearStats.push(clearStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
+  clearStats[0] = 'clear';
+  statsData.push(clearStats);
+
+  totalStats.push(totalStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
+  totalStats[0] = 'total';
+  statsData.push(totalStats);
+
+  if (stats1Grid === undefined) {
+    stats1Grid = new gridjs.Grid({
+      columns: [
+        {
+          id: '0',
+          name: '',
+          formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
+          attributes: {
+            style: 'padding: 0px; text-align: center',
+          },
+        },
+        {
+          id: '1',
+          name: gridjs.h('div', {
+            style: {
+              'background-color': '#9ED0FF',
+            },
+          }, 'easy'),
+        },
+        {
+          id: '2',
+          name: gridjs.h('div', {
+            style: {
+              'background-color': '#C1FF84',
+            },
+          }, 'normal'),
+        },
+        {
+          id: '3',
+          name: gridjs.h('div', {
+            style: {
+              'background-color': '#FFFF99',
+            },
+          }, 'hyper'),
+        },
+        {
+          id: '4',
+          name: gridjs.h('div', {
+            style: {
+              'background-color': '#FF99FF',
+            },
+          }, 'ex'),
+        },
+        {
+          id: '5',
+          name: 'sum',
+        }],
+      fixedHeader: true,
+      style: {
+        table: {
+          width: '100%',
+          'font-family': 'monospace',
+        },
+        th: {
+          padding: '0px',
+          'text-align': 'center',
+        },
+        td: {
+          padding: '0px 5px 0px 0px',
+          'text-align': 'right',
+        },
+      },
+      data: statsData,
+    }).render(document.getElementById('stats1_wrapper'));
+  } else {
+    stats1Grid.updateConfig({
+      data: statsData,
+    }).forceRender();
+  }
+}
+
+function updateStats2() {
+  const targetData = filteredData === undefined ? allData : filteredData;
+
+  const resMedal = alasql('MATRIX OF SELECT [4] AS medal, COUNT(*) AS c FROM ? GROUP BY [4]', [targetData]);
+  const resRank = alasql('MATRIX OF SELECT [5] AS rank, COUNT(*) AS c FROM ? GROUP BY [5]', [targetData]);
+  const resScore = alasql(`MATRIX OF SELECT
+CASE
+WHEN 100000 <= [6] THEN '100k'
+WHEN 99400 <= [6] THEN '99.4k'
+WHEN 99000 <= [6] THEN '99k'
+WHEN 98000 <= [6] THEN '98k'
+WHEN 95000 <= [6] THEN '95k'
+WHEN 90000 <= [6] THEN '90k'
+WHEN 85000 <= [6] THEN '85k'
+WHEN 80000 <= [6] THEN '80k'
+WHEN 70000 <= [6] THEN '70k'
+WHEN 0 <= [6] THEN '0'
+ELSE '-2' END AS scoreHierarchy, COUNT(*) AS c FROM ?
+GROUP BY
+CASE
+WHEN 100000 <= [6] THEN '100k'
+WHEN 99400 <= [6] THEN '99.4k'
+WHEN 99000 <= [6] THEN '99k'
+WHEN 98000 <= [6] THEN '98k'
+WHEN 95000 <= [6] THEN '95k'
+WHEN 90000 <= [6] THEN '90k'
+WHEN 85000 <= [6] THEN '85k'
+WHEN 80000 <= [6] THEN '80k'
+WHEN 70000 <= [6] THEN '70k'
+WHEN 0 <= [6] THEN '0'
+ELSE '-2' END`, [targetData]);
+  const indexer = [...Array(12).keys()];
+  const medalOrder = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -2];
+  const rankOrder = [10, 9, 8, 7, 6, 5, 4, 3, -1, undefined, undefined, -2];
+  const scoreTypeOrder = ['100k', '99.4k', '99k', '98k', '95k', '90k', '85k', '80k', '70k', '0', undefined, '-2'];
+  const statsData = [];
+
+  indexer.map((idx) => {
+    const row = [];
+    {
+      const order = medalOrder[idx];
+      row.push(order);
+      const filterResult = resMedal.filter((a) => a[0] === order);
+
+      if (filterResult.length === 0) {
+        row.push(order === undefined ? undefined : 0);
+      } else {
+        row.push(filterResult[0][1]);
+      }
+    }
+    {
+      const order = rankOrder[idx];
+      row.push(order);
+      const filterResult = resRank.filter((a) => a[0] === order);
+      if (filterResult.length === 0) {
+        row.push(order === undefined ? undefined : 0);
+      } else {
+        row.push(filterResult[0][1]);
+      }
+    }
+    {
+      const order = scoreTypeOrder[idx];
+      row.push(order);
+      const filterResult = resScore.filter((a) => a[0] === order);
+      if (filterResult.length === 0) {
+        row.push(order === undefined ? undefined : 0);
+      } else {
+        row.push(filterResult[0][1]);
+      }
+    }
+    statsData.push(row);
+
+    return undefined;
+  });
+
+  if (stats2Grid === undefined) {
+    stats2Grid = new gridjs.Grid({
+      columns: [
+        {
+          id: '0',
+          name: 'medal',
+          formatter: (_, row) => gridjs.html(
+            !Number.isInteger(row.cells[0].data) ? row.cells[0].data
+              : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`,
+          ),
+          attributes: {
+            style: 'padding: 0px; text-align: center',
+          },
+        },
+        {
+          id: '1',
+          name: '',
+        },
+        {
+          id: '2',
+          name: 'rank',
+          formatter: (_, row) => gridjs.html(
+            !Number.isInteger(row.cells[2].data) ? row.cells[2].data
+              : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18">`,
+          ),
+          attributes: {
+            style: 'padding: 0px; text-align: center',
+          },
+        },
+        {
+          id: '3',
+          name: '',
+        },
+        {
+          id: '4',
+          name: 'score',
+          formatter: (_, row) => {
+            if (row.cells[4].data === undefined) {
+              return undefined;
+            }
+
+            return (row.cells[4].data === '-2'
+              ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18">') : row.cells[4].data);
+          },
+          attributes: {
+            style: 'padding: 0px; text-align: center',
+          },
+        },
+        {
+          id: '5',
+          name: '',
+        },
+      ],
+      fixedHeader: true,
+      style: {
+        table: {
+          width: '100%',
+          'font-family': 'monospace',
+        },
+        th: {
+          padding: '0px',
+          'text-align': 'center',
+        },
+        td: {
+          padding: '0px 5px 0px 0px',
+          'text-align': 'right',
+        },
+      },
+      data: statsData,
+    }).render(document.getElementById('stats2_wrapper'));
+  } else {
+    stats2Grid.updateConfig({
+      data: statsData,
+    }).forceRender();
+  }
+}
+
+function CreateSkipSlider(
+  id,
+  dataObject,
+  defaultKey,
+  prevKey,
+  isView,
+) {
+  const skipSlider = document.getElementById(`skipstep-${id}`);
+  const defaultPos = dataObject[defaultKey];
+  const startPos = (prevKey !== null && prevKey !== undefined)
+    ? dataObject[prevKey]
+    : defaultPos;
+
+  noUiSlider.create(skipSlider, {
+    range: {
+      min: 0,
+      max: dataObject.length - 1,
+    },
+    start: startPos,
+    default: defaultPos,
+    matchingTable: dataObject,
+    step: 1,
+    tooltips: true,
+    format: {
+      to: (key) => dataObject[Math.round(key)],
+      from: (value) => Object.keys(dataObject).filter(
+        (key) => dataObject[key] === value,
+      )[0],
+    },
+  });
+
+  const skipValues = [
+    document.getElementById(`${id}-text`),
+  ];
+
+  skipSlider.noUiSlider.on('update', (values, handle) => {
+    skipValues[handle].innerHTML = values[handle];
+  });
+
+  skipSlider.noUiSlider.on('start', () => {
+    clearTimeout(updateFilterTimer);
+  });
+
+  skipSlider.noUiSlider.on('set', () => {
+    if (isView) {
+      if (allData !== undefined && mainGrid !== undefined) {
+        saveView();
+        document.getElementById('wrapper').innerHTML = '';
+        mainGrid = undefined;
+        updateGrid(allData);
+        clearTimeout(updateFilterTimer);
+        updateFilterTimer = setTimeout(() => {
+          updateGrid2(); // 1st filter
+          updateStats();
+          updateStats2();
+        }, 1000);
+      }
+    } else if (allData !== undefined && mainGrid !== undefined) {
+      saveFilterAndSort();
+      clearTimeout(updateFilterTimer);
+      updateFilterTimer = setTimeout(() => {
+        updateGrid2();
+        updateStats();
+        updateStats2();
+      }, 1000);
+    }
+  });
 }
 
 if (document.querySelector('h1.nologin') !== null) {
@@ -401,270 +871,6 @@ if (document.querySelector('h1.nologin') !== null) {
     updateGrid2();
   });
 
-  const updateStats = () => {
-    const targetData = filteredData === undefined ? allData : filteredData;
-    const res = alasql('MATRIX OF SELECT [4] AS medal, [2] AS levelType, COUNT(*) AS c FROM ? GROUP BY [4], [2]', [targetData]);
-    const medalOrder = [10, 9, 8, 7, 6, 5, 4, 0, 3, 2, 1, -2];
-    const levelTypeOrder = [1, 2, 3, 4];
-    const statsData = [];
-    const clearStats = [undefined, 0, 0, 0, 0];
-    const totalStats = [undefined, 0, 0, 0, 0];
-
-    // for (const element1 of medalOrder) {
-    medalOrder.map((element1) => {
-      let medalSum = 0;
-      const row = [element1];
-
-      // for (const element2 of levelTypeOrder) {
-      levelTypeOrder.map((element2) => {
-        const filterResult = res.filter((a) => a[0] === element1 && a[1] === element2);
-        const c = filterResult.length === 0 ? 0 : filterResult[0][2];
-        if (element1 === 0 || element1 >= 4) {
-          clearStats[element2] += c;
-        }
-        totalStats[element2] += c;
-        row.push(c);
-        medalSum += c;
-
-        return undefined;
-      });
-
-      row.push(medalSum);
-      statsData.push(row);
-      return undefined;
-    });
-
-    clearStats.push(clearStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
-    clearStats[0] = 'clear';
-    statsData.push(clearStats);
-
-    totalStats.push(totalStats.reduce((a, b) => (a ?? 0) + (b ?? 0)));
-    totalStats[0] = 'total';
-    statsData.push(totalStats);
-
-    if (stats1Grid === undefined) {
-      stats1Grid = new gridjs.Grid({
-        columns: [
-          {
-            id: '0',
-            name: '',
-            formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
-            attributes: {
-              style: 'padding: 0px; text-align: center',
-            },
-          },
-          {
-            id: '1',
-            name: gridjs.h('div', {
-              style: {
-                'background-color': '#9ED0FF',
-              },
-            }, 'easy'),
-          },
-          {
-            id: '2',
-            name: gridjs.h('div', {
-              style: {
-                'background-color': '#C1FF84',
-              },
-            }, 'normal'),
-          },
-          {
-            id: '3',
-            name: gridjs.h('div', {
-              style: {
-                'background-color': '#FFFF99',
-              },
-            }, 'hyper'),
-          },
-          {
-            id: '4',
-            name: gridjs.h('div', {
-              style: {
-                'background-color': '#FF99FF',
-              },
-            }, 'ex'),
-          },
-          {
-            id: '5',
-            name: 'sum',
-          }],
-        fixedHeader: true,
-        style: {
-          table: {
-            width: '100%',
-            'font-family': 'monospace',
-          },
-          th: {
-            padding: '0px',
-            'text-align': 'center',
-          },
-          td: {
-            padding: '0px 5px 0px 0px',
-            'text-align': 'right',
-          },
-        },
-        data: statsData,
-      }).render(document.getElementById('stats1_wrapper'));
-    } else {
-      stats1Grid.updateConfig({
-        data: statsData,
-      }).forceRender();
-    }
-  };
-
-  const updateStats2 = () => {
-    const targetData = filteredData === undefined ? allData : filteredData;
-
-    const resMedal = alasql('MATRIX OF SELECT [4] AS medal, COUNT(*) AS c FROM ? GROUP BY [4]', [targetData]);
-    const resRank = alasql('MATRIX OF SELECT [5] AS rank, COUNT(*) AS c FROM ? GROUP BY [5]', [targetData]);
-    const resScore = alasql(`MATRIX OF SELECT
-CASE
-WHEN 100000 <= [6] THEN '100k'
-WHEN 99400 <= [6] THEN '99.4k'
-WHEN 99000 <= [6] THEN '99k'
-WHEN 98000 <= [6] THEN '98k'
-WHEN 95000 <= [6] THEN '95k'
-WHEN 90000 <= [6] THEN '90k'
-WHEN 85000 <= [6] THEN '85k'
-WHEN 80000 <= [6] THEN '80k'
-WHEN 70000 <= [6] THEN '70k'
-WHEN 0 <= [6] THEN '0'
-ELSE '-2' END AS scoreHierarchy, COUNT(*) AS c FROM ?
-GROUP BY
-CASE
-WHEN 100000 <= [6] THEN '100k'
-WHEN 99400 <= [6] THEN '99.4k'
-WHEN 99000 <= [6] THEN '99k'
-WHEN 98000 <= [6] THEN '98k'
-WHEN 95000 <= [6] THEN '95k'
-WHEN 90000 <= [6] THEN '90k'
-WHEN 85000 <= [6] THEN '85k'
-WHEN 80000 <= [6] THEN '80k'
-WHEN 70000 <= [6] THEN '70k'
-WHEN 0 <= [6] THEN '0'
-ELSE '-2' END`, [targetData]);
-    const indexer = [...Array(12).keys()];
-    const medalOrder = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -2];
-    const rankOrder = [10, 9, 8, 7, 6, 5, 4, 3, -1, undefined, undefined, -2];
-    const scoreTypeOrder = ['100k', '99.4k', '99k', '98k', '95k', '90k', '85k', '80k', '70k', '0', undefined, '-2'];
-    const statsData = [];
-
-    indexer.map((idx) => {
-      const row = [];
-      {
-        const order = medalOrder[idx];
-        row.push(order);
-        const filterResult = resMedal.filter((a) => a[0] === order);
-
-        if (filterResult.length === 0) {
-          row.push(order === undefined ? undefined : 0);
-        } else {
-          row.push(filterResult[0][1]);
-        }
-      }
-      {
-        const order = rankOrder[idx];
-        row.push(order);
-        const filterResult = resRank.filter((a) => a[0] === order);
-        if (filterResult.length === 0) {
-          row.push(order === undefined ? undefined : 0);
-        } else {
-          row.push(filterResult[0][1]);
-        }
-      }
-      {
-        const order = scoreTypeOrder[idx];
-        row.push(order);
-        const filterResult = resScore.filter((a) => a[0] === order);
-        if (filterResult.length === 0) {
-          row.push(order === undefined ? undefined : 0);
-        } else {
-          row.push(filterResult[0][1]);
-        }
-      }
-      statsData.push(row);
-
-      return undefined;
-    });
-
-    if (stats2Grid === undefined) {
-      stats2Grid = new gridjs.Grid({
-        columns: [
-          {
-            id: '0',
-            name: 'medal',
-            formatter: (_, row) => gridjs.html(
-              !Number.isInteger(row.cells[0].data) ? row.cells[0].data
-                : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`,
-            ),
-            attributes: {
-              style: 'padding: 0px; text-align: center',
-            },
-          },
-          {
-            id: '1',
-            name: '',
-          },
-          {
-            id: '2',
-            name: 'rank',
-            formatter: (_, row) => gridjs.html(
-              !Number.isInteger(row.cells[2].data) ? row.cells[2].data
-                : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18">`,
-            ),
-            attributes: {
-              style: 'padding: 0px; text-align: center',
-            },
-          },
-          {
-            id: '3',
-            name: '',
-          },
-          {
-            id: '4',
-            name: 'score',
-            formatter: (_, row) => {
-              if (row.cells[4].data === undefined) {
-                return undefined;
-              }
-
-              return (row.cells[4].data === '-2'
-                ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18">') : row.cells[4].data);
-            },
-            attributes: {
-              style: 'padding: 0px; text-align: center',
-            },
-          },
-          {
-            id: '5',
-            name: '',
-          },
-        ],
-        fixedHeader: true,
-        style: {
-          table: {
-            width: '100%',
-            'font-family': 'monospace',
-          },
-          th: {
-            padding: '0px',
-            'text-align': 'center',
-          },
-          td: {
-            padding: '0px 5px 0px 0px',
-            'text-align': 'right',
-          },
-        },
-        data: statsData,
-      }).render(document.getElementById('stats2_wrapper'));
-    } else {
-      stats2Grid.updateConfig({
-        data: statsData,
-      }).forceRender();
-    }
-  };
-
   $.getJSON('/api/profile', (data) => {
     const arr = data[0];
     const [name, popnFriendId, chara, c1, c2, c3, comment, lastUpdate] = arr;
@@ -732,61 +938,19 @@ ELSE '-2' END`, [targetData]);
     // load filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
+    const view = JSON.parse(window.localStorage.getItem('view'));
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
     const prevFilter = (prevFilters === null
       || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
-    {
-      const skipSlider = document.getElementById('skipstep-version');
-      const defaultPos = otoge.VERSION_DATA[0];
-      const startPos = (prevFilter !== null && prevFilter.version !== undefined)
-        ? otoge.VERSION_DATA[prevFilter.version]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.VERSION_DATA.length - 1,
-        },
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.VERSION_DATA,
-        step: 1,
-        tooltips: true,
-        format: {
-          to: (key) => otoge.VERSION_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.VERSION_DATA).filter(
-            (key) => otoge.VERSION_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('version-text'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
+    // TODO : function encapsulation.
+    CreateSkipSlider('name', otoge.NAME_DATA, 2, view?.name, true);
+    CreateSkipSlider('align', otoge.ALIGN_DATA, 0, view?.align, true);
+    CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
+    CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
+    CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
     {
       const skipSlider = document.getElementById('skipstep-medal');
       const defaultPos = [otoge.MEDAL_DATA[0], otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 1]];
@@ -855,7 +1019,7 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -933,7 +1097,7 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -1013,7 +1177,7 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -1088,7 +1252,7 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -1164,7 +1328,7 @@ ELSE '-2' END`, [targetData]);
 
       skipSlider.noUiSlider.on('set', () => {
         if (allData !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -1180,7 +1344,7 @@ ELSE '-2' END`, [targetData]);
   {
     const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`));
     if (showStatus !== null) {
-        const nodelist2 = document.querySelectorAll('.accordion-item');
+      const nodelist2 = document.querySelectorAll('.accordion-item');
 
       Array.from(nodelist2).map((a) => {
         const { id } = a.parentNode;

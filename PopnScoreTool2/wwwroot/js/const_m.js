@@ -39,6 +39,29 @@ export const DIFF_DATA_R = [
   +1, +1000, +2000, +3000, +5000, +10000, +20000, +200000,
 ];
 
+export const NAME_DATA = [
+  'title',
+  'genre',
+  'double',
+  't/g',
+];
+
+export const ALIGN_DATA = [
+  'center',
+  'left',
+  'right',
+];
+
+export const WRAP_DATA = [
+  'wrap',
+  'no wrap',
+];
+
+export const BREAK_DATA = [
+  'break',
+  'no break',
+];
+
 export const VERSION_DATA = [
   'ALL',
   'pop\'n 1',
