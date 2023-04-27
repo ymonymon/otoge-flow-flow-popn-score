@@ -264,7 +264,7 @@ const updateGrid = (data) => {
           };
         }
         return {
-          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right`,
           colspan: '2',
         };
       },
