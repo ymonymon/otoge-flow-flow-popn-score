@@ -54,12 +54,17 @@ export const ALIGN_DATA = [
 
 export const WRAP_DATA = [
   'wrap',
-  'no wrap',
+  'nw',
 ];
 
 export const BREAK_DATA = [
   'break',
-  'no break',
+  'nb',
+];
+
+export const ORDER_DATA = [
+  'tg',
+  'gt',
 ];
 
 export const VERSION_DATA = [

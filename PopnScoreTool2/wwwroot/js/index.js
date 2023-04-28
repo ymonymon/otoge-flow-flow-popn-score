@@ -19,8 +19,9 @@ let sort_target;
 
 let initializing = true;
 
-const fumenFilter = (data, version, medal, rank, score, lv, lv_type) => {
-  let sql = 'MATRIX OF SELECT * FROM ?';
+const fumenFilter = (data, version, medal, rank, score, lv, lv_type, order) => {
+  const columnOrder = order === '1' ? '[1], [0]' : '[0], [1]';
+  let sql = `MATRIX OF SELECT ${columnOrder}, [2], [3], [4], [5], [6], [7] FROM ?`;
   let arg = [data];
   if (version[0] !== 0) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -127,6 +128,9 @@ const updateGrid = (data) => {
       `;
     }
 
+    const name1 = view?.order === '1' ? 'genre' : 'title';
+    const name2 = view?.order === '1' ? 'title' : 'genre';
+
     const br = (view?.break !== '1') ? '<br />' : ' ';
 
     let nameColumns = [];
@@ -134,7 +138,7 @@ const updateGrid = (data) => {
     if (view.name === '0') {
       nameColumns = [{
         id: '0',
-        name: 'title',
+        name: name1,
         formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}</span>`),
         attributes: (cell) => {
           if (cell === null) {
@@ -147,7 +151,7 @@ const updateGrid = (data) => {
       },
       {
         id: '1',
-        name: 'genre',
+        name: name2,
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -161,7 +165,7 @@ const updateGrid = (data) => {
     } else if (view.name === '1') {
       nameColumns = [{
         id: '0',
-        name: 'title',
+        name: name1,
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -174,7 +178,7 @@ const updateGrid = (data) => {
       },
       {
         id: '1',
-        name: 'genre',
+        name: name2,
         formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[1].data}</span>`),
         attributes: (cell) => {
           if (cell === null) {
@@ -188,7 +192,7 @@ const updateGrid = (data) => {
     } else if (view.name === '3') {
       nameColumns = [{
         id: '0',
-        name: 'title',
+        name: name1,
         formatter: (_, row) => {
           const cell0Data = row.cells[0].data;
           const cell1Data = row.cells[1].data;
@@ -206,7 +210,7 @@ const updateGrid = (data) => {
       },
       {
         id: '1',
-        name: 'genre',
+        name: name2,
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -219,7 +223,7 @@ const updateGrid = (data) => {
     } else {
       nameColumns = [{
         id: '0',
-        name: 'title',
+        name: name1,
         formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}${br}${row.cells[1].data}</span>`),
         attributes: (cell) => {
           if (cell === null) {
@@ -232,7 +236,7 @@ const updateGrid = (data) => {
       },
       {
         id: '1',
-        name: 'genre',
+        name: name2,
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -413,12 +417,14 @@ function saveView() {
   const key_align = getKeyNames('skipstep-align', otoge.ALIGN_DATA);
   const key_wrap = getKeyNames('skipstep-wrap', otoge.WRAP_DATA);
   const key_break = getKeyNames('skipstep-break', otoge.BREAK_DATA);
+  const key_order = getKeyNames('skipstep-order', otoge.ORDER_DATA);
 
   const prevView = {
     name: key_name,
     align: key_align,
     wrap: key_wrap,
     break: key_break,
+    order: key_order,
   };
 
   window.localStorage.setItem('view', JSON.stringify(prevView));
@@ -457,6 +463,8 @@ function updateGrid2() {
   const [key_lv1, key_lv2] = getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
+  const order = JSON.parse(window.localStorage.getItem('view'))?.order;
+
   filteredData = fumenFilter(
     allData,
     [key_version].map(Number),
@@ -465,6 +473,7 @@ function updateGrid2() {
     [key_score1, key_score2].map(Number),
     [key_lv1, key_lv2].map(Number),
     [key_lv_type1, key_lv_type2].map(Number),
+    order,
   );
 
   updateGrid(filteredData);
@@ -950,6 +959,7 @@ if (document.querySelector('h1.nologin') !== null) {
     CreateSkipSlider('align', otoge.ALIGN_DATA, 1, view?.align, true);
     CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
     CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
+    CreateSkipSlider('order', otoge.ORDER_DATA, 0, view?.order, true);
     CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
     {
       const skipSlider = document.getElementById('skipstep-medal');
