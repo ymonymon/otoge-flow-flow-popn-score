@@ -108,7 +108,7 @@ const updateGrid = (data) => {
 
     let nameStyle = 'padding: 0ch 1ch;';
 
-    if (view?.align === '1') {
+    if (view?.align === '0') {
       nameStyle += `
         text-align: left;
       `;
@@ -192,7 +192,7 @@ const updateGrid = (data) => {
         formatter: (_, row) => {
           const cell0Data = row.cells[0].data;
           const cell1Data = row.cells[1].data;
-          const displayData = cell0Data === cell1Data ? cell0Data : `<span style="${nameStyle}">${cell0Data}${br}${cell1Data}</span>`;
+          const displayData = `<span style="${nameStyle}">${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}</span>`;
           return gridjs.html(displayData);
         },
         attributes: (cell) => {
@@ -947,7 +947,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
     // TODO : function encapsulation.
     CreateSkipSlider('name', otoge.NAME_DATA, 2, view?.name, true);
-    CreateSkipSlider('align', otoge.ALIGN_DATA, 0, view?.align, true);
+    CreateSkipSlider('align', otoge.ALIGN_DATA, 1, view?.align, true);
     CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
     CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
     CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);

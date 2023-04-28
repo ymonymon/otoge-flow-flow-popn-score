@@ -47,8 +47,8 @@ export const NAME_DATA = [
 ];
 
 export const ALIGN_DATA = [
-  'center',
   'left',
+  'center',
   'right',
 ];
 
