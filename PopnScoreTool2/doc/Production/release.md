@@ -12,6 +12,9 @@
 
 テスト
 
+    > docker compose -f docker-compose-prod.yml down
+
+
 ## ECR の登録
 
 ### arm 用ビルドとタグ付け
