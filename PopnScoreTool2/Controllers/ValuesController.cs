@@ -40,6 +40,7 @@ namespace PopnScoreTool2.Controllers
 #if DEBUG
             // userIntId = 2;
 #endif
+
             return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.MusicScores.Where(b => b.UserIntId == userIntId), a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (c, d) => new
@@ -54,8 +55,10 @@ namespace PopnScoreTool2.Controllers
                     Score = d == null ? -2 : d.Score,
                     c.a.Version
                 })
-                .Select(a => new object[]{ a.Name, a.Genre + (a.Position == 1 ? "UPPER": ""), a.LevelId, a.Level,
-                    a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version })
+                // .Select(a => new object[]{ a.Name, a.Genre + (a.Position == 1 ? "UPPER": ""), a.LevelId, a.Level,
+                //     a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version })
+                .Select(a => new object[]{ a.Name, a.Genre, a.LevelId, a.Level,
+                    a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version, (a.Position == 1 ? "UPPER": "") })
                 .ToArrayAsync();
         }
     }

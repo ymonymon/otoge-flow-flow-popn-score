@@ -19,9 +19,12 @@ let sort_target;
 
 let initializing = true;
 
-const fumenFilter = (data, version, medal, rank, score, lv, lv_type, order) => {
-  const columnOrder = order === '1' ? '[1], [0]' : '[0], [1]';
-  let sql = `MATRIX OF SELECT ${columnOrder}, [2], [3], [4], [5], [6], [7] FROM ?`;
+const fumenFilter = (data, version, medal, rank, score, lv, lv_type, order, upper) => {
+  const column0 = (upper === '0' || upper === '2') ? 'CONCAT([0], [8])' : '[0]';
+  const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT([1], [8])' : '[1]';
+
+  const columnOrder = order === '1' ? `${column1}, ${column0}` : `${column0}, ${column1}`;
+  let sql = `MATRIX OF SELECT ${columnOrder}, [2], [3], [4], [5], [6], [7], [8] FROM ?`;
   let arg = [data];
   if (version[0] !== 0) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -107,7 +110,19 @@ const updateGrid = (data) => {
   if (mainGrid === undefined) {
     const view = JSON.parse(window.localStorage.getItem('view'));
 
-    let nameStyle = 'padding: 0ch 1ch;';
+    let containerStyle = `
+      display: flex;
+      justify-content: space-between;
+      padding: 0ch 1ch;
+      align-items: center;
+    `;
+
+    let middleStyle = `
+      flex-grow: 1;
+      padding: 0;
+    `;
+
+    let nameStyle = 'display: block;';
 
     if (view?.align === '0') {
       nameStyle += `
@@ -120,11 +135,19 @@ const updateGrid = (data) => {
     }
 
     if (view?.wrap === '1') {
+      containerStyle += `
+        overflow: hidden;
+        white-space: nowrap;  
+      `;
+      middleStyle += `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;  
+      `;
       nameStyle += `
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        display: block;
       `;
     }
 
@@ -133,13 +156,25 @@ const updateGrid = (data) => {
 
     const br = (view?.break !== '1') ? '<br />' : ' ';
 
+    // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
+
     let nameColumns = [];
 
-    if (view.name === '0') {
+    const name = view?.name;
+    if (name === '0') {
       nameColumns = [{
         id: '0',
         name: name1,
-        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}</span>`),
+        formatter: (_, row) => {
+          const displayData = row.cells[0].data;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -162,7 +197,7 @@ const updateGrid = (data) => {
         },
         hidden: true,
       }];
-    } else if (view.name === '1') {
+    } else if (name === '1') {
       nameColumns = [{
         id: '0',
         name: name1,
@@ -179,7 +214,16 @@ const updateGrid = (data) => {
       {
         id: '1',
         name: name2,
-        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[1].data}</span>`),
+        formatter: (_, row) => {
+          const displayData = row.cells[1].data;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -189,15 +233,21 @@ const updateGrid = (data) => {
           };
         },
       }];
-    } else if (view.name === '3') {
+    } else if (name === '3') {
       nameColumns = [{
         id: '0',
         name: name1,
         formatter: (_, row) => {
           const cell0Data = row.cells[0].data;
           const cell1Data = row.cells[1].data;
-          const displayData = `<span style="${nameStyle}">${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}</span>`;
-          return gridjs.html(displayData);
+          const displayData = `${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}`;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
         },
         attributes: (cell) => {
           if (cell === null) {
@@ -224,7 +274,16 @@ const updateGrid = (data) => {
       nameColumns = [{
         id: '0',
         name: name1,
-        formatter: (_, row) => gridjs.html(`<span style="${nameStyle}">${row.cells[0].data}${br}${row.cells[1].data}</span>`),
+        formatter: (_, row) => {
+          const displayData = `${row.cells[0].data}${br}${row.cells[1].data}`;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
         attributes: (cell) => {
           if (cell === null) {
             return undefined;
@@ -330,6 +389,15 @@ const updateGrid = (data) => {
       attributes: {
         style: 'display:none',
       },
+    },
+    {
+      id: '8',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
     }];
 
     mainGrid = new gridjs.Grid({
@@ -418,6 +486,7 @@ function saveView() {
   const key_wrap = getKeyNames('skipstep-wrap', otoge.WRAP_DATA);
   const key_break = getKeyNames('skipstep-break', otoge.BREAK_DATA);
   const key_order = getKeyNames('skipstep-order', otoge.ORDER_DATA);
+  const key_upper = getKeyNames('skipstep-upper', otoge.UPPER_DATA);
 
   const prevView = {
     name: key_name,
@@ -425,6 +494,7 @@ function saveView() {
     wrap: key_wrap,
     break: key_break,
     order: key_order,
+    upper: key_upper,
   };
 
   window.localStorage.setItem('view', JSON.stringify(prevView));
@@ -464,6 +534,7 @@ function updateGrid2() {
   const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const order = JSON.parse(window.localStorage.getItem('view'))?.order;
+  const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
 
   filteredData = fumenFilter(
     allData,
@@ -474,6 +545,7 @@ function updateGrid2() {
     [key_lv1, key_lv2].map(Number),
     [key_lv_type1, key_lv_type2].map(Number),
     order,
+    upper,
   );
 
   updateGrid(filteredData);
@@ -960,6 +1032,7 @@ if (document.querySelector('h1.nologin') !== null) {
     CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
     CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
     CreateSkipSlider('order', otoge.ORDER_DATA, 0, view?.order, true);
+    CreateSkipSlider('upper', otoge.UPPER_DATA, 1, view?.upper, true);
     CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
     {
       const skipSlider = document.getElementById('skipstep-medal');

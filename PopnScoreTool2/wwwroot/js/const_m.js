@@ -67,6 +67,14 @@ export const ORDER_DATA = [
   'gt',
 ];
 
+export const UPPER_DATA = [
+  'title',
+  'genre',
+  'both',
+  'first',
+  'last',
+];
+
 export const VERSION_DATA = [
   'ALL',
   'pop\'n 1',
