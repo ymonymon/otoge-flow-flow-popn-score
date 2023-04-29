@@ -815,7 +815,7 @@ ELSE '-2' END`, [targetData]);
   }
 }
 
-function CreateSkipSlider(
+function CreateSkipSlider1(
   id,
   dataObject,
   defaultKey,
@@ -886,6 +886,93 @@ function CreateSkipSlider(
         if (fn) {
           fn();
         }
+      }, 1000);
+    }
+  });
+}
+
+function CreateSkipSlider2(
+  id,
+  dataObject,
+  prevKeys,
+  margin = 0,
+  updateFn = undefined,
+) {
+  const skipSlider = document.getElementById(`skipstep-${id}`);
+  const defaultPos = [dataObject[0], dataObject[dataObject.length - 1]];
+  const startPos = (prevKeys !== null && prevKeys !== undefined
+    && prevKeys.length === 2)
+    ? [dataObject[prevKeys[0]], dataObject[prevKeys[1]]]
+    : defaultPos;
+
+  noUiSlider.create(skipSlider, {
+    range: {
+      min: 0,
+      max: dataObject.length - 1,
+    },
+    connect: true,
+    start: startPos,
+    default: defaultPos,
+    matchingTable: dataObject,
+    step: 1,
+    margin,
+    tooltips: [true, true],
+    format: {
+      to: (key) => dataObject[Math.round(key)],
+      from: (value) => Object.keys(dataObject).filter(
+        (key) => dataObject[key] === value,
+      )[0],
+    },
+  });
+
+  const skipValues = [
+    document.getElementById(`${id}-lower`),
+    document.getElementById(`${id}-upper`),
+    document.getElementById(`${id}-hyphen`),
+    document.getElementById(`${id}-same`),
+  ];
+
+  skipSlider.noUiSlider.on('update', updateFn !== undefined ? updateFn : (values, handle) => {
+    skipValues[handle].innerHTML = values[handle];
+
+    const firstDataValue = dataObject[0];
+    const lastDataValue = dataObject[dataObject.length - 1];
+
+    if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
+      skipValues[3].innerHTML = values[handle];
+      skipValues[0].style.display = 'none';
+      skipValues[1].style.display = 'none';
+      skipValues[2].style.display = 'none';
+      skipValues[3].style.display = 'inline';
+    } else if ((skipValues[0].innerText === firstDataValue
+                || skipValues[0].innerHTML === firstDataValue)
+                && (skipValues[1].innerText === lastDataValue
+                    || skipValues[1].innerHTML === lastDataValue)) {
+      skipValues[3].innerHTML = 'ALL';
+      skipValues[0].style.display = 'none';
+      skipValues[1].style.display = 'none';
+      skipValues[2].style.display = 'none';
+      skipValues[3].style.display = 'inline';
+    } else {
+      skipValues[0].style.display = 'inline';
+      skipValues[1].style.display = 'inline';
+      skipValues[2].style.display = 'inline';
+      skipValues[3].style.display = 'none';
+    }
+  });
+
+  skipSlider.noUiSlider.on('start', () => {
+    clearTimeout(updateFilterTimer);
+  });
+
+  skipSlider.noUiSlider.on('set', () => {
+    if (allData !== undefined && mainGrid !== undefined) {
+      saveFilterAndSort();
+      clearTimeout(updateFilterTimer);
+      updateFilterTimer = setTimeout(() => {
+        updateGrid2();
+        updateStats();
+        updateStats2();
       }, 1000);
     }
   });
@@ -1034,12 +1121,14 @@ if (document.querySelector('h1.nologin') !== null) {
       : prevFilters[selectedFilter];
 
     const name_data = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
-    // TODO : function encapsulation.
-    CreateSkipSlider('name', name_data, 2, view?.name, true);
-    CreateSkipSlider('align', otoge.ALIGN_DATA, 1, view?.align, true);
-    CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
-    CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
-    CreateSkipSlider('order', otoge.ORDER_DATA, 0, view?.order, true, () => {
+
+    // view
+    CreateSkipSlider1('name', name_data, 2, view?.name, true);
+    CreateSkipSlider1('align', otoge.ALIGN_DATA, 1, view?.align, true);
+    CreateSkipSlider1('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
+    CreateSkipSlider1('break', otoge.BREAK_DATA, 0, view?.break, true);
+    CreateSkipSlider1('order', otoge.ORDER_DATA, 0, view?.order, true, () => {
+      // When the 'order' slider is moved, we need to update the display of the 'name' slider.
       const skipSlider = document.getElementById('skipstep-name');
       const currentView = JSON.parse(window.localStorage.getItem('view'));
       const isNewOrder = currentView?.order === '1';
@@ -1057,395 +1146,52 @@ if (document.querySelector('h1.nologin') !== null) {
         },
       });
     });
-    CreateSkipSlider('upper', otoge.UPPER_DATA, 1, view?.upper, true);
-    CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
-    {
-      const skipSlider = document.getElementById('skipstep-medal');
-      const defaultPos = [otoge.MEDAL_DATA[0], otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.medal !== undefined
-        && prevFilter.medal.length === 2)
-        ? [otoge.MEDAL_DATA[prevFilter.medal[0]], otoge.MEDAL_DATA[prevFilter.medal[1]]]
-        : defaultPos;
+    CreateSkipSlider1('upper', otoge.UPPER_DATA, 1, view?.upper, true);
 
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.MEDAL_DATA.length - 1,
-        },
-        connect: true,
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.MEDAL_DATA,
-        step: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.MEDAL_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.MEDAL_DATA).filter(
-            (key) => otoge.MEDAL_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('medal-lower'),
-        document.getElementById('medal-upper'),
-        document.getElementById('medal-hyphen'),
-        document.getElementById('medal-same'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-
-        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-          skipValues[3].innerHTML = values[handle];
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText === otoge.MEDAL_DATA[0]
-                    || skipValues[0].innerHTML === otoge.MEDAL_DATA[0])
-                    && (skipValues[1].innerText === otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 1]
-                        || skipValues[1].innerHTML === otoge.MEDAL_DATA[
-                          otoge.MEDAL_DATA.length - 1])) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          skipValues[3].style.display = 'none';
-        }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          saveFilterAndSort();
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
-    {
-      const skipSlider = document.getElementById('skipstep-rank');
-      const defaultPos = [otoge.RANK_DATA[0], otoge.RANK_DATA[otoge.RANK_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.rank !== undefined
-        && prevFilter.rank.length === 2)
-        ? [otoge.RANK_DATA[prevFilter.rank[0]], otoge.RANK_DATA[prevFilter.rank[1]]]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.RANK_DATA.length - 1,
-        },
-        connect: true,
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.RANK_DATA,
-        step: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.RANK_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.RANK_DATA).filter(
-            (key) => otoge.RANK_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('rank-lower'),
-        document.getElementById('rank-upper'),
-        document.getElementById('rank-hyphen'),
-        document.getElementById('rank-same'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-
-        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-          skipValues[3].innerHTML = values[handle];
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else if ((skipValues[0].innerText === otoge.RANK_DATA[0]
-                    || skipValues[0].innerHTML === otoge.RANK_DATA[0])
-                    && (skipValues[1].innerText === otoge.RANK_DATA[otoge.RANK_DATA.length - 1]
-                        || skipValues[1].innerHTML === otoge.RANK_DATA[
-                          otoge.RANK_DATA.length - 1])) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          skipValues[3].style.display = 'none';
-        }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          saveFilterAndSort();
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
-    {
-      const skipSlider = document.getElementById('skipstep-score');
-      const defaultPos = [otoge.SCORE_DATA[0], otoge.SCORE_DATA[otoge.SCORE_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.score !== undefined
-        && prevFilter.score.length === 2)
-        ? [otoge.SCORE_DATA[prevFilter.score[0]], otoge.SCORE_DATA[prevFilter.score[1]]]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.SCORE_DATA.length - 1,
-        },
-        connect: true,
-        // start: [otoge.SCORE_DATA[0], '100k'],
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.SCORE_DATA,
-        step: 1,
-        margin: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.SCORE_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.SCORE_DATA).filter(
-            (key) => otoge.SCORE_DATA[key] === value,
-          )[0],
-        },
-      });
-
+    // filter
+    CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
+    CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal);
+    CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank);
+    CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, 1, (values, handle) => {
       const skipValues = [
         document.getElementById('score-lower'),
         document.getElementById('score-upper'),
-        document.getElementById('score-line'),
+        document.getElementById('score-hyphen'),
         document.getElementById('score-same'),
       ];
 
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        const key_score = Object.keys(otoge.SCORE_DATA).filter(
-          (key) => otoge.SCORE_DATA[key] === values[handle],
-        )[0];
+      const dataObject = otoge.SCORE_DATA;
+      const dataDisplayObject = otoge.SCORE_DATA_DISPLAY;
+      const firstDataValue = dataObject[0];
+      const lastDataValue = dataObject[dataObject.length - 1];
 
-        skipValues[handle].innerHTML = otoge.SCORE_DATA_DISPLAY[key_score];
+      const key_score = Object.keys(dataObject).filter(
+        (key) => dataObject[key] === values[handle],
+      )[0];
 
-        if (values[0] === otoge.SCORE_DATA[0]
-                    && values[1] === otoge.SCORE_DATA[otoge.SCORE_DATA.length - 1]) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
+      skipValues[handle].innerHTML = dataDisplayObject[key_score];
+
+      if (values[0] === firstDataValue
+                  && values[1] === lastDataValue) {
+        skipValues[3].innerHTML = 'ALL';
+        skipValues[0].style.display = 'none';
+        skipValues[1].style.display = 'none';
+        skipValues[2].style.display = 'none';
+        skipValues[3].style.display = 'inline';
+      } else {
+        skipValues[0].style.display = 'inline';
+        skipValues[1].style.display = 'inline';
+        skipValues[2].style.display = 'inline';
+        if (values[1] === lastDataValue) {
+          skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
         } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          if (values[1] === otoge.SCORE_DATA[otoge.SCORE_DATA.length - 1]) {
-            skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
-          } else {
-            skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
-          }
-          skipValues[3].style.display = 'none';
+          skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
         }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          saveFilterAndSort();
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
-    {
-      const skipSlider = document.getElementById('skipstep-lv');
-      const defaultPos = [otoge.LV_DATA[0], otoge.LV_DATA[otoge.LV_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.lv !== undefined
-        && prevFilter.lv.length === 2)
-        ? [otoge.LV_DATA[prevFilter.lv[0]], otoge.LV_DATA[prevFilter.lv[1]]]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.LV_DATA.length - 1,
-        },
-        connect: true,
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.LV_DATA,
-        step: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.LV_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.LV_DATA).filter(
-            (key) => otoge.LV_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('lv-lower'),
-        document.getElementById('lv-upper'),
-        document.getElementById('lv-hyphen'),
-        document.getElementById('lv-same'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-
-        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-          skipValues[3].innerHTML = values[handle];
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText === otoge.LV_DATA[0]
-                    && skipValues[1].innerText === otoge.LV_DATA[otoge.LV_DATA.length - 1]) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          skipValues[3].style.display = 'none';
-        }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          saveFilterAndSort();
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
-    {
-      const skipSlider = document.getElementById('skipstep-lv-type');
-      const defaultPos = [otoge.LV_TYPE_DATA[0], otoge.LV_TYPE_DATA[otoge.LV_TYPE_DATA.length - 1]];
-      const startPos = (prevFilter !== null
-        && prevFilter.lv_type !== undefined
-        && prevFilter.lv_type.length === 2)
-        ? [otoge.LV_TYPE_DATA[prevFilter.lv_type[0]], otoge.LV_TYPE_DATA[prevFilter.lv_type[1]]]
-        : defaultPos;
-
-      noUiSlider.create(skipSlider, {
-        range: {
-          min: 0,
-          max: otoge.LV_TYPE_DATA.length - 1,
-        },
-        connect: true,
-        start: startPos,
-        default: defaultPos,
-        matchingTable: otoge.LV_TYPE_DATA,
-        step: 1,
-        tooltips: [true, true],
-        format: {
-          to: (key) => otoge.LV_TYPE_DATA[Math.round(key)],
-          from: (value) => Object.keys(otoge.LV_TYPE_DATA).filter(
-            (key) => otoge.LV_TYPE_DATA[key] === value,
-          )[0],
-        },
-      });
-
-      const skipValues = [
-        document.getElementById('lv-type-lower'),
-        document.getElementById('lv-type-upper'),
-        document.getElementById('lv-type-hyphen'),
-        document.getElementById('lv-type-same'),
-      ];
-
-      skipSlider.noUiSlider.on('update', (values, handle) => {
-        skipValues[handle].innerHTML = values[handle];
-
-        if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-          skipValues[3].innerHTML = values[handle];
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else if (skipValues[0].innerText === otoge.LV_TYPE_DATA[0]
-                    && skipValues[1].innerText === otoge.LV_TYPE_DATA[
-                      otoge.LV_TYPE_DATA.length - 1]) {
-          skipValues[3].innerHTML = 'ALL';
-          skipValues[0].style.display = 'none';
-          skipValues[1].style.display = 'none';
-          skipValues[2].style.display = 'none';
-          skipValues[3].style.display = 'inline';
-        } else {
-          skipValues[0].style.display = 'inline';
-          skipValues[1].style.display = 'inline';
-          skipValues[2].style.display = 'inline';
-          skipValues[3].style.display = 'none';
-        }
-      });
-
-      skipSlider.noUiSlider.on('start', () => {
-        clearTimeout(updateFilterTimer);
-      });
-
-      skipSlider.noUiSlider.on('set', () => {
-        if (allData !== undefined && mainGrid !== undefined) {
-          saveFilterAndSort();
-          clearTimeout(updateFilterTimer);
-          updateFilterTimer = setTimeout(() => {
-            updateGrid2();
-            updateStats();
-            updateStats2();
-          }, 1000);
-        }
-      });
-    }
+        skipValues[3].style.display = 'none';
+      }
+    });
+    CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv);
+    CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
   }
 
   // local storage からの読み込み処理
