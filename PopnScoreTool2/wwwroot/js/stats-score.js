@@ -136,7 +136,7 @@ const onReady = () => {
   const test = site.getCurrentSortStatus();
   // console.log(test);
   if (test[0]) {
-    updateGrid2(true);
+    saveFilterAndSort();
   }
 };
 
@@ -355,7 +355,7 @@ const updateGrid = (data) => {
   }
 };
 
-function updateGrid2(filterSaveOnly) {
+function saveFilterAndSort() {
   const key_stats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
   const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
   const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
@@ -365,39 +365,48 @@ function updateGrid2(filterSaveOnly) {
   const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
-  if (filterSaveOnly) {
-    // save filter & sort
-    const sortStatus = site.getCurrentSortStatus();
+  // save filter & sort
+  const sortStatus = site.getCurrentSortStatus();
 
-    const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
-    const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
-    prevFilters[selectedFilter] = {
-      stats: key_stats,
-      diff: [key_diff1, key_diff2],
-      medal: [key_medal1, key_medal2],
-      rank: [key_rank1, key_rank2],
-      score: [key_score1, key_score2],
-      version: key_version,
-      lv: [key_lv1, key_lv2],
-      lv_type: [key_lv_type1, key_lv_type2],
-      sort: sortStatus,
-    };
+  const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
+  const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
+  prevFilters[selectedFilter] = {
+    stats: key_stats,
+    diff: [key_diff1, key_diff2],
+    medal: [key_medal1, key_medal2],
+    rank: [key_rank1, key_rank2],
+    score: [key_score1, key_score2],
+    version: key_version,
+    lv: [key_lv1, key_lv2],
+    lv_type: [key_lv_type1, key_lv_type2],
+    sort: sortStatus,
+  };
 
-    window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
-  } else {
-    const filteredData = fumenFilter(
-      [key_stats].map(Number),
-      [key_diff1, key_diff2].map(Number),
-      [key_medal1, key_medal2].map(Number),
-      [key_rank1, key_rank2].map(Number),
-      [key_score1, key_score2].map(Number),
-      [key_version].map(Number),
-      [key_lv1, key_lv2].map(Number),
-      [key_lv_type1, key_lv_type2].map(Number),
-    );
+  window.localStorage.setItem(`${PAGE_NAME}.filters`, JSON.stringify(prevFilters));
+}
 
-    updateGrid(filteredData);
-  }
+function updateGrid2() {
+  const key_stats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
+  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+
+  const filteredData = fumenFilter(
+    [key_stats].map(Number),
+    [key_diff1, key_diff2].map(Number),
+    [key_medal1, key_medal2].map(Number),
+    [key_rank1, key_rank2].map(Number),
+    [key_score1, key_score2].map(Number),
+    [key_version].map(Number),
+    [key_lv1, key_lv2].map(Number),
+    [key_lv_type1, key_lv_type2].map(Number),
+  );
+
+  updateGrid(filteredData);
 }
 
 if (document.querySelector('h1.nologin') !== null) {
@@ -517,7 +526,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -591,7 +600,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -666,7 +675,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -740,7 +749,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -817,7 +826,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -864,7 +873,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -936,7 +945,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
@@ -1009,7 +1018,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
       skipSlider.noUiSlider.on('set', () => {
         if (fumens_data_raw !== undefined && mainGrid !== undefined) {
-          updateGrid2(true);
+          saveFilterAndSort();
           clearTimeout(updateFilterTimer);
           updateFilterTimer = setTimeout(() => {
             updateGrid2();
