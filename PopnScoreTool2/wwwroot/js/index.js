@@ -455,58 +455,13 @@ const updateGrid = (data) => {
   }
 };
 
-function getKeyNames(sliderId, dataObject) {
-  const skipStepSlider = document.getElementById(sliderId);
-
-  const sliderValues = skipStepSlider.noUiSlider.get();
-  const isArray = Array.isArray(sliderValues);
-
-  // スライダーの値が1つの場合
-  if (!isArray) {
-    const keyName = Object.keys(dataObject).find(
-      (key) => dataObject[key] === sliderValues,
-    );
-    return keyName;
-  }
-
-  // スライダーの値が2つの場合
-  const keyName1 = Object.keys(dataObject).find(
-    (key) => dataObject[key] === sliderValues[0],
-  );
-  const keyName2 = Object.keys(dataObject).find(
-    (key) => dataObject[key] === sliderValues[1],
-  );
-
-  return [keyName1, keyName2];
-}
-
-function saveView() {
-  const key_name = getKeyNames('skipstep-name', otoge.NAME_DATA1);
-  const key_align = getKeyNames('skipstep-align', otoge.ALIGN_DATA);
-  const key_wrap = getKeyNames('skipstep-wrap', otoge.WRAP_DATA);
-  const key_break = getKeyNames('skipstep-break', otoge.BREAK_DATA);
-  const key_order = getKeyNames('skipstep-order', otoge.ORDER_DATA);
-  const key_upper = getKeyNames('skipstep-upper', otoge.UPPER_DATA);
-
-  const prevView = {
-    name: key_name,
-    align: key_align,
-    wrap: key_wrap,
-    break: key_break,
-    order: key_order,
-    upper: key_upper,
-  };
-
-  window.localStorage.setItem('view', JSON.stringify(prevView));
-}
-
 function saveFilterAndSort() {
-  const key_version = getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_medal1, key_medal2] = getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const [key_lv1, key_lv2] = getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const sortStatus = site.getCurrentSortStatus();
 
@@ -526,12 +481,12 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_version = getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_medal1, key_medal2] = getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const [key_lv1, key_lv2] = getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const order = JSON.parse(window.localStorage.getItem('view'))?.order;
   const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
@@ -862,7 +817,7 @@ function CreateSkipSlider1(
   skipSlider.noUiSlider.on('set', () => {
     if (isView) {
       if (allData !== undefined && mainGrid !== undefined) {
-        saveView();
+        site.saveView();
         document.getElementById('wrapper').innerHTML = '';
         mainGrid = undefined;
         updateGrid(allData);
