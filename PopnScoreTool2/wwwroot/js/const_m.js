@@ -39,11 +39,18 @@ export const DIFF_DATA_R = [
   +1, +1000, +2000, +3000, +5000, +10000, +20000, +200000,
 ];
 
-export const NAME_DATA = [
+export const NAME_DATA1 = [
   'title',
   'genre',
   'double',
   't/g',
+];
+
+export const NAME_DATA2 = [
+  'genre',
+  'title',
+  'double',
+  'g/t',
 ];
 
 export const ALIGN_DATA = [

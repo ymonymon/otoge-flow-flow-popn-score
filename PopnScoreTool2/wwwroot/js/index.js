@@ -481,7 +481,7 @@ function getKeyNames(sliderId, dataObject) {
 }
 
 function saveView() {
-  const key_name = getKeyNames('skipstep-name', otoge.NAME_DATA);
+  const key_name = getKeyNames('skipstep-name', otoge.NAME_DATA1);
   const key_align = getKeyNames('skipstep-align', otoge.ALIGN_DATA);
   const key_wrap = getKeyNames('skipstep-wrap', otoge.WRAP_DATA);
   const key_break = getKeyNames('skipstep-break', otoge.BREAK_DATA);
@@ -821,6 +821,7 @@ function CreateSkipSlider(
   defaultKey,
   prevKey,
   isView,
+  fn,
 ) {
   const skipSlider = document.getElementById(`skipstep-${id}`);
   const defaultPos = dataObject[defaultKey];
@@ -870,6 +871,9 @@ function CreateSkipSlider(
           updateGrid2(); // 1st filter
           updateStats();
           updateStats2();
+          if (fn) {
+            fn();
+          }
         }, 1000);
       }
     } else if (allData !== undefined && mainGrid !== undefined) {
@@ -879,6 +883,9 @@ function CreateSkipSlider(
         updateGrid2();
         updateStats();
         updateStats2();
+        if (fn) {
+          fn();
+        }
       }, 1000);
     }
   });
@@ -1026,12 +1033,30 @@ if (document.querySelector('h1.nologin') !== null) {
       ? null
       : prevFilters[selectedFilter];
 
+    const name_data = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
     // TODO : function encapsulation.
-    CreateSkipSlider('name', otoge.NAME_DATA, 2, view?.name, true);
+    CreateSkipSlider('name', name_data, 2, view?.name, true);
     CreateSkipSlider('align', otoge.ALIGN_DATA, 1, view?.align, true);
     CreateSkipSlider('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
     CreateSkipSlider('break', otoge.BREAK_DATA, 0, view?.break, true);
-    CreateSkipSlider('order', otoge.ORDER_DATA, 0, view?.order, true);
+    CreateSkipSlider('order', otoge.ORDER_DATA, 0, view?.order, true, () => {
+      const skipSlider = document.getElementById('skipstep-name');
+      const currentView = JSON.parse(window.localStorage.getItem('view'));
+      const isNewOrder = currentView?.order === '1';
+
+      const new_name_data = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+      const old_name_data = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
+
+      const findKeyByValue = (obj, value) => Object.keys(obj).find((key) => obj[key] === value);
+
+      skipSlider.noUiSlider.updateOptions({
+        format: {
+          to: (key) => new_name_data[Math.round(key)],
+          from: (value) => findKeyByValue(new_name_data, value)
+           || findKeyByValue(old_name_data, value),
+        },
+      });
+    });
     CreateSkipSlider('upper', otoge.UPPER_DATA, 1, view?.upper, true);
     CreateSkipSlider('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
     {
