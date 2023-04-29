@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-/* eslint-disable no-undef */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 

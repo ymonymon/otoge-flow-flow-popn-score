@@ -1,0 +1,12 @@
+{
+    "env": {
+        "browser": true,
+        "jquery": true
+    },
+    "globals": {
+        "AspNet": "readonly",        
+        "alasql": "readonly",
+        "gridjs": "readonly",
+        "noUiSlider": "readonly",
+    }
+}
