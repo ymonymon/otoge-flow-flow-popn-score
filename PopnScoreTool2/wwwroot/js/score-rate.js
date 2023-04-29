@@ -313,28 +313,9 @@ const updateGrid = (data) => {
 };
 
 function updateGrid2(filterSaveOnly) {
-  let skipSlider;
-  let val;
-
-  skipSlider = document.getElementById('skipstep-version');
-  val = skipSlider.noUiSlider.get();
-  const key_version = Object.keys(otoge.VERSION_DATA).filter(
-    (key) => otoge.VERSION_DATA[key] === val,
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-lv');
-  val = skipSlider.noUiSlider.get();
-  const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
-  const key_lv2 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[1])[0];
-
-  skipSlider = document.getElementById('skipstep-lv-type');
-  val = skipSlider.noUiSlider.get();
-  const key_lv_type1 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[0],
-  )[0];
-  const key_lv_type2 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[1],
-  )[0];
+  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   if (filterSaveOnly) {
     // save filter & sort

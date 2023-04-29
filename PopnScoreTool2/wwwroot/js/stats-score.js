@@ -356,68 +356,14 @@ const updateGrid = (data) => {
 };
 
 function updateGrid2(filterSaveOnly) {
-  let skipSlider;
-  let val;
-
-  skipSlider = document.getElementById('skipstep-stats');
-  val = skipSlider.noUiSlider.get();
-  const key_stats = Object.keys(otoge.STATS_DATA).filter((key) => otoge.STATS_DATA[key] === val)[0];
-
-  skipSlider = document.getElementById('skipstep-diff');
-  val = skipSlider.noUiSlider.get();
-  const key_diff1 = Object.keys(otoge.DIFF_DATA).filter(
-    (key) => otoge.DIFF_DATA[key] === val[0],
-  )[0];
-  const key_diff2 = Object.keys(otoge.DIFF_DATA).filter(
-    (key) => otoge.DIFF_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-medal');
-  val = skipSlider.noUiSlider.get();
-  const key_medal1 = Object.keys(otoge.MEDAL_DATA).filter(
-    (key) => otoge.MEDAL_DATA[key] === val[0],
-  )[0];
-  const key_medal2 = Object.keys(otoge.MEDAL_DATA).filter(
-    (key) => otoge.MEDAL_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-rank');
-  val = skipSlider.noUiSlider.get();
-  const key_rank1 = Object.keys(otoge.RANK_DATA).filter(
-    (key) => otoge.RANK_DATA[key] === val[0],
-  )[0];
-  const key_rank2 = Object.keys(otoge.RANK_DATA).filter(
-    (key) => otoge.RANK_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-score');
-  val = skipSlider.noUiSlider.get();
-  const key_score1 = Object.keys(otoge.SCORE_DATA).filter(
-    (key) => otoge.SCORE_DATA[key] === val[0],
-  )[0];
-  const key_score2 = Object.keys(otoge.SCORE_DATA).filter(
-    (key) => otoge.SCORE_DATA[key] === val[1],
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-version');
-  val = skipSlider.noUiSlider.get();
-  const key_version = Object.keys(otoge.VERSION_DATA).filter(
-    (key) => otoge.VERSION_DATA[key] === val,
-  )[0];
-
-  skipSlider = document.getElementById('skipstep-lv');
-  val = skipSlider.noUiSlider.get();
-  const key_lv1 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[0])[0];
-  const key_lv2 = Object.keys(otoge.LV_DATA).filter((key) => otoge.LV_DATA[key] === val[1])[0];
-
-  skipSlider = document.getElementById('skipstep-lv-type');
-  val = skipSlider.noUiSlider.get();
-  const key_lv_type1 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[0],
-  )[0];
-  const key_lv_type2 = Object.keys(otoge.LV_TYPE_DATA).filter(
-    (key) => otoge.LV_TYPE_DATA[key] === val[1],
-  )[0];
+  const key_stats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
+  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   if (filterSaveOnly) {
     // save filter & sort
