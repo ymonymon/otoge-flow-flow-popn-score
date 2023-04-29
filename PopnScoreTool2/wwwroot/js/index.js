@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
@@ -13,12 +12,12 @@ let filteredData;
 
 let updateFilterTimer;
 
-let sort_click_count;
-let sort_target;
+let sortClickCount;
+let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (data, version, medal, rank, score, lv, lv_type, order, upper) => {
+const fumenFilter = (data, version, medal, rank, score, lv, lvType, order, upper) => {
   const column0 = (upper === '0' || upper === '2') ? 'CONCAT([0], [8])' : '[0]';
   const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT([1], [8])' : '[1]';
 
@@ -52,10 +51,10 @@ const fumenFilter = (data, version, medal, rank, score, lv, lv_type, order, uppe
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
+  if (lvType[0] !== 0 || lvType[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
-    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+    arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
 
   const res = alasql(sql, arg);
@@ -101,7 +100,7 @@ const storeSort = () => {
   // console.log('row: ' + JSON.stringify(args), args);
 
   setTimeout(() => {
-    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+    [...Array(sortClickCount)].map(() => $(`.gridjs-th[data-column-id=${sortTarget}]`).trigger('click'));
   }, 0);
 };
 
@@ -436,43 +435,43 @@ const updateGrid = (data) => {
     mainGrid.render(document.getElementById('wrapper'));
 
     // 1st sort.
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, null, 0);
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, null, 0);
 
     mainGrid.updateConfig({
       data: filteredData,
     }).forceRender();
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
 };
 
 function saveFilterAndSort() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const sortStatus = site.getCurrentSortStatus();
 
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    version: key_version,
-    medal: [key_medal1, key_medal2],
-    rank: [key_rank1, key_rank2],
-    score: [key_score1, key_score2],
-    lv: [key_lv1, key_lv2],
-    lv_type: [key_lv_type1, key_lv_type2],
+    version: keyVersion,
+    medal: [keyMedal1, keyMedal2],
+    rank: [keyRank1, keyRank2],
+    score: [keyScore1, keyScore2],
+    lv: [keyLv1, keyLv2],
+    lv_type: [keyLvType1, keyLvType2],
     sort: sortStatus,
   };
 
@@ -480,24 +479,24 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const order = JSON.parse(window.localStorage.getItem('view'))?.order;
   const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
 
   filteredData = fumenFilter(
     allData,
-    [key_version].map(Number),
-    [key_medal1, key_medal2].map(Number),
-    [key_rank1, key_rank2].map(Number),
-    [key_score1, key_score2].map(Number),
-    [key_lv1, key_lv2].map(Number),
-    [key_lv_type1, key_lv_type2].map(Number),
+    [keyVersion].map(Number),
+    [keyMedal1, keyMedal2].map(Number),
+    [keyRank1, keyRank2].map(Number),
+    [keyScore1, keyScore2].map(Number),
+    [keyLv1, keyLv2].map(Number),
+    [keyLvType1, keyLvType2].map(Number),
     order,
     upper,
   );
@@ -1074,10 +1073,10 @@ if (document.querySelector('h1.nologin') !== null) {
       ? null
       : prevFilters[selectedFilter];
 
-    const name_data = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+    const nameData = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
 
     // view
-    CreateSkipSlider1('name', name_data, 2, view?.name, true);
+    CreateSkipSlider1('name', nameData, 2, view?.name, true);
     CreateSkipSlider1('align', otoge.ALIGN_DATA, 1, view?.align, true);
     CreateSkipSlider1('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
     CreateSkipSlider1('break', otoge.BREAK_DATA, 0, view?.break, true);
@@ -1087,16 +1086,16 @@ if (document.querySelector('h1.nologin') !== null) {
       const currentView = JSON.parse(window.localStorage.getItem('view'));
       const isNewOrder = currentView?.order === '1';
 
-      const new_name_data = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
-      const old_name_data = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
+      const newNameData = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+      const oldNameData = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
 
       const findKeyByValue = (obj, value) => Object.keys(obj).find((key) => obj[key] === value);
 
       skipSlider.noUiSlider.updateOptions({
         format: {
-          to: (key) => new_name_data[Math.round(key)],
-          from: (value) => findKeyByValue(new_name_data, value)
-           || findKeyByValue(old_name_data, value),
+          to: (key) => newNameData[Math.round(key)],
+          from: (value) => findKeyByValue(newNameData, value)
+           || findKeyByValue(oldNameData, value),
         },
       });
     });
@@ -1119,11 +1118,11 @@ if (document.querySelector('h1.nologin') !== null) {
       const firstDataValue = dataObject[0];
       const lastDataValue = dataObject[dataObject.length - 1];
 
-      const key_score = Object.keys(dataObject).filter(
+      const keyScore = Object.keys(dataObject).filter(
         (key) => dataObject[key] === values[handle],
       )[0];
 
-      skipValues[handle].innerHTML = dataDisplayObject[key_score];
+      skipValues[handle].innerHTML = dataDisplayObject[keyScore];
 
       if (values[0] === firstDataValue
                   && values[1] === lastDataValue) {

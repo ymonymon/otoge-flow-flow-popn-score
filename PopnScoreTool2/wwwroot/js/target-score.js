@@ -1,20 +1,19 @@
-/* eslint-disable camelcase */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
 const PAGE_NAME = 'targetScore';
 
 let mainGrid;
-let fumens_data_raw;
-let score_rate_data_raw;
-let my_music_data_raw;
+let fumensDataRaw;
+let scoreRateDataRaw;
+let myMusicDataRaw;
 
-let target_score_key;
+let targetScoreKey;
 
 let updateFilterTimer;
 
-let sort_click_count;
-let sort_target;
+let sortClickCount;
+let sortTarget;
 
 let initializing = true;
 
@@ -26,8 +25,8 @@ const fumenFilter = (
   score,
   version,
   lv,
-  lv_type,
-  target_percent,
+  lvType,
+  targetPercent,
   count,
 ) => {
   const res = alasql(`MATRIX OF
@@ -47,7 +46,7 @@ TBL2.[7] AS [14],
 TBL2.[9] AS [15] -- count
 FROM ? AS TBL1
 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
-INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_raw, my_music_data_raw]);
+INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumensDataRaw, scoreRateDataRaw, myMusicDataRaw]);
 
   let res2;
   if (target[0] === otoge.TARGET_SCORE_DATA.length - 1) {
@@ -175,17 +174,17 @@ FROM ? AS TBL1`, [res2]);
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
+  if (lvType[0] !== 0 || lvType[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
-    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+    arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
-  if (target_percent[0] !== 0
-    || target_percent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
+  if (targetPercent[0] !== 0
+    || targetPercent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [8] AND [8] <= ?';
-    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[target_percent[0]],
-      otoge.TARGET_PERCENT_DATA_R[target_percent[1]]]);
+    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[targetPercent[0]],
+      otoge.TARGET_PERCENT_DATA_R[targetPercent[1]]]);
   }
   if (count[0] !== 0
     || count[1] !== otoge.COUNT_DATA.length - 1) {
@@ -229,7 +228,7 @@ const storeSort = () => {
   // console.log('row: ' + JSON.stringify(args), args);
 
   setTimeout(() => {
-    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+    [...Array(sortClickCount)].map(() => $(`.gridjs-th[data-column-id=${sortTarget}]`).trigger('click'));
   }, 0);
 };
 
@@ -357,26 +356,26 @@ const updateGrid = (data) => {
           id: '7',
           name: '→t',
           formatter: (_, row) => {
-            let target_score_class = otoge.TARGET_SCORE_DATA_R[target_score_key];
-            const now_score_class = scoreToScoreClass(row.cells[6].data);
-            if (target_score_key === String(otoge.TARGET_SCORE_DATA.length - 1)) {
-              if (now_score_class < 10) {
-                target_score_class = now_score_class + 1;
+            let targetScoreClass = otoge.TARGET_SCORE_DATA_R[targetScoreKey];
+            const nowScoreClass = scoreToScoreClass(row.cells[6].data);
+            if (targetScoreKey === String(otoge.TARGET_SCORE_DATA.length - 1)) {
+              if (nowScoreClass < 10) {
+                targetScoreClass = nowScoreClass + 1;
               } else {
-                target_score_class = 10;
+                targetScoreClass = 10;
               }
             }
 
             // const now_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[now_score_class];
-            let target_score_class_str = '';
-            if (target_score_class <= 10) {
+            let targetScoreClassStr = '';
+            if (targetScoreClass <= 10) {
               // 85kから
-              target_score_class_str = otoge.TARGET_SCORE_CLASS_DATA[
-                target_score_class < 4 ? 4 : target_score_class];
+              targetScoreClassStr = otoge.TARGET_SCORE_CLASS_DATA[
+                targetScoreClass < 4 ? 4 : targetScoreClass];
             }
 
             // return now_score_class_str + '→' + target_score_class_str;
-            return `→${target_score_class_str}`;
+            return `→${targetScoreClassStr}`;
           },
           attributes: (cell) => {
             if (cell === null) {
@@ -395,13 +394,13 @@ const updateGrid = (data) => {
             ? row.cells[8].data.toFixed(2) : row.cells[8].data),
           sort: {
             compare: (a, b) => {
-              const a_is_finite = Number.isFinite(a);
-              const b_is_finite = Number.isFinite(b);
-              if (!a_is_finite && !b_is_finite) {
+              const aIsFinite = Number.isFinite(a);
+              const bIsFinite = Number.isFinite(b);
+              if (!aIsFinite && !bIsFinite) {
                 return 0;
-              } if (!a_is_finite) {
+              } if (!aIsFinite) {
                 return 1;
-              } if (!b_is_finite) {
+              } if (!bIsFinite) {
                 return -1;
               }
               if (a > b) {
@@ -490,51 +489,51 @@ const updateGrid = (data) => {
     mainGrid.on('ready', onReady);
 
     // 1st sort.
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '8', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '8', 2);
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '8', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '8', 2);
 
     mainGrid.updateConfig({
       data,
     }).forceRender();
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
 };
 
 function saveFilterAndSort() {
-  const key_target = site.getKeyNames('skipstep-target', otoge.TARGET_SCORE_DATA);
-  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
-  const key_target_percent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
-  const key_count = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
+  const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_SCORE_DATA);
+  const [keyDiff1, keyDiff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   const sortStatus = site.getCurrentSortStatus();
 
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    target: key_target,
-    diff: [key_diff1, key_diff2],
-    medal: [key_medal1, key_medal2],
-    rank: [key_rank1, key_rank2],
-    score: [key_score1, key_score2],
-    version: key_version,
-    lv: [key_lv1, key_lv2],
-    lv_type: [key_lv_type1, key_lv_type2],
-    target_percent: key_target_percent,
-    count: key_count,
+    target: keyTarget,
+    diff: [keyDiff1, keyDiff2],
+    medal: [keyMedal1, keyMedal2],
+    rank: [keyRank1, keyRank2],
+    score: [keyScore1, keyScore2],
+    version: keyVersion,
+    lv: [keyLv1, keyLv2],
+    lv_type: [keyLvType1, keyLvType2],
+    target_percent: keyTargetPercent,
+    count: keyCount,
     sort: sortStatus,
   };
 
@@ -542,31 +541,31 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_target = site.getKeyNames('skipstep-target', otoge.TARGET_SCORE_DATA);
-  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
-  const key_target_percent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
-  const key_count = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
+  const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_SCORE_DATA);
+  const [keyDiff1, keyDiff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   // for column
-  target_score_key = key_target;
+  targetScoreKey = keyTarget;
 
   const filteredData = fumenFilter(
-    [key_target].map(Number),
-    [key_diff1, key_diff2].map(Number),
-    [key_medal1, key_medal2].map(Number),
-    [key_rank1, key_rank2].map(Number),
-    [key_score1, key_score2].map(Number),
-    [key_version].map(Number),
-    [key_lv1, key_lv2].map(Number),
-    [key_lv_type1, key_lv_type2].map(Number),
-    key_target_percent.map(Number),
-    key_count.map(Number),
+    [keyTarget].map(Number),
+    [keyDiff1, keyDiff2].map(Number),
+    [keyMedal1, keyMedal2].map(Number),
+    [keyRank1, keyRank2].map(Number),
+    [keyScore1, keyScore2].map(Number),
+    [keyVersion].map(Number),
+    [keyLv1, keyLv2].map(Number),
+    [keyLvType1, keyLvType2].map(Number),
+    keyTargetPercent.map(Number),
+    keyCount.map(Number),
   );
 
   updateGrid(filteredData);
@@ -618,11 +617,11 @@ function CreateSkipSlider1(
 
   skipSlider.noUiSlider.on('set', () => {
     if (isView) {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+      if (fumensDataRaw !== undefined && mainGrid !== undefined) {
         site.saveView();
         document.getElementById('wrapper').innerHTML = '';
         mainGrid = undefined;
-        updateGrid(fumens_data_raw);
+        updateGrid(fumensDataRaw);
         clearTimeout(updateFilterTimer);
         updateFilterTimer = setTimeout(() => {
           updateGrid2(); // 1st filter
@@ -631,7 +630,7 @@ function CreateSkipSlider1(
           }
         }, 1000);
       }
-    } else if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    } else if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -721,7 +720,7 @@ function CreateSkipSlider2(
   });
 
   skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -825,11 +824,11 @@ if (document.querySelector('h1.nologin') !== null) {
       const firstDataValue = dataObject[0];
       const lastDataValue = dataObject[dataObject.length - 1];
 
-      const key_score = Object.keys(dataObject).filter(
+      const keyScore = Object.keys(dataObject).filter(
         (key) => dataObject[key] === values[handle],
       )[0];
 
-      skipValues[handle].innerHTML = dataDisplayObject[key_score];
+      skipValues[handle].innerHTML = dataDisplayObject[keyScore];
 
       if (values[0] === firstDataValue
                   && values[1] === lastDataValue) {
@@ -857,12 +856,12 @@ if (document.querySelector('h1.nologin') !== null) {
     CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, undefined, 1);
   }
 
-  $.getJSON('/api/mymusic', (my_music_data) => {
-    $.getJSON('/api/globalscorerate', (score_rate_data) => {
-      $.getJSON('/api/fumens', (fumens_data) => {
-        fumens_data_raw = fumens_data;
-        score_rate_data_raw = score_rate_data;
-        my_music_data_raw = my_music_data;
+  $.getJSON('/api/mymusic', (myMusicData) => {
+    $.getJSON('/api/globalscorerate', (scoreRateData) => {
+      $.getJSON('/api/fumens', (fumensData) => {
+        fumensDataRaw = fumensData;
+        scoreRateDataRaw = scoreRateData;
+        myMusicDataRaw = myMusicData;
 
         updateGrid2();
       });

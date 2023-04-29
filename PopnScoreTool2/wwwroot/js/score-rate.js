@@ -1,22 +1,21 @@
-/* eslint-disable camelcase */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
 const PAGE_NAME = 'scoreRate';
 
 let mainGrid;
-let fumens_data_raw;
-let old_top_score_data_raw;
-let score_rate_data_raw;
+let fumensDataRaw;
+let oldTopScoreDataRaw;
+let scoreRateDataRaw;
 
 let updateFilterTimer;
 
-let sort_click_count;
-let sort_target;
+let sortClickCount;
+let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (version, lv, lv_type) => {
+const fumenFilter = (version, lv, lvType) => {
   // AS は必須
   const res = alasql(`MATRIX OF
 SELECT TBL1.[2] AS [0], TBL1.[1] AS [1], -- genre/title
@@ -32,7 +31,7 @@ CASE WHEN TBL2.[8] = 0 THEN (CASE WHEN 100000 <= TBL3.[1] THEN 1 ELSE 0 END) ELS
 TBL2.[9] AS [12] -- count
 FROM ? AS TBL1
 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
-INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_raw, old_top_score_data_raw]);
+INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumensDataRaw, scoreRateDataRaw, oldTopScoreDataRaw]);
 
   // filter
   let sql = 'MATRIX OF SELECT * FROM ?';
@@ -47,10 +46,10 @@ INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumens_data_raw, score_rate_data_
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
+  if (lvType[0] !== 0 || lvType[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
-    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+    arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
 
   const res2 = alasql(sql, arg);
@@ -79,7 +78,7 @@ const storeSort = () => {
   // console.log('row: ' + JSON.stringify(args), args);
 
   setTimeout(() => {
-    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+    [...Array(sortClickCount)].map(() => $(`.gridjs-th[data-column-id=${sortTarget}]`).trigger('click'));
   }, 0);
 };
 
@@ -293,37 +292,37 @@ const updateGrid = (data) => {
     mainGrid.on('ready', onReady);
 
     // 1st sort.
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, null, 0);
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, null, 0);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, null, 0);
 
     mainGrid.updateConfig({
       data,
     }).forceRender();
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
 };
 
 function saveFilterAndSort() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const sortStatus = site.getCurrentSortStatus();
 
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    version: key_version,
-    lv: [key_lv1, key_lv2],
-    lv_type: [key_lv_type1, key_lv_type2],
+    version: keyVersion,
+    lv: [keyLv1, keyLv2],
+    lv_type: [keyLvType1, keyLvType2],
     sort: sortStatus,
   };
 
@@ -331,14 +330,14 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const filteredData = fumenFilter(
-    [key_version].map(Number),
-    [key_lv1, key_lv2].map(Number),
-    [key_lv_type1, key_lv_type2].map(Number),
+    [keyVersion].map(Number),
+    [keyLv1, keyLv2].map(Number),
+    [keyLvType1, keyLvType2].map(Number),
   );
 
   updateGrid(filteredData);
@@ -390,11 +389,11 @@ function CreateSkipSlider1(
 
   skipSlider.noUiSlider.on('set', () => {
     if (isView) {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+      if (fumensDataRaw !== undefined && mainGrid !== undefined) {
         site.saveView();
         document.getElementById('wrapper').innerHTML = '';
         mainGrid = undefined;
-        updateGrid(fumens_data_raw);
+        updateGrid(fumensDataRaw);
         clearTimeout(updateFilterTimer);
         updateFilterTimer = setTimeout(() => {
           updateGrid2(); // 1st filter
@@ -403,7 +402,7 @@ function CreateSkipSlider1(
           }
         }, 1000);
       }
-    } else if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    } else if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -493,7 +492,7 @@ function CreateSkipSlider2(
   });
 
   skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -583,12 +582,12 @@ document.getElementById('reset-button').addEventListener('click', () => {
   CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
 }
 
-$.getJSON('/api/globalscorerate', (score_rate_data) => {
-  $.getJSON('/api/globaloldtopscore', (old_top_score_data) => {
-    $.getJSON('/api/fumens', (fumens_data) => {
-      fumens_data_raw = fumens_data;
-      old_top_score_data_raw = old_top_score_data;
-      score_rate_data_raw = score_rate_data;
+$.getJSON('/api/globalscorerate', (scoreRateData) => {
+  $.getJSON('/api/globaloldtopscore', (oldTopScoreData) => {
+    $.getJSON('/api/fumens', (fumensData) => {
+      fumensDataRaw = fumensData;
+      oldTopScoreDataRaw = oldTopScoreData;
+      scoreRateDataRaw = scoreRateData;
 
       updateGrid2();
     });

@@ -1,22 +1,21 @@
-/* eslint-disable camelcase */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
 const PAGE_NAME = 'targetMedal';
 
 let mainGrid;
-let medal_rate_data_raw;
-let fumens_data_raw;
-let target_medal_key;
+let medalRateDataRaw;
+let fumensDataRaw;
+let targetMedalKey;
 
 let updateFilterTimer;
 
-let sort_click_count;
-let sort_target;
+let sortClickCount;
+let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (version, target, medal, rank, lv, lv_type) => {
+const fumenFilter = (version, target, medal, rank, lv, lvType) => {
   const res = alasql(`MATRIX OF
 SELECT TBL1.[1] AS [0], TBL1.[2] AS [1], -- genre/title
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
@@ -27,7 +26,7 @@ TBL2.[4] AS [8], -- count
 TBL2.[5] AS [9], (TBL2.[5] - TBL2.[3]) AS [10], -- avg/diff
 TBL2.[6] AS [11], TBL2.[7] AS [12], TBL2.[8] AS [13], TBL2.[9] AS [14], TBL2.[10] AS [15], TBL2.[11] AS [16], TBL2.[12] AS [17],
 TBL2.[13] AS [18] -- count now
-FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, medal_rate_data_raw]);
+FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, medalRateDataRaw]);
 
   const data = res.map((a) => [a[1], a[0],
     a[2], a[3],
@@ -69,10 +68,10 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumens_data_raw, m
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
+  if (lvType[0] !== 0 || lvType[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
-    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+    arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
 
   const res2 = alasql(sql, arg);
@@ -130,7 +129,7 @@ const storeSort = () => {
   // console.log('row: ' + JSON.stringify(args), args);
 
   setTimeout(() => {
-    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+    [...Array(sortClickCount)].map(() => $(`.gridjs-th[data-column-id=${sortTarget}]`).trigger('click'));
   }, 0);
 };
 
@@ -196,19 +195,19 @@ const updateGrid = (data) => {
           id: '4',
           name: 'n→t',
           formatter: (_, row) => {
-            let next_medal = otoge.TARGET_MEDAL_DATA_R[target_medal_key];
-            if (target_medal_key === String(otoge.TARGET_MEDAL_DATA.length - 1)) {
+            let nextMedal = otoge.TARGET_MEDAL_DATA_R[targetMedalKey];
+            if (targetMedalKey === String(otoge.TARGET_MEDAL_DATA.length - 1)) {
               if (row.cells[4].data < 4) {
-                next_medal = 4;
+                nextMedal = 4;
               } else {
-                next_medal = row.cells[4].data + 1;
+                nextMedal = row.cells[4].data + 1;
               }
             }
 
             return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
                               + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" />`
-                              + `→${(next_medal > 10) ? ('score')
-                                : (`<img src="/icon/medal_${next_medal}.png" alt="${next_medal}" width="18" height="18" />`)}`);
+                              + `→${(nextMedal > 10) ? ('score')
+                                : (`<img src="/icon/medal_${nextMedal}.png" alt="${nextMedal}" width="18" height="18" />`)}`);
           },
           attributes: {
             style: 'padding: 0px; text-align: center',
@@ -222,13 +221,13 @@ const updateGrid = (data) => {
             ? row.cells[5].data.toFixed(2) : row.cells[5].data),
           sort: {
             compare: (a, b) => {
-              const a_is_finite = Number.isFinite(a);
-              const b_is_finite = Number.isFinite(b);
-              if (!a_is_finite && !b_is_finite) {
+              const aIsFinite = Number.isFinite(a);
+              const bIsFinite = Number.isFinite(b);
+              if (!aIsFinite && !bIsFinite) {
                 return 0;
-              } if (!a_is_finite) {
+              } if (!aIsFinite) {
                 return 1;
-              } if (!b_is_finite) {
+              } if (!bIsFinite) {
                 return -1;
               }
               if (a > b) {
@@ -313,31 +312,31 @@ const updateGrid = (data) => {
     mainGrid.on('ready', onReady);
 
     // 1st sort.
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '5', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '5', 2);
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '5', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '5', 2);
 
     mainGrid.updateConfig({
       data,
     }).forceRender();
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
 };
 
 function saveFilterAndSort() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const key_target = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   // save filter & sort
   const sortStatus = site.getCurrentSortStatus();
@@ -345,12 +344,12 @@ function saveFilterAndSort() {
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    version: key_version,
-    target: key_target,
-    medal: [key_medal1, key_medal2],
-    rank: [key_rank1, key_rank2],
-    lv: [key_lv1, key_lv2],
-    lv_type: [key_lv_type1, key_lv_type2],
+    version: keyVersion,
+    target: keyTarget,
+    medal: [keyMedal1, keyMedal2],
+    rank: [keyRank1, keyRank2],
+    lv: [keyLv1, keyLv2],
+    lv_type: [keyLvType1, keyLvType2],
     sort: sortStatus,
   };
 
@@ -358,23 +357,23 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const key_target = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   // for column
-  target_medal_key = key_target;
+  targetMedalKey = keyTarget;
 
   const filteredData = fumenFilter(
-    [key_version].map(Number),
-    [key_target].map(Number),
-    [key_medal1, key_medal2].map(Number),
-    [key_rank1, key_rank2].map(Number),
-    [key_lv1, key_lv2].map(Number),
-    [key_lv_type1, key_lv_type2].map(Number),
+    [keyVersion].map(Number),
+    [keyTarget].map(Number),
+    [keyMedal1, keyMedal2].map(Number),
+    [keyRank1, keyRank2].map(Number),
+    [keyLv1, keyLv2].map(Number),
+    [keyLvType1, keyLvType2].map(Number),
   );
 
   updateGrid(filteredData);
@@ -426,11 +425,11 @@ function CreateSkipSlider1(
 
   skipSlider.noUiSlider.on('set', () => {
     if (isView) {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+      if (fumensDataRaw !== undefined && mainGrid !== undefined) {
         site.saveView();
         document.getElementById('wrapper').innerHTML = '';
         mainGrid = undefined;
-        updateGrid(fumens_data_raw);
+        updateGrid(fumensDataRaw);
         clearTimeout(updateFilterTimer);
         updateFilterTimer = setTimeout(() => {
           updateGrid2(); // 1st filter
@@ -439,7 +438,7 @@ function CreateSkipSlider1(
           }
         }, 1000);
       }
-    } else if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    } else if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -529,7 +528,7 @@ function CreateSkipSlider2(
   });
 
   skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -625,10 +624,10 @@ if (document.querySelector('h1.nologin') !== null) {
     CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
   }
 
-  $.getJSON('/api/medalrate', (medal_rate_data) => {
-    $.getJSON('/api/fumens', (fumens_data) => {
-      medal_rate_data_raw = medal_rate_data;
-      fumens_data_raw = fumens_data;
+  $.getJSON('/api/medalrate', (medalRateData) => {
+    $.getJSON('/api/fumens', (fumensData) => {
+      medalRateDataRaw = medalRateData;
+      fumensDataRaw = fumensData;
 
       updateGrid2();
     });

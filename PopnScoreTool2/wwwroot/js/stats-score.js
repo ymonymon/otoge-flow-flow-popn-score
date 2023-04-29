@@ -1,48 +1,47 @@
-/* eslint-disable camelcase */
 import * as site from './site_m.js';
 import * as otoge from './const_m.js';
 
 const PAGE_NAME = 'statsScore';
 
 let mainGrid;
-let fumens_data_raw;
-let percentile_score_data_raw;
-let old_top_score_data_raw;
-let avg_score_data_raw;
-let my_music_data_raw;
+let fumensDataRaw;
+let percentileScoreDataRaw;
+let oldTopScoreDataRaw;
+let avgScoreDataRaw;
+let myMusicDataRaw;
 
 let updateFilterTimer;
 
-let sort_click_count;
-let sort_target;
+let sortClickCount;
+let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (stats, diff, medal, rank, score, version, lv, lv_type) => {
-  let stats_column = 'TBL3.[2]';
+const fumenFilter = (stats, diff, medal, rank, score, version, lv, lvType) => {
+  let statsColumn = 'TBL3.[2]';
   switch (stats[0]) {
     case 1:
-      stats_column = 'TBL4.[1]';
+      statsColumn = 'TBL4.[1]';
       break;
     case 2:
-      stats_column = 'TBL4.[2]';
+      statsColumn = 'TBL4.[2]';
       break;
     case 3:
-      stats_column = 'TBL4.[3]';
+      statsColumn = 'TBL4.[3]';
       break;
     case 4:
-      stats_column = 'TBL4.[4]';
+      statsColumn = 'TBL4.[4]';
       break;
     default:
       break;
   }
 
-  // old_top_score_data_raw
+  // oldTopScoreDataRaw
 
   // AS は必須
   // 高い方のスコアを採用
-  // old_top_score_data_rawは全ての譜面行を持つがpercentile_score_data_rawは持たないのでleft join
-  const percentile_score_data_raw2 = alasql(
+  // oldTopScoreDataRawは全ての譜面行を持つがpercentileScoreDataRawは持たないのでleft join
+  const percentileScoreDataRaw2 = alasql(
     `MATRIX OF
 SELECT TBL1.[0] AS [0],
 TBL1.[1] AS [1],
@@ -52,7 +51,7 @@ CASE WHEN TBL2.[1] IS NULL THEN TBL1.[4] ELSE (
 CASE WHEN TBL1.[4] < TBL2.[1] THEN TBL2.[1] ELSE TBL1.[4] END) END AS [4]
 FROM ? AS TBL1
 LEFT JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`,
-    [percentile_score_data_raw, old_top_score_data_raw],
+    [percentileScoreDataRaw, oldTopScoreDataRaw],
   );
 
   // TODO : LEFT JOIN
@@ -61,8 +60,8 @@ SELECT TBL1.[1] AS [0], TBL1.[2] AS [1], -- genre/title
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
 TBL2.[3] AS [4], -- score
 TBL1.[5] AS [5], -- version
-${stats_column} AS [6], -- stats
-((CASE TBL2.[3] WHEN -2 THEN 0 ELSE TBL2.[3] END) - ${stats_column}) AS [7], -- diff
+${statsColumn} AS [6], -- stats
+((CASE TBL2.[3] WHEN -2 THEN 0 ELSE TBL2.[3] END) - ${statsColumn}) AS [7], -- diff
 TBL3.[1] AS [8], -- count
 TBL3.[3] AS [9], -- count now
 TBL2.[1] AS [10], -- medal
@@ -74,7 +73,7 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
 
   const res = alasql(
     basesql,
-    [fumens_data_raw, my_music_data_raw, avg_score_data_raw, percentile_score_data_raw2],
+    [fumensDataRaw, myMusicDataRaw, avgScoreDataRaw, percentileScoreDataRaw2],
   );
 
   // filter
@@ -114,10 +113,10 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     sql += ' ? <= [3] AND [3] <= ?';
     arg = arg.concat([lv[0] + 1, lv[1] + 1]); // +1 == to lv
   }
-  if (lv_type[0] !== 0 || lv_type[1] !== otoge.LV_TYPE_DATA.length - 1) {
+  if (lvType[0] !== 0 || lvType[1] !== otoge.LV_TYPE_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
-    arg = arg.concat([lv_type[0] + 1, lv_type[1] + 1]); // +1 == to lv type
+    arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
 
   const res2 = alasql(sql, arg);
@@ -146,12 +145,12 @@ const storeSort = () => {
   // console.log('row: ' + JSON.stringify(args), args);
 
   setTimeout(() => {
-    [...Array(sort_click_count)].map(() => $(`.gridjs-th[data-column-id=${sort_target}]`).trigger('click'));
+    [...Array(sortClickCount)].map(() => $(`.gridjs-th[data-column-id=${sortTarget}]`).trigger('click'));
   }, 0);
 };
 
 const updateGrid = (data) => {
-  const columns_setting = [
+  const columnsSetting = [
     {
       id: '0',
       name: 'genre',
@@ -304,7 +303,7 @@ const updateGrid = (data) => {
 
   if (mainGrid === undefined) {
     mainGrid = new gridjs.Grid({
-      columns: columns_setting,
+      columns: columnsSetting,
       sort: true,
       search: true,
       pagination: {
@@ -335,34 +334,34 @@ const updateGrid = (data) => {
     mainGrid.on('ready', onReady);
 
     // 1st sort.
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   } else {
-    [sort_target, sort_click_count] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
+    [sortTarget, sortClickCount] = site.getFilterSortStatus(PAGE_NAME, '7', 2);
 
     mainGrid.updateConfig({
-      columns: columns_setting,
+      columns: columnsSetting,
       data,
     }).forceRender();
 
-    if (sort_click_count > 0) {
+    if (sortClickCount > 0) {
       mainGrid.on('ready', storeSort);
     }
   }
 };
 
 function saveFilterAndSort() {
-  const key_stats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
-  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyStats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
+  const [keyDiff1, keyDiff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   // save filter & sort
   const sortStatus = site.getCurrentSortStatus();
@@ -370,14 +369,14 @@ function saveFilterAndSort() {
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    stats: key_stats,
-    diff: [key_diff1, key_diff2],
-    medal: [key_medal1, key_medal2],
-    rank: [key_rank1, key_rank2],
-    score: [key_score1, key_score2],
-    version: key_version,
-    lv: [key_lv1, key_lv2],
-    lv_type: [key_lv_type1, key_lv_type2],
+    stats: keyStats,
+    diff: [keyDiff1, keyDiff2],
+    medal: [keyMedal1, keyMedal2],
+    rank: [keyRank1, keyRank2],
+    score: [keyScore1, keyScore2],
+    version: keyVersion,
+    lv: [keyLv1, keyLv2],
+    lv_type: [keyLvType1, keyLvType2],
     sort: sortStatus,
   };
 
@@ -385,24 +384,24 @@ function saveFilterAndSort() {
 }
 
 function updateGrid2() {
-  const key_stats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
-  const [key_diff1, key_diff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
-  const [key_medal1, key_medal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
-  const [key_rank1, key_rank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
-  const [key_score1, key_score2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
-  const key_version = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
-  const [key_lv1, key_lv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
-  const [key_lv_type1, key_lv_type2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyStats = site.getKeyNames('skipstep-stats', otoge.STATS_DATA);
+  const [keyDiff1, keyDiff2] = site.getKeyNames('skipstep-diff', otoge.DIFF_DATA);
+  const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
+  const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
+  const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
   const filteredData = fumenFilter(
-    [key_stats].map(Number),
-    [key_diff1, key_diff2].map(Number),
-    [key_medal1, key_medal2].map(Number),
-    [key_rank1, key_rank2].map(Number),
-    [key_score1, key_score2].map(Number),
-    [key_version].map(Number),
-    [key_lv1, key_lv2].map(Number),
-    [key_lv_type1, key_lv_type2].map(Number),
+    [keyStats].map(Number),
+    [keyDiff1, keyDiff2].map(Number),
+    [keyMedal1, keyMedal2].map(Number),
+    [keyRank1, keyRank2].map(Number),
+    [keyScore1, keyScore2].map(Number),
+    [keyVersion].map(Number),
+    [keyLv1, keyLv2].map(Number),
+    [keyLvType1, keyLvType2].map(Number),
   );
 
   updateGrid(filteredData);
@@ -454,11 +453,11 @@ function CreateSkipSlider1(
 
   skipSlider.noUiSlider.on('set', () => {
     if (isView) {
-      if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+      if (fumensDataRaw !== undefined && mainGrid !== undefined) {
         site.saveView();
         document.getElementById('wrapper').innerHTML = '';
         mainGrid = undefined;
-        updateGrid(fumens_data_raw);
+        updateGrid(fumensDataRaw);
         clearTimeout(updateFilterTimer);
         updateFilterTimer = setTimeout(() => {
           updateGrid2(); // 1st filter
@@ -467,7 +466,7 @@ function CreateSkipSlider1(
           }
         }, 1000);
       }
-    } else if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    } else if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -557,7 +556,7 @@ function CreateSkipSlider2(
   });
 
   skipSlider.noUiSlider.on('set', () => {
-    if (fumens_data_raw !== undefined && mainGrid !== undefined) {
+    if (fumensDataRaw !== undefined && mainGrid !== undefined) {
       saveFilterAndSort();
       clearTimeout(updateFilterTimer);
       updateFilterTimer = setTimeout(() => {
@@ -662,11 +661,11 @@ if (document.querySelector('h1.nologin') !== null) {
       const firstDataValue = dataObject[0];
       const lastDataValue = dataObject[dataObject.length - 1];
 
-      const key_score = Object.keys(dataObject).filter(
+      const keyScore = Object.keys(dataObject).filter(
         (key) => dataObject[key] === values[handle],
       )[0];
 
-      skipValues[handle].innerHTML = dataDisplayObject[key_score];
+      skipValues[handle].innerHTML = dataDisplayObject[keyScore];
 
       if (values[0] === firstDataValue
                   && values[1] === lastDataValue) {
@@ -692,16 +691,16 @@ if (document.querySelector('h1.nologin') !== null) {
     CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
   }
 
-  $.getJSON('/api/mymusic', (my_music_data) => {
-    $.getJSON('/api/globalavgscore', (avg_score_data) => {
-      $.getJSON('/api/globalpercentilescore', (percentile_score_data) => {
-        $.getJSON('/api/globaloldtopscore', (old_top_score_data) => {
-          $.getJSON('/api/fumens', (fumens_data) => {
-            fumens_data_raw = fumens_data;
-            old_top_score_data_raw = old_top_score_data;
-            percentile_score_data_raw = percentile_score_data;
-            avg_score_data_raw = avg_score_data;
-            my_music_data_raw = my_music_data;
+  $.getJSON('/api/mymusic', (myMusicData) => {
+    $.getJSON('/api/globalavgscore', (avgScoreData) => {
+      $.getJSON('/api/globalpercentilescore', (percentileScoreData) => {
+        $.getJSON('/api/globaloldtopscore', (oldTopScoreData) => {
+          $.getJSON('/api/fumens', (fumensData) => {
+            fumensDataRaw = fumensData;
+            oldTopScoreDataRaw = oldTopScoreData;
+            percentileScoreDataRaw = percentileScoreData;
+            avgScoreDataRaw = avgScoreData;
+            myMusicDataRaw = myMusicData;
 
             updateGrid2();
           });
