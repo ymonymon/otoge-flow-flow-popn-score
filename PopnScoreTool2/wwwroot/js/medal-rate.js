@@ -432,7 +432,7 @@ document.getElementById('reset-button').addEventListener('click', () => {
     ? null
     : prevFilters[selectedFilter];
 
-  site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, false, onSliderStart, onFilterSliderSet);
+  site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, false, onSliderStart, onFilterSliderSet, 0);
   site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
   site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lvType, onSliderStart, onFilterSliderSet);
 }

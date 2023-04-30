@@ -71,10 +71,10 @@ export const saveView = () => {
 export const CreateSkipSlider1 = (
   id,
   dataObject,
-  defaultKey,
   prevKey,
   onStart,
   onSet,
+  defaultKey,
 ) => {
   const skipSlider = document.getElementById(`skipstep-${id}`);
   const defaultPos = dataObject[defaultKey];

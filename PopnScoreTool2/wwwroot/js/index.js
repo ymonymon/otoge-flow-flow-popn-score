@@ -1011,15 +1011,15 @@ if (document.querySelector('h1.nologin') !== null) {
     const nameData = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
 
     // view
-    site.CreateSkipSlider1('name', nameData, 2, view?.name, onSliderStart, onViewSliderSet);
-    site.CreateSkipSlider1('align', otoge.ALIGN_DATA, 1, view?.align, onSliderStart, onViewSliderSet);
-    site.CreateSkipSlider1('wrap', otoge.WRAP_DATA, 0, view?.wrap, onSliderStart, onViewSliderSet);
-    site.CreateSkipSlider1('break', otoge.BREAK_DATA, 0, view?.break, onSliderStart, onViewSliderSet);
-    site.CreateSkipSlider1('order', otoge.ORDER_DATA, 0, view?.order, onSliderStart, onViewOrderSliderSet);
-    site.CreateSkipSlider1('upper', otoge.UPPER_DATA, 1, view?.upper, onSliderStart, onViewSliderSet);
+    site.CreateSkipSlider1('name', nameData, view?.name, onSliderStart, onViewSliderSet, 2);
+    site.CreateSkipSlider1('align', otoge.ALIGN_DATA, view?.align, onSliderStart, onViewSliderSet, 1);
+    site.CreateSkipSlider1('wrap', otoge.WRAP_DATA, view?.wrap, onSliderStart, onViewSliderSet, 0);
+    site.CreateSkipSlider1('break', otoge.BREAK_DATA, view?.break, onSliderStart, onViewSliderSet, 0);
+    site.CreateSkipSlider1('order', otoge.ORDER_DATA, view?.order, onSliderStart, onViewOrderSliderSet, 0);
+    site.CreateSkipSlider1('upper', otoge.UPPER_DATA, view?.upper, onSliderStart, onViewSliderSet, 1);
 
     // filter
-    site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, undefined, onFilterScoreSliderUpdate);

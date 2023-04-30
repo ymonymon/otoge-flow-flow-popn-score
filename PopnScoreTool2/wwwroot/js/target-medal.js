@@ -474,8 +474,8 @@ if (document.querySelector('h1.nologin') !== null) {
       ? null
       : prevFilters[selectedFilter];
 
-    site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, onSliderStart, onFilterSliderSet);
-    site.CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, otoge.TARGET_MEDAL_DATA.length - 1, prevFilter?.target, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
+    site.CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, prevFilter?.target, onSliderStart, onFilterSliderSet, otoge.TARGET_MEDAL_DATA.length - 1);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet, 0, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);

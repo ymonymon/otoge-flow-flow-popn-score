@@ -704,12 +704,12 @@ if (document.querySelector('h1.nologin') !== null) {
       ? null
       : prevFilters[selectedFilter];
 
-    site.CreateSkipSlider1('target', otoge.TARGET_SCORE_DATA, otoge.TARGET_SCORE_DATA.length - 1, 0, prevFilter?.target, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('target', otoge.TARGET_SCORE_DATA, prevFilter?.target, onSliderStart, onFilterSliderSet, otoge.TARGET_SCORE_DATA.length - 1);
     site.CreateSkipSlider2('diff', otoge.DIFF_DATA, prevFilter?.diff, onSliderStart, onFilterSliderSet, 0, -1);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, '100k', onFilterScoreSliderUpdate);
-    site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1);
