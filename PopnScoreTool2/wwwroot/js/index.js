@@ -768,167 +768,102 @@ ELSE '-2' END`, [targetData]);
   }
 }
 
-function CreateSkipSlider1(
-  id,
-  dataObject,
-  defaultKey,
-  prevKey,
-  isView,
-  fn,
-) {
-  const skipSlider = document.getElementById(`skipstep-${id}`);
-  const defaultPos = dataObject[defaultKey];
-  const startPos = (prevKey !== null && prevKey !== undefined)
-    ? dataObject[prevKey]
-    : defaultPos;
+function onSliderStart() {
+  clearTimeout(updateFilterTimer);
+}
 
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: dataObject.length - 1,
-    },
-    start: startPos,
-    default: defaultPos,
-    matchingTable: dataObject,
-    step: 1,
-    tooltips: true,
-    format: {
-      to: (key) => dataObject[Math.round(key)],
-      from: (value) => Object.keys(dataObject).filter(
-        (key) => dataObject[key] === value,
-      )[0],
-    },
-  });
+function onViewSliderSet(values, handle, unencoded, tap, positions, slider, callback) {
+  if (!allData || !mainGrid) return;
 
-  const skipValues = [
-    document.getElementById(`${id}-text`),
-  ];
-
-  skipSlider.noUiSlider.on('update', (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
-  });
-
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
-
-  skipSlider.noUiSlider.on('set', () => {
-    if (isView) {
-      if (allData !== undefined && mainGrid !== undefined) {
-        site.saveView();
-        document.getElementById('wrapper').innerHTML = '';
-        mainGrid = undefined;
-        updateGrid(allData);
-        clearTimeout(updateFilterTimer);
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2(); // 1st filter
-          updateStats();
-          updateStats2();
-          if (fn) {
-            fn();
-          }
-        }, 1000);
-      }
-    } else if (allData !== undefined && mainGrid !== undefined) {
-      saveFilterAndSort();
-      clearTimeout(updateFilterTimer);
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-        updateStats();
-        updateStats2();
-        if (fn) {
-          fn();
-        }
-      }, 1000);
+  site.saveView();
+  document.getElementById('wrapper').innerHTML = '';
+  mainGrid = undefined;
+  updateGrid(allData);
+  clearTimeout(updateFilterTimer);
+  updateFilterTimer = setTimeout(() => {
+    if (callback) {
+      callback();
     }
+    updateGrid2(); // 1st filter
+    updateStats();
+    updateStats2();
+  }, 1000);
+}
+
+function onViewOrderSliderSet(values, handle, unencoded, tap, positions, slider) {
+  onViewSliderSet(values, handle, unencoded, tap, positions, slider, () => {
+    // When the 'order' slider is moved, we need to update the display of the 'name' slider.
+    const skipSlider = document.getElementById('skipstep-name');
+    const currentView = JSON.parse(window.localStorage.getItem('view'));
+    const isNewOrder = currentView?.order === '1';
+
+    const newNameData = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+    const oldNameData = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
+
+    const findKeyByValue = (obj, value) => Object.keys(obj).find((key) => obj[key] === value);
+
+    skipSlider.noUiSlider.updateOptions({
+      format: {
+        to: (key) => newNameData[Math.round(key)],
+        from: (value) => findKeyByValue(newNameData, value)
+          || findKeyByValue(oldNameData, value),
+      },
+    });
   });
 }
 
-function CreateSkipSlider2(
-  id,
-  dataObject,
-  prevKeys,
-  margin = 0,
-  updateFn = undefined,
-) {
-  const skipSlider = document.getElementById(`skipstep-${id}`);
-  const defaultPos = [dataObject[0], dataObject[dataObject.length - 1]];
-  const startPos = (prevKeys !== null && prevKeys !== undefined
-    && prevKeys.length === 2)
-    ? [dataObject[prevKeys[0]], dataObject[prevKeys[1]]]
-    : defaultPos;
+function onFilterSliderSet(values, handle, unencoded, tap, positions, slider, callback) {
+  if (!allData || !mainGrid) return;
 
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: dataObject.length - 1,
-    },
-    connect: true,
-    start: startPos,
-    default: defaultPos,
-    matchingTable: dataObject,
-    step: 1,
-    margin,
-    tooltips: [true, true],
-    format: {
-      to: (key) => dataObject[Math.round(key)],
-      from: (value) => Object.keys(dataObject).filter(
-        (key) => dataObject[key] === value,
-      )[0],
-    },
-  });
+  saveFilterAndSort();
+  clearTimeout(updateFilterTimer);
+  updateFilterTimer = setTimeout(() => {
+    updateGrid2();
+    updateStats();
+    updateStats2();
+    if (callback) {
+      callback();
+    }
+  }, 1000);
+}
 
+function onFilterScoreSliderUpdate(values, handle) {
   const skipValues = [
-    document.getElementById(`${id}-lower`),
-    document.getElementById(`${id}-upper`),
-    document.getElementById(`${id}-hyphen`),
-    document.getElementById(`${id}-same`),
+    document.getElementById('score-lower'),
+    document.getElementById('score-upper'),
+    document.getElementById('score-hyphen'),
+    document.getElementById('score-same'),
   ];
 
-  skipSlider.noUiSlider.on('update', updateFn !== undefined ? updateFn : (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
+  const dataObject = otoge.SCORE_DATA;
+  const dataDisplayObject = otoge.SCORE_DATA_DISPLAY;
+  const firstDataValue = dataObject[0];
+  const lastDataValue = dataObject[dataObject.length - 1];
 
-    const firstDataValue = dataObject[0];
-    const lastDataValue = dataObject[dataObject.length - 1];
+  const keyScore = Object.keys(dataObject).filter(
+    (key) => dataObject[key] === values[handle],
+  )[0];
 
-    if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-      skipValues[3].innerHTML = values[handle];
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else if ((skipValues[0].innerText === firstDataValue
-                || skipValues[0].innerHTML === firstDataValue)
-                && (skipValues[1].innerText === lastDataValue
-                    || skipValues[1].innerHTML === lastDataValue)) {
-      skipValues[3].innerHTML = 'ALL';
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
+  skipValues[handle].innerHTML = dataDisplayObject[keyScore];
+
+  if (values[0] === firstDataValue
+              && values[1] === lastDataValue) {
+    skipValues[3].innerHTML = 'ALL';
+    skipValues[0].style.display = 'none';
+    skipValues[1].style.display = 'none';
+    skipValues[2].style.display = 'none';
+    skipValues[3].style.display = 'inline';
+  } else {
+    skipValues[0].style.display = 'inline';
+    skipValues[1].style.display = 'inline';
+    skipValues[2].style.display = 'inline';
+    if (values[1] === lastDataValue) {
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
     } else {
-      skipValues[0].style.display = 'inline';
-      skipValues[1].style.display = 'inline';
-      skipValues[2].style.display = 'inline';
-      skipValues[3].style.display = 'none';
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
     }
-  });
-
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
-
-  skipSlider.noUiSlider.on('set', () => {
-    if (allData !== undefined && mainGrid !== undefined) {
-      saveFilterAndSort();
-      clearTimeout(updateFilterTimer);
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-        updateStats();
-        updateStats2();
-      }, 1000);
-    }
-  });
+    skipValues[3].style.display = 'none';
+  }
 }
 
 if (document.querySelector('h1.nologin') !== null) {
@@ -1076,75 +1011,20 @@ if (document.querySelector('h1.nologin') !== null) {
     const nameData = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
 
     // view
-    CreateSkipSlider1('name', nameData, 2, view?.name, true);
-    CreateSkipSlider1('align', otoge.ALIGN_DATA, 1, view?.align, true);
-    CreateSkipSlider1('wrap', otoge.WRAP_DATA, 0, view?.wrap, true);
-    CreateSkipSlider1('break', otoge.BREAK_DATA, 0, view?.break, true);
-    CreateSkipSlider1('order', otoge.ORDER_DATA, 0, view?.order, true, () => {
-      // When the 'order' slider is moved, we need to update the display of the 'name' slider.
-      const skipSlider = document.getElementById('skipstep-name');
-      const currentView = JSON.parse(window.localStorage.getItem('view'));
-      const isNewOrder = currentView?.order === '1';
-
-      const newNameData = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
-      const oldNameData = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
-
-      const findKeyByValue = (obj, value) => Object.keys(obj).find((key) => obj[key] === value);
-
-      skipSlider.noUiSlider.updateOptions({
-        format: {
-          to: (key) => newNameData[Math.round(key)],
-          from: (value) => findKeyByValue(newNameData, value)
-           || findKeyByValue(oldNameData, value),
-        },
-      });
-    });
-    CreateSkipSlider1('upper', otoge.UPPER_DATA, 1, view?.upper, true);
+    site.CreateSkipSlider1('name', nameData, 2, view?.name, onSliderStart, onViewSliderSet);
+    site.CreateSkipSlider1('align', otoge.ALIGN_DATA, 1, view?.align, onSliderStart, onViewSliderSet);
+    site.CreateSkipSlider1('wrap', otoge.WRAP_DATA, 0, view?.wrap, onSliderStart, onViewSliderSet);
+    site.CreateSkipSlider1('break', otoge.BREAK_DATA, 0, view?.break, onSliderStart, onViewSliderSet);
+    site.CreateSkipSlider1('order', otoge.ORDER_DATA, 0, view?.order, onSliderStart, onViewOrderSliderSet);
+    site.CreateSkipSlider1('upper', otoge.UPPER_DATA, 1, view?.upper, onSliderStart, onViewSliderSet);
 
     // filter
-    CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
-    CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal);
-    CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank);
-    CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, 1, (values, handle) => {
-      const skipValues = [
-        document.getElementById('score-lower'),
-        document.getElementById('score-upper'),
-        document.getElementById('score-hyphen'),
-        document.getElementById('score-same'),
-      ];
-
-      const dataObject = otoge.SCORE_DATA;
-      const dataDisplayObject = otoge.SCORE_DATA_DISPLAY;
-      const firstDataValue = dataObject[0];
-      const lastDataValue = dataObject[dataObject.length - 1];
-
-      const keyScore = Object.keys(dataObject).filter(
-        (key) => dataObject[key] === values[handle],
-      )[0];
-
-      skipValues[handle].innerHTML = dataDisplayObject[keyScore];
-
-      if (values[0] === firstDataValue
-                  && values[1] === lastDataValue) {
-        skipValues[3].innerHTML = 'ALL';
-        skipValues[0].style.display = 'none';
-        skipValues[1].style.display = 'none';
-        skipValues[2].style.display = 'none';
-        skipValues[3].style.display = 'inline';
-      } else {
-        skipValues[0].style.display = 'inline';
-        skipValues[1].style.display = 'inline';
-        skipValues[2].style.display = 'inline';
-        if (values[1] === lastDataValue) {
-          skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
-        } else {
-          skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
-        }
-        skipValues[3].style.display = 'none';
-      }
-    });
-    CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv);
-    CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, onFilterScoreSliderUpdate);
+    site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
   }
 
   // local storage からの読み込み処理
