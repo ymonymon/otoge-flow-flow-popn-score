@@ -401,7 +401,9 @@ const updateGrid = (data) => {
     mainGrid = new gridjs.Grid({
       columns: [...nameColumns, ...otherColumns],
       sort: true,
-      search: true,
+      search: {
+        ignoreHiddenColumns: false,
+      },
       pagination: {
         enabled: true,
         limit: 20,
@@ -913,7 +915,7 @@ if (document.querySelector('h1.nologin') !== null) {
   });
 
   document.getElementById('reset-button').addEventListener('click', () => {
-    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+    Array.from(document.querySelectorAll('#filter [id^=skipstep-]')).map(
       (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
     );
 

@@ -17,7 +17,13 @@ let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (stats, diff, medal, rank, score, version, lv, lvType) => {
+const fumenFilter = (stats, diff, medal, rank, score, version, lv, lvType, order, upper) => {
+  const column0 = (upper === '0' || upper === '2') ? 'CONCAT(TBL1.[1], TBL1.[6]) AS [0]' : 'TBL1.[1] AS [0]';
+  const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT(TBL1.[2], TBL1.[6]) AS [1]' : 'TBL1.[2] AS [1]';
+
+  const columnOrder = order === '1' ? `${column1}, ${column0}` : `${column0}, ${column1}`;
+
+  // TBL1.[2] AS [0], TBL1.[1] AS [1]
   let statsColumn = 'TBL3.[2]';
   switch (stats[0]) {
     case 1:
@@ -56,7 +62,7 @@ LEFT JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`,
 
   // TODO : LEFT JOIN
   const basesql = `MATRIX OF
-SELECT TBL1.[1] AS [0], TBL1.[2] AS [1], -- genre/title
+SELECT ${columnOrder}, -- t/g
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
 TBL2.[3] AS [4], -- score
 TBL1.[5] AS [5], -- version
@@ -65,7 +71,8 @@ ${statsColumn} AS [6], -- stats
 TBL3.[1] AS [8], -- count
 TBL3.[3] AS [9], -- count now
 TBL2.[1] AS [10], -- medal
-TBL2.[2] AS [11] -- rank
+TBL2.[2] AS [11], -- rank
+TBL1.[6] AS [12] -- upper
 FROM ? AS TBL1
 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
 INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]
@@ -123,7 +130,7 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
 
   // version除去/列番号変更
   const result = res2.map((a) => [a[0], a[1], a[2], a[3],
-    a[10], a[11], a[6], a[7], a[4], a[8], a[9]]);
+    a[10], a[11], a[6], a[7], a[4], a[8], a[9], a[12]]);
   return result;
 };
 
@@ -136,6 +143,26 @@ const onReady = () => {
   if (test[0]) {
     saveFilterAndSort();
   }
+
+  const tableWrapper = document.querySelector('#wrapper');
+  const table = tableWrapper.querySelector('table');
+
+  table.style.tableLayout = 'auto';
+
+  const view = JSON.parse(window.localStorage.getItem('view'));
+
+  if (view?.name === '0' || view?.name === '1') {
+    table.querySelector('thead tr th:first-child').style.width = '100%';
+    table.querySelector('thead tr th:nth-child(4)').style.width = '22px';
+    table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+  } else {
+    table.querySelector('thead tr th:nth-child(1)').style.width = '50%';
+    table.querySelector('thead tr th:nth-child(2)').style.width = '50%';
+    table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+    table.querySelector('thead tr th:nth-child(6)').style.width = '22px';
+  }
+
+  table.style.tableLayout = 'fixed';
 };
 
 // const storeSort = (...args) => {
@@ -199,6 +226,7 @@ const updateGrid = (data) => {
   const br = (view?.break !== '1') ? '<br />' : ' ';
 
   // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
+  const upperIndex = 11;
 
   let nameColumns = [];
 
@@ -211,9 +239,9 @@ const updateGrid = (data) => {
         const displayData = row.cells[0].data;
         return gridjs.html(`
 <div style="${containerStyle}">
-${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
       },
@@ -260,9 +288,9 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
         const displayData = row.cells[1].data;
         return gridjs.html(`
 <div style="${containerStyle}">
-${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
       },
@@ -285,9 +313,9 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
         const displayData = `${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}`;
         return gridjs.html(`
 <div style="${containerStyle}">
-${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
       },
@@ -320,9 +348,9 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
         const displayData = `${row.cells[0].data}${br}${row.cells[1].data}`;
         return gridjs.html(`
 <div style="${containerStyle}">
-${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
       },
@@ -361,6 +389,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '3',
     name: 'lv',
+    width: '3ch',
     attributes: (cell, row) => {
       if (cell === null) {
         return {
@@ -368,7 +397,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
         };
       }
       return {
-        style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+        style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right`,
         colspan: '2',
       };
     },
@@ -376,6 +405,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '4',
     name: 'm',
+    width: '45px',
     attributes: (cell) => {
       if (cell === null) {
         return undefined;
@@ -402,6 +432,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '6',
     name: document.getElementById('skipstep-stats').noUiSlider.get(),
+    width: '5ch',
     attributes: (cell) => {
       if (cell === null) {
         return undefined;
@@ -414,6 +445,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '7',
     name: 'diff',
+    width: '4ch',
     formatter: (_, row) => (row.cells[7].data <= 0 ? row.cells[7].data : (`+${row.cells[7].data}`)),
     attributes: (cell) => {
       if (cell === null) {
@@ -427,6 +459,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '8',
     name: 'score',
+    width: '5ch',
     formatter: (_, row) => (row.cells[8].data === -2 ? '-' : row.cells[8].data),
     attributes: (cell) => {
       if (cell === null) {
@@ -440,6 +473,7 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
   {
     id: '9',
     name: 'c',
+    width: '3ch',
     formatter: (_, row) => {
       if (document.getElementById('skipstep-stats').noUiSlider.get() === otoge.STATS_DATA[0]) {
         return gridjs.html(`${row.cells[9].data}<br><span style='color:gray'>(${row.cells[10].data})</span>`);
@@ -466,6 +500,15 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
     attributes: {
       style: 'display:none',
     },
+  },
+  {
+    id: '11',
+    name: '',
+    sort: 0,
+    width: '1px',
+    attributes: {
+      style: 'display:none',
+    },
   }];
 
   const columnsSetting = [...nameColumns, ...otherColumns];
@@ -474,7 +517,9 @@ ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch
     mainGrid = new gridjs.Grid({
       columns: columnsSetting,
       sort: true,
-      search: true,
+      search: {
+        ignoreHiddenColumns: false,
+      },
       pagination: {
         enabled: true,
         limit: 10,
@@ -562,6 +607,9 @@ function updateGrid2() {
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
+  const order = JSON.parse(window.localStorage.getItem('view'))?.order;
+  const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
+
   const filteredData = fumenFilter(
     [keyStats].map(Number),
     [keyDiff1, keyDiff2].map(Number),
@@ -571,6 +619,8 @@ function updateGrid2() {
     [keyVersion].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
+    order,
+    upper,
   );
 
   updateGrid(filteredData);
@@ -717,7 +767,7 @@ if (document.querySelector('h1.nologin') !== null) {
   });
 
   document.getElementById('reset-button').addEventListener('click', () => {
-    Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+    Array.from(document.querySelectorAll('#filter [id^=skipstep-]')).map(
       (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
     );
 

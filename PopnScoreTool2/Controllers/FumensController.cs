@@ -22,8 +22,8 @@ namespace PopnScoreTool2.Controllers
         public async Task<ActionResult<object[]>> GetValues()
         {
             return await _context.Musics.Where(w => w.Deleted == false)
-                .Select(a => new object[]{ a.Id, a.Name, a.Genre + (a.Position == 1 ? "UPPER": ""), a.LevelId, a.Level,
-                    a.Version })
+                .Select(a => new object[]{ a.Id, a.Name, a.Genre, a.LevelId, a.Level,
+                    a.Version, (a.Position == 1 ? "UPPER": "") })
                 .ToArrayAsync();
         }
     }

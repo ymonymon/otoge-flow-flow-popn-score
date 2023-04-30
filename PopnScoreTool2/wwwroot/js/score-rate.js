@@ -15,10 +15,17 @@ let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (version, lv, lvType) => {
+const fumenFilter = (version, lv, lvType, order, upper) => {
+  const column0 = (upper === '0' || upper === '2') ? 'CONCAT(TBL1.[1], TBL1.[6]) AS [0]' : 'TBL1.[1] AS [0]';
+  const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT(TBL1.[2], TBL1.[6]) AS [1]' : 'TBL1.[2] AS [1]';
+
+  const columnOrder = order === '1' ? `${column1}, ${column0}` : `${column0}, ${column1}`;
+
+  // TBL1.[2] AS [0], TBL1.[1] AS [1]
+
   // AS は必須
   const res = alasql(`MATRIX OF
-SELECT TBL1.[2] AS [0], TBL1.[1] AS [1], -- genre/title
+SELECT ${columnOrder}, -- t/g
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
 TBL1.[5] AS [4], -- version
 TBL2.[1] AS [5],
@@ -28,7 +35,8 @@ TBL2.[4] AS [8],
 TBL2.[5] AS [9],
 TBL2.[6] AS [10],
 CASE WHEN TBL2.[8] = 0 THEN (CASE WHEN 100000 <= TBL3.[1] THEN 1 ELSE 0 END) ELSE TBL2.[8] END  AS [11],
-TBL2.[9] AS [12] -- count
+TBL2.[9] AS [12], -- count
+TBL1.[6] AS [16] -- upper
 FROM ? AS TBL1
 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
 INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumensDataRaw, scoreRateDataRaw, oldTopScoreDataRaw]);
@@ -56,7 +64,7 @@ INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumensDataRaw, scoreRateDataRaw, 
 
   // version除去
   const result = res2.map((a) => [a[0], a[1], a[2], a[3], a[5],
-    a[6], a[7], a[8], a[9], a[10], a[11], a[12]]);
+    a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13]]);
   return result;
 };
 
@@ -69,6 +77,26 @@ const onReady = () => {
   if (test[0]) {
     saveFilterAndSort();
   }
+
+  const tableWrapper = document.querySelector('#wrapper');
+  const table = tableWrapper.querySelector('table');
+
+  table.style.tableLayout = 'auto';
+
+  const view = JSON.parse(window.localStorage.getItem('view'));
+
+  if (view?.name === '0' || view?.name === '1') {
+    table.querySelector('thead tr th:first-child').style.width = '100px';
+    // table.querySelector('thead tr th:nth-child(4)').style.width = '22px';
+    // table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+  } else {
+    table.querySelector('thead tr th:nth-child(1)').style.width = '50px';
+    table.querySelector('thead tr th:nth-child(2)').style.width = '50px';
+    // table.querySelector('thead tr th:nth-child(5)').style.width = '22px';
+    // table.querySelector('thead tr th:nth-child(6)').style.width = '22px';
+  }
+
+  table.style.tableLayout = 'fixed';
 };
 
 // const storeSort = (...args) => {
@@ -133,6 +161,7 @@ const updateGrid = (data) => {
     const br = (view?.break !== '1') ? '<br />' : ' ';
 
     // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
+    const upperIndex = 11;
 
     let nameColumns = [];
 
@@ -145,9 +174,9 @@ const updateGrid = (data) => {
           const displayData = row.cells[0].data;
           return gridjs.html(`
 <div style="${containerStyle}">
-  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
   <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
         },
@@ -194,9 +223,9 @@ const updateGrid = (data) => {
           const displayData = row.cells[1].data;
           return gridjs.html(`
 <div style="${containerStyle}">
-  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
   <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
         },
@@ -219,9 +248,9 @@ const updateGrid = (data) => {
           const displayData = `${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}`;
           return gridjs.html(`
 <div style="${containerStyle}">
-  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
   <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
         },
@@ -254,9 +283,9 @@ const updateGrid = (data) => {
           const displayData = `${row.cells[0].data}${br}${row.cells[1].data}`;
           return gridjs.html(`
 <div style="${containerStyle}">
-  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '3' && row.cells[upperIndex].data) ? `<span style="padding-right: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
   <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
-  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  ${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-left: 0.5ch;">${row.cells[upperIndex].data}</span>` : ''}
 </div>
 `);
         },
@@ -295,6 +324,7 @@ const updateGrid = (data) => {
     {
       id: '3',
       name: 'lv',
+      width: '3ch',
       attributes: (cell, row) => {
         if (cell === null) {
           return {
@@ -302,7 +332,7 @@ const updateGrid = (data) => {
           };
         }
         return {
-          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right`,
           colspan: '2',
         };
       },
@@ -310,6 +340,7 @@ const updateGrid = (data) => {
     {
       id: '4',
       name: '85k',
+      width: '6ch',
       formatter: (_, row) => row.cells[4].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -323,6 +354,7 @@ const updateGrid = (data) => {
     {
       id: '5',
       name: '90k',
+      width: '6ch',
       formatter: (_, row) => row.cells[5].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -336,6 +368,7 @@ const updateGrid = (data) => {
     {
       id: '6',
       name: '95k',
+      width: '6ch',
       formatter: (_, row) => row.cells[6].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -349,6 +382,7 @@ const updateGrid = (data) => {
     {
       id: '7',
       name: '98k',
+      width: '6ch',
       formatter: (_, row) => row.cells[7].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -362,6 +396,7 @@ const updateGrid = (data) => {
     {
       id: '8',
       name: '99k',
+      width: '6ch',
       formatter: (_, row) => row.cells[8].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -375,6 +410,7 @@ const updateGrid = (data) => {
     {
       id: '9',
       name: '99.4k',
+      width: '6ch',
       formatter: (_, row) => row.cells[9].data.toFixed(2),
       attributes: (cell) => {
         if (cell === null) {
@@ -388,6 +424,7 @@ const updateGrid = (data) => {
     {
       id: '10',
       name: '100k',
+      width: '6ch',
       formatter: (_, row) => row.cells[10].data,
       attributes: (cell) => {
         if (cell === null) {
@@ -401,6 +438,7 @@ const updateGrid = (data) => {
     {
       id: '11',
       name: 'c',
+      width: '3ch',
       /*
       formatter: (_, row) => {
           return gridjs.html(`${row.cells[11].data}<br>
@@ -431,7 +469,9 @@ const updateGrid = (data) => {
     mainGrid = new gridjs.Grid({
       columns: [...nameColumns, ...otherColumns],
       sort: true,
-      search: true,
+      search: {
+        ignoreHiddenColumns: false,
+      },
       pagination: {
         enabled: true,
         limit: 10,
@@ -503,10 +543,15 @@ function updateGrid2() {
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
+  const order = JSON.parse(window.localStorage.getItem('view'))?.order;
+  const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
+
   const filteredData = fumenFilter(
     [keyVersion].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
+    order,
+    upper,
   );
 
   updateGrid(filteredData);
@@ -611,7 +656,7 @@ document.getElementById('filter-selection').addEventListener('click', ({ target 
 });
 
 document.getElementById('reset-button').addEventListener('click', () => {
-  Array.from(document.querySelectorAll('[id^=skipstep-]')).map(
+  Array.from(document.querySelectorAll('#filter [id^=skipstep-]')).map(
     (skipSlider) => skipSlider.noUiSlider.set(skipSlider.noUiSlider.options.default),
   );
 
