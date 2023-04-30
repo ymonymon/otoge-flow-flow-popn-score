@@ -135,153 +135,322 @@ const storeSort = () => {
 
 const updateGrid = (data) => {
   if (mainGrid === undefined) {
+    const view = JSON.parse(window.localStorage.getItem('view'));
+
+    let containerStyle = `
+      display: flex;
+      justify-content: space-between;
+      padding: 0ch 1ch;
+      align-items: center;
+    `;
+
+    let middleStyle = `
+      flex-grow: 1;
+      padding: 0;
+    `;
+
+    let nameStyle = 'display: block;';
+
+    if (view?.align === '0') {
+      nameStyle += `
+        text-align: left;
+      `;
+    } else if (view?.align === '2') {
+      nameStyle += `
+        text-align: right;
+      `;
+    }
+
+    if (view?.wrap === '1') {
+      containerStyle += `
+        overflow: hidden;
+        white-space: nowrap;  
+      `;
+      middleStyle += `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;  
+      `;
+      nameStyle += `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      `;
+    }
+
+    const name1 = view?.order === '1' ? 'genre' : 'title';
+    const name2 = view?.order === '1' ? 'title' : 'genre';
+
+    const br = (view?.break !== '1') ? '<br />' : ' ';
+
+    // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
+
+    let nameColumns = [];
+
+    const name = view?.name;
+    if (name === '0') {
+      nameColumns = [{
+        id: '0',
+        name: name1,
+        formatter: (_, row) => {
+          const displayData = row.cells[0].data;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '1',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: name2,
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+        hidden: true,
+      }];
+    } else if (name === '1') {
+      nameColumns = [{
+        id: '0',
+        name: name1,
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+        hidden: true,
+      },
+      {
+        id: '1',
+        name: name2,
+        formatter: (_, row) => {
+          const displayData = row.cells[1].data;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '1',
+          };
+        },
+      }];
+    } else if (name === '3') {
+      nameColumns = [{
+        id: '0',
+        name: name1,
+        formatter: (_, row) => {
+          const cell0Data = row.cells[0].data;
+          const cell1Data = row.cells[1].data;
+          const displayData = `${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}`;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '2',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: name2,
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+      }];
+    } else {
+      nameColumns = [{
+        id: '0',
+        name: name1,
+        formatter: (_, row) => {
+          const displayData = `${row.cells[0].data}${br}${row.cells[1].data}`;
+          return gridjs.html(`
+<div style="${containerStyle}">
+  ${(view?.upper === '3' && row.cells[8].data) ? `<span style="padding-right: 0.5ch;">${row.cells[8].data}</span>` : ''}
+  <span style="${middleStyle}"><span style="${nameStyle}">${displayData}</span></span>
+  ${(view?.upper === '4' && row.cells[8].data) ? `<span style="padding-left: 0.5ch;">${row.cells[8].data}</span>` : ''}
+</div>
+`);
+        },
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            colspan: '2',
+          };
+        },
+      },
+      {
+        id: '1',
+        name: name2,
+        attributes: (cell) => {
+          if (cell === null) {
+            return undefined;
+          }
+          return {
+            style: 'display:none',
+          };
+        },
+      }];
+    }
+
+    const otherColumns = [{
+      id: '2',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    },
+    {
+      id: '3',
+      name: 'lv',
+      attributes: (cell, row) => {
+        if (cell === null) {
+          return {
+            colspan: '2',
+          };
+        }
+        return {
+          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
+          colspan: '2',
+        };
+      },
+    },
+    {
+      id: '4',
+      name: 'n→t',
+      formatter: (_, row) => {
+        let nextMedal = otoge.TARGET_MEDAL_DATA_R[targetMedalKey];
+        if (targetMedalKey === String(otoge.TARGET_MEDAL_DATA.length - 1)) {
+          if (row.cells[4].data < 4) {
+            nextMedal = 4;
+          } else {
+            nextMedal = row.cells[4].data + 1;
+          }
+        }
+
+        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
+                          + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" />`
+                          + `→${(nextMedal > 10) ? ('score')
+                            : (`<img src="/icon/medal_${nextMedal}.png" alt="${nextMedal}" width="18" height="18" />`)}`);
+      },
+      attributes: {
+        style: 'padding: 0px; text-align: center',
+      },
+    },
+    {
+      id: '5',
+      // important!
+      name: gridjs.html('target<br>%'),
+      formatter: (_, row) => (Number.isFinite(row.cells[5].data)
+        ? row.cells[5].data.toFixed(2) : row.cells[5].data),
+      sort: {
+        compare: (a, b) => {
+          const aIsFinite = Number.isFinite(a);
+          const bIsFinite = Number.isFinite(b);
+          if (!aIsFinite && !bIsFinite) {
+            return 0;
+          } if (!aIsFinite) {
+            return 1;
+          } if (!bIsFinite) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          } if (a < b) {
+            return -1;
+          }
+          return 0;
+        },
+      },
+      attributes: (cell) => {
+        if (cell === null) {
+          return undefined;
+        }
+        return {
+          style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
+        };
+      },
+    },
+    {
+      id: '6',
+      name: 'c',
+      formatter: (_, row) => gridjs.html(`${row.cells[6].data}<br><span style='color:gray'>(${row.cells[7].data})</span>`),
+      attributes: (cell) => {
+        if (cell === null) {
+          return {
+            colspan: '3',
+          };
+        }
+        return {
+          style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
+          colspan: '2',
+        };
+      },
+    },
+    {
+      id: '7',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    },
+    {
+      id: '8',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    }];
+
     mainGrid = new gridjs.Grid({
-      columns: [
-        {
-          id: '0',
-          name: 'genre',
-          formatter: (_, row) => gridjs.html(`${row.cells[0].data}<br>${row.cells[1].data}`), /*
-                          return gridjs.html((row.cells[0].data === row.cells[1].data) ?
-                              row.cells[1].data :
-                              (row.cells[0].data + ' / ' + row.cells[1].data));
-                              */
-
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '1',
-          name: 'title',
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              style: 'display:none',
-            };
-          },
-        },
-        {
-          id: '2',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        },
-        {
-          id: '3',
-          name: 'lv',
-          attributes: (cell, row) => {
-            if (cell === null) {
-              return {
-                colspan: '2',
-              };
-            }
-            return {
-              style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0px; text-align: center`,
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '4',
-          name: 'n→t',
-          formatter: (_, row) => {
-            let nextMedal = otoge.TARGET_MEDAL_DATA_R[targetMedalKey];
-            if (targetMedalKey === String(otoge.TARGET_MEDAL_DATA.length - 1)) {
-              if (row.cells[4].data < 4) {
-                nextMedal = 4;
-              } else {
-                nextMedal = row.cells[4].data + 1;
-              }
-            }
-
-            return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                              + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" />`
-                              + `→${(nextMedal > 10) ? ('score')
-                                : (`<img src="/icon/medal_${nextMedal}.png" alt="${nextMedal}" width="18" height="18" />`)}`);
-          },
-          attributes: {
-            style: 'padding: 0px; text-align: center',
-          },
-        },
-        {
-          id: '5',
-          // important!
-          name: gridjs.html('target<br>%'),
-          formatter: (_, row) => (Number.isFinite(row.cells[5].data)
-            ? row.cells[5].data.toFixed(2) : row.cells[5].data),
-          sort: {
-            compare: (a, b) => {
-              const aIsFinite = Number.isFinite(a);
-              const bIsFinite = Number.isFinite(b);
-              if (!aIsFinite && !bIsFinite) {
-                return 0;
-              } if (!aIsFinite) {
-                return 1;
-              } if (!bIsFinite) {
-                return -1;
-              }
-              if (a > b) {
-                return 1;
-              } if (a < b) {
-                return -1;
-              }
-              return 0;
-            },
-          },
-          attributes: (cell) => {
-            if (cell === null) {
-              return undefined;
-            }
-            return {
-              style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
-            };
-          },
-        },
-        {
-          id: '6',
-          name: 'c',
-          formatter: (_, row) => gridjs.html(`${row.cells[6].data}<br><span style='color:gray'>(${row.cells[7].data})</span>`),
-          attributes: (cell) => {
-            if (cell === null) {
-              return {
-                colspan: '3',
-              };
-            }
-            return {
-              style: 'padding:  0px 5px 0px 0px; text-align: right; font-family: monospace',
-              colspan: '2',
-            };
-          },
-        },
-        {
-          id: '7',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        },
-        {
-          id: '8',
-          name: '',
-          sort: 0,
-          width: '1px',
-          attributes: {
-            style: 'display:none',
-          },
-        },
-      ],
+      columns: [...nameColumns, ...otherColumns],
       sort: true,
       search: true,
       pagination: {
@@ -383,6 +552,44 @@ function onSliderStart() {
   clearTimeout(updateFilterTimer);
 }
 
+function onViewSliderSet(values, handle, unencoded, tap, positions, slider, callback) {
+  if (!fumensDataRaw || !mainGrid) return;
+
+  site.saveView();
+  document.getElementById('wrapper').innerHTML = '';
+  mainGrid = undefined;
+  updateGrid(fumensDataRaw);
+  clearTimeout(updateFilterTimer);
+  updateFilterTimer = setTimeout(() => {
+    if (callback) {
+      callback();
+    }
+    updateGrid2(); // 1st filter
+  }, 1000);
+}
+
+function onViewOrderSliderSet(values, handle, unencoded, tap, positions, slider) {
+  onViewSliderSet(values, handle, unencoded, tap, positions, slider, () => {
+    // When the 'order' slider is moved, we need to update the display of the 'name' slider.
+    const skipSlider = document.getElementById('skipstep-name');
+    const currentView = JSON.parse(window.localStorage.getItem('view'));
+    const isNewOrder = currentView?.order === '1';
+
+    const newNameData = isNewOrder ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+    const oldNameData = isNewOrder ? otoge.NAME_DATA1 : otoge.NAME_DATA2;
+
+    const findKeyByValue = (obj, value) => Object.keys(obj).find((key) => obj[key] === value);
+
+    skipSlider.noUiSlider.updateOptions({
+      format: {
+        to: (key) => newNameData[Math.round(key)],
+        from: (value) => findKeyByValue(newNameData, value)
+          || findKeyByValue(oldNameData, value),
+      },
+    });
+  });
+}
+
 function onFilterSliderSet(values, handle, unencoded, tap, positions, slider, callback) {
   if (!fumensDataRaw || !mainGrid) return;
 
@@ -464,16 +671,49 @@ if (document.querySelector('h1.nologin') !== null) {
     updateGrid2();
   });
 
+  // accordion-item の 表示非表示処理
+  const nodelist = document.querySelectorAll('.accordion-item');
+  const btns = Array.prototype.slice.call(nodelist, 0);
+  btns.forEach((btn) => {
+    btn.addEventListener('click', (element) => {
+      const ITEM_ID = element.currentTarget.parentNode.id;
+      const elm = element.currentTarget.parentNode.querySelectorAll('.content')[0];
+      const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`)) ?? {};
+
+      if (elm.style.display !== 'none') {
+        elm.style.display = 'none';
+        showStatus[ITEM_ID] = '0';
+      } else {
+        elm.style.display = '';
+        showStatus[ITEM_ID] = '1';
+      }
+
+      window.localStorage.setItem(`${PAGE_NAME}.show`, JSON.stringify(showStatus));
+    });
+  });
+
   {
     // load filter
     const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
     document.getElementById(`btnradio${selectedFilter}`).parentNode.click();
+    const view = JSON.parse(window.localStorage.getItem('view'));
     const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`));
     const prevFilter = (prevFilters === null
       || !Object.prototype.hasOwnProperty.call(prevFilters, selectedFilter))
       ? null
       : prevFilters[selectedFilter];
 
+    const nameData = view?.order === '1' ? otoge.NAME_DATA2 : otoge.NAME_DATA1;
+
+    // view
+    site.CreateSkipSlider1('name', nameData, view?.name, onSliderStart, onViewSliderSet, 2);
+    site.CreateSkipSlider1('align', otoge.ALIGN_DATA, view?.align, onSliderStart, onViewSliderSet, 1);
+    site.CreateSkipSlider1('wrap', otoge.WRAP_DATA, view?.wrap, onSliderStart, onViewSliderSet, 0);
+    site.CreateSkipSlider1('break', otoge.BREAK_DATA, view?.break, onSliderStart, onViewSliderSet, 0);
+    site.CreateSkipSlider1('order', otoge.ORDER_DATA, view?.order, onSliderStart, onViewOrderSliderSet, 0);
+    site.CreateSkipSlider1('upper', otoge.UPPER_DATA, view?.upper, onSliderStart, onViewSliderSet, 1);
+
+    // filter
     site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
     site.CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, prevFilter?.target, onSliderStart, onFilterSliderSet, otoge.TARGET_MEDAL_DATA.length - 1);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet, 0, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
@@ -490,6 +730,23 @@ if (document.querySelector('h1.nologin') !== null) {
       updateGrid2();
     });
   });
+
+  // local storage からの読み込み処理
+  {
+    const showStatus = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.show`));
+    if (showStatus !== null) {
+      const nodelist2 = document.querySelectorAll('.accordion-item');
+
+      Array.from(nodelist2).map((a) => {
+        const { id } = a.parentNode;
+        // ls の結果から表示非表示初期対応
+        if (showStatus[id]) {
+          document.querySelector(`#${id} .content`).style.display = (showStatus[id] === '1') ? '' : 'none';
+        }
+        return undefined;
+      });
+    }
+  }
 
   initializing = false;
 }

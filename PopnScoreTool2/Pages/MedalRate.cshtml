@@ -5,9 +5,71 @@
 }
 <h1>@ViewData["Title"]</h1>
 <div class="text-center">
+    <div id="view">
+        <div class="accordion-item">
+            [View]
+        </div>
+        <div class="content" style="user-select:none; -webkit-user-select: none;">
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">name</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-name">
+                    </div>
+                </li>
+                <li style="width:20%;">
+                    <span id="name-text"></span>
+                </li>
+            </ul>
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">align</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-align">
+                    </div>
+                </li>
+                <li style="width:20%;">
+                    <span id="align-text"></span>
+                </li>
+            </ul>
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%;">
+                    <span id="wrap-text"></span>
+                </li>
+                <li style="width:22%; padding: 0px 20px">
+                    <div id="skipstep-wrap">
+                    </div>
+                </li>
+                <li style="width:10%;">
+                    <span id="break-text"></span>
+                </li>
+                <li style="width:22%; padding: 0px 20px">
+                    <div id="skipstep-break">
+                    </div>
+                </li>
+                <li style="width:10%;">
+                    <span id="order-text"></span>
+                </li>
+                <li style="width:22%; padding: 0px 20px">
+                    <div id="skipstep-order">
+                    </div>
+                </li>
+            </ul>
+            <ul style="display:flex; list-style: none; padding: 0px;">
+                <li style="width:10%">upper</li>
+                <li style="width:70%; padding: 0px 20px">
+                    <div id="skipstep-upper">
+                    </div>
+                </li>
+                <li style="width:20%;">
+                    <span id="upper-text"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="content" style="display: none">
+        </div>
+    </div>
     <div id="filter">
-        <div class="item">
-            Filter
+        <div class="accordion-item">
+            [Filter]
         </div>
         <div class="content" style="user-select:none; -webkit-user-select: none;">
             <ul style="display:flex; list-style: none; padding: 0px;">
