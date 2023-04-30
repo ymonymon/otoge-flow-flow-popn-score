@@ -119,10 +119,12 @@ export const CreateSkipSlider2 = (
   onStart,
   onSet,
   margin = 0,
+  defaultPosUpper = undefined,
   updateFn = undefined,
 ) => {
   const skipSlider = document.getElementById(`skipstep-${id}`);
-  const defaultPos = [dataObject[0], dataObject[dataObject.length - 1]];
+  const defaultPos = [dataObject[0],
+    defaultPosUpper === undefined ? dataObject[dataObject.length - 1] : defaultPosUpper];
   const startPos = (prevKeys !== null && prevKeys !== undefined
     && prevKeys.length === 2)
     ? [dataObject[prevKeys[0]], dataObject[prevKeys[1]]]

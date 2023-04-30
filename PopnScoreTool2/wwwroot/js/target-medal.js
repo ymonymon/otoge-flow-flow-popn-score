@@ -379,163 +379,21 @@ function updateGrid2() {
   updateGrid(filteredData);
 }
 
-function CreateSkipSlider1(
-  id,
-  dataObject,
-  defaultKey,
-  prevKey,
-  isView,
-  fn,
-) {
-  const skipSlider = document.getElementById(`skipstep-${id}`);
-  const defaultPos = dataObject[defaultKey];
-  const startPos = (prevKey !== null && prevKey !== undefined)
-    ? dataObject[prevKey]
-    : defaultPos;
-
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: dataObject.length - 1,
-    },
-    start: startPos,
-    default: defaultPos,
-    matchingTable: dataObject,
-    step: 1,
-    tooltips: true,
-    format: {
-      to: (key) => dataObject[Math.round(key)],
-      from: (value) => Object.keys(dataObject).filter(
-        (key) => dataObject[key] === value,
-      )[0],
-    },
-  });
-
-  const skipValues = [
-    document.getElementById(`${id}-text`),
-  ];
-
-  skipSlider.noUiSlider.on('update', (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
-  });
-
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
-
-  skipSlider.noUiSlider.on('set', () => {
-    if (isView) {
-      if (fumensDataRaw !== undefined && mainGrid !== undefined) {
-        site.saveView();
-        document.getElementById('wrapper').innerHTML = '';
-        mainGrid = undefined;
-        updateGrid(fumensDataRaw);
-        clearTimeout(updateFilterTimer);
-        updateFilterTimer = setTimeout(() => {
-          updateGrid2(); // 1st filter
-          if (fn) {
-            fn();
-          }
-        }, 1000);
-      }
-    } else if (fumensDataRaw !== undefined && mainGrid !== undefined) {
-      saveFilterAndSort();
-      clearTimeout(updateFilterTimer);
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-        if (fn) {
-          fn();
-        }
-      }, 1000);
-    }
-  });
+function onSliderStart() {
+  clearTimeout(updateFilterTimer);
 }
 
-function CreateSkipSlider2(
-  id,
-  dataObject,
-  prevKeys,
-  defaultPosUpper = undefined,
-  margin = 0,
-  updateFn = undefined,
-) {
-  const skipSlider = document.getElementById(`skipstep-${id}`);
-  const defaultPos = [dataObject[0],
-    defaultPosUpper === undefined ? dataObject[dataObject.length - 1] : defaultPosUpper];
-  const startPos = (prevKeys !== null && prevKeys !== undefined
-    && prevKeys.length === 2)
-    ? [dataObject[prevKeys[0]], dataObject[prevKeys[1]]]
-    : defaultPos;
+function onFilterSliderSet(values, handle, unencoded, tap, positions, slider, callback) {
+  if (!fumensDataRaw || !mainGrid) return;
 
-  noUiSlider.create(skipSlider, {
-    range: {
-      min: 0,
-      max: dataObject.length - 1,
-    },
-    connect: true,
-    start: startPos,
-    default: defaultPos,
-    matchingTable: dataObject,
-    step: 1,
-    margin,
-    tooltips: [true, true],
-    format: {
-      to: (key) => dataObject[Math.round(key)],
-      from: (value) => Object.keys(dataObject).filter(
-        (key) => dataObject[key] === value,
-      )[0],
-    },
-  });
-
-  const skipValues = [
-    document.getElementById(`${id}-lower`),
-    document.getElementById(`${id}-upper`),
-    document.getElementById(`${id}-hyphen`),
-    document.getElementById(`${id}-same`),
-  ];
-
-  skipSlider.noUiSlider.on('update', updateFn !== undefined ? updateFn : (values, handle) => {
-    skipValues[handle].innerHTML = values[handle];
-
-    const firstDataValue = dataObject[0];
-    const lastDataValue = dataObject[dataObject.length - 1];
-
-    if (skipValues[0].innerHTML === skipValues[1].innerHTML) {
-      skipValues[3].innerHTML = values[handle];
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else if ((skipValues[0].innerText === firstDataValue
-                || skipValues[0].innerHTML === firstDataValue)
-                && (skipValues[1].innerText === lastDataValue
-                    || skipValues[1].innerHTML === lastDataValue)) {
-      skipValues[3].innerHTML = 'ALL';
-      skipValues[0].style.display = 'none';
-      skipValues[1].style.display = 'none';
-      skipValues[2].style.display = 'none';
-      skipValues[3].style.display = 'inline';
-    } else {
-      skipValues[0].style.display = 'inline';
-      skipValues[1].style.display = 'inline';
-      skipValues[2].style.display = 'inline';
-      skipValues[3].style.display = 'none';
+  saveFilterAndSort();
+  clearTimeout(updateFilterTimer);
+  updateFilterTimer = setTimeout(() => {
+    updateGrid2();
+    if (callback) {
+      callback();
     }
-  });
-
-  skipSlider.noUiSlider.on('start', () => {
-    clearTimeout(updateFilterTimer);
-  });
-
-  skipSlider.noUiSlider.on('set', () => {
-    if (fumensDataRaw !== undefined && mainGrid !== undefined) {
-      saveFilterAndSort();
-      clearTimeout(updateFilterTimer);
-      updateFilterTimer = setTimeout(() => {
-        updateGrid2();
-      }, 1000);
-    }
-  });
+  }, 1000);
 }
 
 if (document.querySelector('h1.nologin') !== null) {
@@ -616,12 +474,12 @@ if (document.querySelector('h1.nologin') !== null) {
       ? null
       : prevFilters[selectedFilter];
 
-    CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, false);
-    CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, otoge.TARGET_MEDAL_DATA.length - 1, prevFilter?.target, false);
-    CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
-    CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank);
-    CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv);
-    CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, 0, prevFilter?.version, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, otoge.TARGET_MEDAL_DATA.length - 1, prevFilter?.target, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet, 0, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
+    site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
   }
 
   $.getJSON('/api/medalrate', (medalRateData) => {
