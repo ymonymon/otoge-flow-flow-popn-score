@@ -397,7 +397,7 @@ ${(view?.upper === '4' && row.cells[upperIndex].data) ? `<span style="padding-le
         };
       }
       return {
-        style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right`,
+        style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right; font-family: monospace;`,
         colspan: '2',
       };
     },

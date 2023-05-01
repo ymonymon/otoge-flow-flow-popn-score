@@ -509,7 +509,7 @@ const updateGrid = (data) => {
           };
         }
         return {
-          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right`,
+          style: `background-color:${otoge.LV_TYPE_BACK_COLOR[row.cells[2].data]}; padding:0ch 0.5ch; text-align: right; font-family: monospace;`,
           colspan: '2',
         };
       },
@@ -594,7 +594,7 @@ const updateGrid = (data) => {
       id: '8',
       // important!
       name: gridjs.html('target<br>%'),
-      width: '4ch',
+      width: '5ch',
       formatter: (_, row) => (Number.isFinite(row.cells[8].data)
         ? row.cells[8].data.toFixed(2) : row.cells[8].data),
       sort: {
