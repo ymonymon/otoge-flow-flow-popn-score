@@ -42,7 +42,8 @@ SELECT ${columnOrder}, -- t/g
 TBL1.[3] AS [2], TBL1.[4] AS [3], -- lv-type/lv
 TBL3.[1] AS [4], -- medal
 TBL3.[2] AS [5], -- rank
-CASE WHEN TBL3.[3] = -2 THEN 0 ELSE TBL3.[3] END AS [6], -- score
+TBL3.[3] AS [6], -- score
+-- CASE WHEN TBL3.[3] = -2 THEN 0 ELSE TBL3.[3] END AS [6], -- score
 TBL1.[5] AS [7], -- version
 TBL2.[1] AS [8], 
 TBL2.[2] AS [9], 
@@ -545,7 +546,7 @@ const updateGrid = (data) => {
       id: '6',
       name: 'score',
       width: '5ch',
-      formatter: (_, row) => row.cells[6].data,
+      formatter: (_, row) => (row.cells[6].data === -2 ? '-' : row.cells[6].data),
       attributes: (cell) => {
         if (cell === null) {
           return undefined;
