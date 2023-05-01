@@ -161,7 +161,7 @@ const updateGrid = (data) => {
     const br = (view?.break !== '1') ? '<br />' : ' ';
 
     // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
-    const upperIndex = 11;
+    const upperIndex = 12;
 
     let nameColumns = [];
 

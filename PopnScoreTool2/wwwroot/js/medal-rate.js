@@ -454,7 +454,16 @@ const updateGrid = (data) => {
       },
     },
     {
-      id: '0',
+      id: '12',
+      name: '',
+      sort: 0,
+      width: '1px',
+      attributes: {
+        style: 'display:none',
+      },
+    },
+    {
+      id: '13',
       name: '',
       sort: 0,
       width: '1px',
