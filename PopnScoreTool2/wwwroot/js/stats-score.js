@@ -832,7 +832,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
     // filter
     site.CreateSkipSlider1('stats', otoge.STATS_DATA, prevFilter?.stats, onSliderStart, onFilterSliderSet, 0);
-    site.CreateSkipSlider2('diff', otoge.DIFF_DATA, prevFilter?.diff, onSliderStart, onFilterSliderSet, -1);
+    site.CreateSkipSlider2('diff', otoge.DIFF_DATA, prevFilter?.diff, onSliderStart, onFilterSliderSet, 0, -1);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, '100k', onFilterScoreSliderUpdate);
