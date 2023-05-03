@@ -368,3 +368,5 @@ FodyWeavers.xsd
 *.user.bat
 /*.code-workspace
 /.vscode
+/PopnScoreTool2/.parcel-cache
+/PopnScoreTool2/wwwroot/js

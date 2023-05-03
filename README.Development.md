@@ -15,6 +15,7 @@
 - Windows 10 (21H1)
 - Microsoft Visual Studio Community 2022 Version 17.5.4
   - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0 -> .NET 7.0）
+  - Node.js 開発
   - .NET デスクトップ開発
 - Microsoft Visual Studio Code 1.77.3
   - markdown書き。
@@ -29,6 +30,8 @@
 - PowerShell 7.3.4
 - Hosts File Manager 2.0.327.0
 - Discord WebHook
+- Node.js LTS 64bit 18.16.0 (同梱 npm 9.5.1)
+  BuildSystem(Parcel)
 
 ### code cleanup
 
@@ -67,7 +70,8 @@
 
 ## DEBUG構成
 
-- Windows 上の Docker Desktop で確認。一部デバッグは他の構成を使用する事があり。（現在他の構成のプロファイルは全削除）
+- Visual Studio の docker-compose の構成で実行している。
+  - js などのリソースのbuildはnpm run devで更新。（hot reload 未使用）
 
 ### DB
 
@@ -77,7 +81,3 @@
 - プラットフォーム - Linux
 - バージョン - 15.0.4123.1 -> 15.0.4153.1
 - 言語 - 日本語
-
-## 運用環境
-
-- WinSCP

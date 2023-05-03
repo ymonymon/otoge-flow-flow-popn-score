@@ -14,7 +14,7 @@
     "prettier": "^2.6.2"
   },
   "scripts": {
-    "build": "parcel build src/js/*.js --dist-dir ./wwwroot/js --production",
+    "build": "parcel build src/js/*.js --dist-dir ./wwwroot/js",
     "dev": "parcel build src/js/*.js --dist-dir ./wwwroot/js --no-optimize",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
