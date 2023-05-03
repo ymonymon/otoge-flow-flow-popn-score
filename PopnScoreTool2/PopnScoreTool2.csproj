@@ -10,6 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="src\js\.eslintrc" />
+    <Content Include="src\js\m\const_m.js" />
+    <Content Include="src\js\index.js" />
+    <Content Include="src\js\medal-rate.js" />
+    <Content Include="src\js\score-rate.js" />
+    <Content Include="src\js\m\site_m.js" />
+    <Content Include="src\js\stats-score.js" />
+    <Content Include="src\js\target-medal.js" />
+    <Content Include="src\js\target-score.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
@@ -28,6 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\nouislider\" />
   </ItemGroup>
 

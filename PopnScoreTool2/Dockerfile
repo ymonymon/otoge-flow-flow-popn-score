@@ -9,10 +9,18 @@ EXPOSE 5101
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+
+#RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+RUN node --version
+
 COPY ["PopnScoreTool2.csproj", "PopnScoreTool2/"]
 RUN dotnet restore "PopnScoreTool2/PopnScoreTool2.csproj"
 COPY . PopnScoreTool2/
 WORKDIR "/src/PopnScoreTool2"
+RUN npm install
+RUN npm run build
 RUN dotnet build "PopnScoreTool2.csproj" -c Release -o /app/build
 
 FROM build AS publish

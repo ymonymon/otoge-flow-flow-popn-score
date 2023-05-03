@@ -1,5 +1,5 @@
-import * as site from './site_m.js';
-import * as otoge from './const_m.js';
+import * as site from './m/site_m.js';
+import * as otoge from './m/const_m.js';
 
 const PAGE_NAME = 'statsScore';
 
