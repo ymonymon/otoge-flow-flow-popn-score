@@ -31,7 +31,7 @@
 - Hosts File Manager 2.0.327.0
 - Discord WebHook
 - Node.js LTS 64bit 18.16.0 (同梱 npm 9.5.1)
-  BuildSystem(Parcel)
+    Module Bundler - Parcel
 
 ### code cleanup
 
