@@ -1,0 +1,31 @@
+﻿@page
+@model PopnScoreTool2.Pages.TwitterAuthenticationErrorModel
+@{
+    ViewData["Title"] = "Twitter Authentication Error";
+}
+
+<h1 class="text-danger">Error.</h1>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<p>
+    Twitter側の認証エラーが発生しました。Twitterアカウントを利用したログインが出来ません。<a href="https://twitter.com/otoge_flow_flow" target="_blank">@@otoge_flow_flow</a>にリプライかDMでお知らせください。
+</p>
+<p>
+    An authentication error has occurred on the Twitter side. Login using Twitter account is not available. Please notify <a href="https://twitter.com/otoge_flow_flow" target="_blank">@@otoge_flow_flow</a> via reply or direct message.
+</p>
+<p>
+    发生了Twitter方面的认证错误。无法使用Twitter账户登录。请通过回复或私信<a href="https://twitter.com/otoge_flow_flow" target="_blank">@@otoge_flow_flow</a>告诉我们。
+</p>
+<p>
+    Twitter 측에서 인증 오류가 발생했습니다. Twitter 계정을 사용한 로그인이 불가능합니다. <a href="https://twitter.com/otoge_flow_flow" target="_blank">@@otoge_flow_flow</a>에게 답글이나 DM으로 알려주세요.
+</p>
+<p>
+    🐦❌🔒🚫💻🚫<a href="https://twitter.com/otoge_flow_flow" target="_blank">@@otoge_flow_flow</a>🐦💬💌📣🙏
+</p>

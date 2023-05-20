@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,10 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using PopnScoreTool2.Authentication.Twitter;
 using PopnScoreTool2.Data;
 
 namespace PopnScoreTool2
@@ -51,12 +55,15 @@ namespace PopnScoreTool2
                 .AddEntityFrameworkStores<AppDbContext>();
             _ = services.AddRazorPages();
 
-            _ = services.AddAuthentication().AddTwitter(twitterOptions =>
-            {
-                twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
-                twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                twitterOptions.RetrieveUserDetails = true;
-            });
+            var builder = services.AddAuthentication();
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>());         
+            builder.AddRemoteScheme<TwitterOptions, CustomTwitterHandler>(TwitterDefaults.AuthenticationScheme, TwitterDefaults.DisplayName, twitterOptions =>
+                {
+                    twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
+                    twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    twitterOptions.RetrieveUserDetails = true;
+                });
+
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
