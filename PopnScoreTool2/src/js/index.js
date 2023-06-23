@@ -953,7 +953,15 @@ if (document.querySelector('h1.nologin') !== null) {
     document.getElementById('popnFriendId').innerHTML = popnFriendId;
     document.getElementById('creditsCount').innerHTML = `${c1} / ${c2} / ${c3}`;
     document.getElementById('comment').innerHTML = comment;
-    document.getElementById('lastUpdate').innerHTML = lastUpdate;
+    const date = new Date(lastUpdate);
+
+    const formattedDateTime = `${date.getFullYear()}/${
+      (`0${date.getMonth() + 1}`).slice(-2)}/${
+      (`0${date.getDate()}`).slice(-2)} ${
+      (`0${date.getHours()}`).slice(-2)}:${
+      (`0${date.getMinutes()}`).slice(-2)}:${
+      (`0${date.getSeconds()}`).slice(-2)}`;
+    document.getElementById('lastUpdate').innerHTML = formattedDateTime;
     $('div#profile').show();
   }).fail((jqXHR) => {
     if (jqXHR.status === 404) {
