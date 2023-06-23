@@ -292,8 +292,15 @@ const updateGrid = (data) => {
         id: '0',
         name: name1,
         formatter: (_, row) => {
-          const cell0Data = row.cells[0].data;
-          const cell1Data = row.cells[1].data;
+          let cell0Data = row.cells[0].data;
+          let cell1Data = row.cells[1].data;
+          if (cell0Data.replace(/UPPER$/, '') === cell1Data.replace(/UPPER$/, '') && cell0Data !== cell1Data) {
+            if (cell1Data.length < cell0Data.length) {
+              cell1Data = cell0Data;
+            } else {
+              cell0Data = cell1Data;
+            }
+          }
           const displayData = `${cell0Data}${cell0Data === cell1Data ? '' : br + cell1Data}`;
           return gridjs.html(`
 <div style="${containerStyle}">
