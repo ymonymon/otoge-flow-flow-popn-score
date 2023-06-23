@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -48,6 +49,9 @@ namespace PopnScoreTool2
                 _ = options.UseSqlServer(connectionStringBuilder.ConnectionString);
             });
 
+            _ = services.AddDataProtection()
+                .PersistKeysToDbContext<AppDbContext>();
+
             _ = services.AddHealthChecks()
                 .AddDbContextCheck<AppDbContext>("database");
 
@@ -93,6 +97,7 @@ namespace PopnScoreTool2
                     await next();
                 }
             });
+
 
             _ = app.UseHttpsRedirection();
 

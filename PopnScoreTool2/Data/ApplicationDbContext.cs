@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using PopnScoreTool2.Models;
 
 namespace PopnScoreTool2.Data
 {
-    public class AppDbContext : IdentityDbContext
+    public class AppDbContext : IdentityDbContext, IDataProtectionKeyContext
     {
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
         public DbSet<UserInt> UserInts { get; set; }
 
         public DbSet<MusicScoreBasis> Musics { get; set; }
