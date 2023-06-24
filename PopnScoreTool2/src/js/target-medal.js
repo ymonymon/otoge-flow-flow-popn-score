@@ -96,10 +96,10 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
 
     if (count[1] === otoge.COUNT_DATA.length - 1) {
       // ～∞
-      sql += ' ? <= [11]';
+      sql += ' ? <= [12]';
       arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
     } else {
-      sql += ' ? <= [11] AND [11] <= ?';
+      sql += ' ? <= [12] AND [12] <= ?';
       arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
         otoge.COUNT_DATA_R[count[1]]]);
     }
