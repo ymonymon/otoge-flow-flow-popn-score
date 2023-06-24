@@ -90,23 +90,16 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
   }
-  if (targetPercent[0] !== 0
-    || targetPercent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
-    sql += (arg.length === 1) ? ' WHERE' : ' AND';
-    sql += ' ? <= [11] AND [11] <= ?';
-    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[targetPercent[0]],
-      otoge.TARGET_PERCENT_DATA_R[targetPercent[1]]]);
-  }
   if (count[0] !== 0
     || count[1] !== otoge.COUNT_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
 
     if (count[1] === otoge.COUNT_DATA.length - 1) {
       // ～∞
-      sql += ' ? <= [12]';
+      sql += ' ? <= [11]';
       arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
     } else {
-      sql += ' ? <= [12] AND [12] <= ?';
+      sql += ' ? <= [11] AND [11] <= ?';
       arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
         otoge.COUNT_DATA_R[count[1]]]);
     }
@@ -138,11 +131,20 @@ CASE WHEN TBL1.[4] < 10 THEN TBL1.[${otoge.TARGET_MEDAL_DATA_R[target[0]] + 1}]
 ELSE 'score' END,
 TBL1.[12], TBL1.[13], TBL1.[15], TBL1.[16]
 FROM ? AS TBL1`;
+
     res3 = alasql(test, [res2]);
   }
 
   sql = 'MATRIX OF SELECT * FROM ?';
   arg = [res3];
+
+  if (targetPercent[0] !== 0
+    || targetPercent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [5] AND [5] <= ?';
+    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[targetPercent[0]],
+      otoge.TARGET_PERCENT_DATA_R[targetPercent[1]]]);
+  }
 
   const result = alasql(sql, arg);
 
