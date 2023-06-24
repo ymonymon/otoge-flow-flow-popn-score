@@ -4,8 +4,8 @@ import * as otoge from './m/const_m.js';
 const PAGE_NAME = 'targetMedal';
 
 let mainGrid;
-let medalRateDataRaw;
 let fumensDataRaw;
+let medalRateDataRaw;
 let targetMedalKey;
 
 let updateFilterTimer;
@@ -15,7 +15,18 @@ let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (version, target, medal, rank, lv, lvType, order, upper) => {
+const fumenFilter = (
+  target,
+  medal,
+  rank,
+  version,
+  lv,
+  lvType,
+  targetPercent,
+  count,
+  order,
+  upper,
+) => {
   const column0 = (upper === '0' || upper === '2') ? 'CONCAT(TBL1.[1], TBL1.[6]) AS [0]' : 'TBL1.[1] AS [0]';
   const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT(TBL1.[2], TBL1.[6]) AS [1]' : 'TBL1.[2] AS [1]';
 
@@ -78,6 +89,27 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
+  }
+  if (targetPercent[0] !== 0
+    || targetPercent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [11] AND [11] <= ?';
+    arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[targetPercent[0]],
+      otoge.TARGET_PERCENT_DATA_R[targetPercent[1]]]);
+  }
+  if (count[0] !== 0
+    || count[1] !== otoge.COUNT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+
+    if (count[1] === otoge.COUNT_DATA.length - 1) {
+      // ～∞
+      sql += ' ? <= [12]';
+      arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
+    } else {
+      sql += ' ? <= [12] AND [12] <= ?';
+      arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
+        otoge.COUNT_DATA_R[count[1]]]);
+    }
   }
 
   const res2 = alasql(sql, arg);
@@ -548,12 +580,14 @@ const updateGrid = (data) => {
 };
 
 function saveFilterAndSort() {
-  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
   const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
   const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
+  const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   // save filter & sort
   const sortStatus = site.getCurrentSortStatus();
@@ -561,12 +595,14 @@ function saveFilterAndSort() {
   const selectedFilter = window.localStorage.getItem(`${PAGE_NAME}.selectedFilter`) ?? '0';
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
-    version: keyVersion,
     target: keyTarget,
     medal: [keyMedal1, keyMedal2],
     rank: [keyRank1, keyRank2],
+    version: keyVersion,
     lv: [keyLv1, keyLv2],
     lv_type: [keyLvType1, keyLvType2],
+    target_percent: keyTargetPercent,
+    count: keyCount,
     sort: sortStatus,
   };
 
@@ -580,6 +616,8 @@ function updateGrid2() {
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   const order = JSON.parse(window.localStorage.getItem('view'))?.order;
   const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
@@ -588,12 +626,14 @@ function updateGrid2() {
   targetMedalKey = keyTarget;
 
   const filteredData = fumenFilter(
-    [keyVersion].map(Number),
     [keyTarget].map(Number),
     [keyMedal1, keyMedal2].map(Number),
     [keyRank1, keyRank2].map(Number),
+    [keyVersion].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
+    keyTargetPercent.map(Number),
+    keyCount.map(Number),
     order,
     upper,
   );
@@ -720,7 +760,6 @@ if (document.querySelector('h1.nologin') !== null) {
         }
       }
     }
-
     updateGrid2();
   });
 
@@ -767,12 +806,14 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider1('upper', otoge.UPPER_DATA, view?.upper, onSliderStart, onViewSliderSet, 1);
 
     // filter
-    site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
     site.CreateSkipSlider1('target', otoge.TARGET_MEDAL_DATA, prevFilter?.target, onSliderStart, onFilterSliderSet, otoge.TARGET_MEDAL_DATA.length - 1);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet, 0, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1);
+    site.CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, onSliderStart, onFilterSliderSet, 1);
   }
 
   $.getJSON('/api/medalrate', (medalRateData) => {
