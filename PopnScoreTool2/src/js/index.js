@@ -346,8 +346,8 @@ const updateGrid = (data) => {
         if (cell === null) {
           return undefined;
         }
-        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" class="suppress-long-press">`
-                            + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18" class="suppress-long-press">`);
+        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}\t" width="18" height="18" class="suppress-long-press">`
+          + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18" class="suppress-long-press">`);
       },
       attributes: (cell) => {
         if (cell === null) {

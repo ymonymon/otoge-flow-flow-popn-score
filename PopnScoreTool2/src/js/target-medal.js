@@ -440,10 +440,10 @@ const updateGrid = (data) => {
           }
         }
 
-        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" class="suppress-long-press">`
-                          + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}" width="18" height="18" class="suppress-long-press">`
-                          + `→${(nextMedal > 10) ? ('score')
-                            : (`<img src="/icon/medal_${nextMedal}.png" alt="${nextMedal}" width="18" height="18" class="suppress-long-press">`)}`);
+        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}\t" width="18" height="18" class="suppress-long-press">`
+          + `<img src="/icon/rank_${row.cells[8].data}.png" alt="${row.cells[8].data}\t" width="18" height="18" class="suppress-long-press">`
+          + `→${(nextMedal > 10) ? ('score')
+            : (`<img src="/icon/medal_${nextMedal}.png" alt="${nextMedal}" width="18" height="18" class="suppress-long-press">`)}`);
       },
       attributes: {
         style: 'padding: 0.5ch; text-align: right; width: 6ch;',
