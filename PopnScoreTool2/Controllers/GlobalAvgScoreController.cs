@@ -23,40 +23,19 @@ namespace PopnScoreTool2.Controllers
         public async Task<ActionResult<object[]>> GetValues()
         {
             // ログイン不要API。
-            /*
-            var item = await _context.Musics.Where(w => w.Deleted == false)
-                .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
-                .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
-                // != 0 重要
-                .GroupJoin(_context.MusicScores.Where(w => w.Score != 0).GroupBy(g => g.FumenId).Select(h => new {
-                    FumenId = h.Key,
-                    PlayerCount = h.Count(),
-                    AverageScore = h.Average(i => i.Score),
-                }), c => c.a.a.Id, d => d.FumenId, (c, d) => new { c, d })
-                .SelectMany(cd => cd.d.DefaultIfEmpty(), (c, d) => new
-                {
-                    c.c.a.a.Id,
-                    PlayerCount = (c.c.b == null ? 0 : c.c.b.PlayerCount) + (d == null ? 0 : d.PlayerCount),
-                    AverageScore = Math.Round(
-                        
-                        ((c.c.b == null ? 0 : c.c.b.AverageScore * c.c.b.PlayerCount) +
-                        (d == null ? 0 : d.AverageScore * d.PlayerCount)) /
-                    (((c.c.b == null ? 0 : c.c.b.PlayerCount) +
-                    (d == null ? 0 : d.PlayerCount) == 0) ?
-                    1 :
-                    ((c.c.b == null ? 0 : c.c.b.PlayerCount) + (d == null ? 0 : d.PlayerCount))
-                    
-                    ), 0),
-                    PlayerCountNow = (d == null ? 0 : d.PlayerCount),
-                })
-                .Select(a => new object[] { a.Id, a.PlayerCount, a.AverageScore, a.PlayerCountNow })
-                .ToArrayAsync();
-            */
+
+            var userIntIdsQuery = _context.Profiles
+                .GroupBy(p => p.PopnFriendId)
+                .Select(g => g.OrderByDescending(p => p.LastUpdateTime).FirstOrDefault().UserIntId);
+
+            var musicScoresQuery = _context.MusicScores
+                .Where(ms => userIntIdsQuery.Contains(ms.UserIntId));
+
             return await _context.Musics.Where(w => w.Deleted == false)
                 .GroupJoin(_context.OldStatses, a => a.Id, b => b.FumenId, (a, b) => new { a, b })
                 .SelectMany(ab => ab.b.DefaultIfEmpty(), (a, b) => new { a, b })
                 // != 0 重要
-                .GroupJoin(_context.MusicScores.Where(w => w.Score != 0).GroupBy(g => g.FumenId).Select(h => new
+                .GroupJoin(musicScoresQuery.Where(w => w.Score != 0).GroupBy(g => g.FumenId).Select(h => new
                 {
                     FumenId = (int?)h.Key,
                     PlayerCount = (int?)h.Count(),
