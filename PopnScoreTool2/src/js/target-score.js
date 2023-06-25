@@ -336,7 +336,7 @@ const updateGrid = (data) => {
     const name1 = view?.order === '1' ? 'genre' : 'title';
     const name2 = view?.order === '1' ? 'title' : 'genre';
 
-    const br = (view?.break !== '1') ? '<br />' : ' ';
+    const br = (view?.break !== '1') ? '<br>' : ' ';
 
     // const Upper = (view?.upper === '3' || view?.upper === '4') ? 'UPPER' : '';
     const upperIndex = 11;
