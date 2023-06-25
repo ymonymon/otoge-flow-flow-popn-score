@@ -15,7 +15,7 @@ namespace PopnScoreTool2.Models
         public string PlayerName { get; set; }
 
         [Required]
-        public string PopnFrendId { get; set; }
+        public string PopnFriendId { get; set; }
 
         [Required]
         public string UseCharacterName { get; set; }
@@ -51,7 +51,7 @@ namespace PopnScoreTool2.Models
         public int BrowsingSettingProfile { get; set; }
 
         [Required]
-        public int BrowsingSettingProfilePopnFrendId { get; set; }
+        public int BrowsingSettingProfilePopnFriendId { get; set; }
 
         [Required]
         public int BrowsingSettingProfileActivitiyTime { get; set; }
@@ -72,7 +72,7 @@ namespace PopnScoreTool2.Models
             Comment = string.Empty;
             LastUpdateTime = DateTime.Now;
             BrowsingSettingProfile = 0;
-            BrowsingSettingProfilePopnFrendId = 0;
+            BrowsingSettingProfilePopnFriendId = 0;
             BrowsingSettingProfileActivitiyTime = 0;
             BrowsingSettingScore = 0;
         }
@@ -83,7 +83,7 @@ namespace PopnScoreTool2.Models
             {
                 // TODO : サニタイズ
                 PlayerName = profile[0];
-                PopnFrendId = profile[1];
+                PopnFriendId = profile[1];
                 UseCharacterName = profile[2];
                 NormalModeCreditCount = int.Parse(profile[3]);
                 BattleModeCreditCount = int.Parse(profile[4]);
@@ -103,7 +103,7 @@ namespace PopnScoreTool2.Models
         {
             return
                 profileA.PlayerName == profileB.PlayerName &&
-                profileA.PopnFrendId == profileB.PopnFrendId &&
+                profileA.PopnFriendId == profileB.PopnFriendId &&
                 profileA.UseCharacterName == profileB.UseCharacterName &&
                 profileA.NormalModeCreditCount == profileB.NormalModeCreditCount &&
                 profileA.BattleModeCreditCount == profileB.BattleModeCreditCount &&
@@ -114,7 +114,7 @@ namespace PopnScoreTool2.Models
         public void ApplyUploadedData(Profile uploadProfile)
         {
             PlayerName = uploadProfile.PlayerName;
-            PopnFrendId = uploadProfile.PopnFrendId;
+            PopnFriendId = uploadProfile.PopnFriendId;
             UseCharacterName = uploadProfile.UseCharacterName;
             NormalModeCreditCount = uploadProfile.NormalModeCreditCount;
             BattleModeCreditCount = uploadProfile.BattleModeCreditCount;
