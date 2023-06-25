@@ -346,8 +346,8 @@ const updateGrid = (data) => {
         if (cell === null) {
           return undefined;
         }
-        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                            + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`);
+        return gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" class="suppress-long-press">`
+                            + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18" class="suppress-long-press">`);
       },
       attributes: (cell) => {
         if (cell === null) {
@@ -561,7 +561,7 @@ function updateStats() {
         {
           id: '0',
           name: '',
-          formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`),
+          formatter: (_, row) => gridjs.html(!Number.isInteger(row.cells[0].data) ? row.cells[0].data : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18" class="suppress-long-press">`),
           attributes: {
             style: 'padding: 0px; text-align: center',
           },
@@ -709,7 +709,7 @@ ELSE '-2' END`, [targetData]);
           name: 'medal',
           formatter: (_, row) => gridjs.html(
             !Number.isInteger(row.cells[0].data) ? row.cells[0].data
-              : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18">`,
+              : `<img src="/icon/medal_${row.cells[0].data}.png" alt="${row.cells[0].data}" width="18" height="18" class="suppress-long-press">`,
           ),
           attributes: {
             style: 'padding: 0px; text-align: center',
@@ -724,7 +724,7 @@ ELSE '-2' END`, [targetData]);
           name: 'rank',
           formatter: (_, row) => gridjs.html(
             !Number.isInteger(row.cells[2].data) ? row.cells[2].data
-              : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18">`,
+              : `<img src="/icon/rank_${row.cells[2].data}.png" alt="${row.cells[2].data}" width="18" height="18" class="suppress-long-press">`,
           ),
           attributes: {
             style: 'padding: 0px; text-align: center',
@@ -743,7 +743,7 @@ ELSE '-2' END`, [targetData]);
             }
 
             return (row.cells[4].data === '-2'
-              ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18">') : row.cells[4].data);
+              ? gridjs.html('<img src="/icon/rank_-2.png" alt="-2" width="18" height="18" class="suppress-long-press">') : row.cells[4].data);
           },
           attributes: {
             style: 'padding: 0px; text-align: center',
@@ -868,9 +868,9 @@ function onFilterScoreSliderUpdate(values, handle) {
     skipValues[1].style.display = 'inline';
     skipValues[2].style.display = 'inline';
     if (values[1] === lastDataValue) {
-      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed" width="20" height="10" class="suppress-long-press">';
     } else {
-      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed" width="20" height="10" class="suppress-long-press">';
     }
     skipValues[3].style.display = 'none';
   }

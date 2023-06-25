@@ -538,8 +538,8 @@ const updateGrid = (data) => {
     {
       id: '5',
       name: 'r',
-      formatter: (_, row) => gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" />`
-                          + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18">`),
+      formatter: (_, row) => gridjs.html(`<img src="/icon/medal_${row.cells[4].data}.png" alt="${row.cells[4].data}" width="18" height="18" class="suppress-long-press">`
+        + `<img src="/icon/rank_${row.cells[5].data}.png" alt="${row.cells[5].data}" width="18" height="18" class="suppress-long-press">`),
       attributes: (cell) => {
         if (cell === null) {
           return undefined;
@@ -890,9 +890,9 @@ function onFilterScoreSliderUpdate(values, handle) {
     skipValues[1].style.display = 'inline';
     skipValues[2].style.display = 'inline';
     if (values[1] === lastDataValue) {
-      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed"  width="20" height="10"/>';
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed" width="20" height="10" class="suppress-long-press">';
     } else {
-      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed"  width="20" height="10"/>';
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed" width="20" height="10" class="suppress-long-press">';
     }
     skipValues[3].style.display = 'none';
   }

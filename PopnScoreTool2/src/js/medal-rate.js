@@ -347,7 +347,7 @@ const updateGrid = (data) => {
     },
     {
       id: '4',
-      name: gridjs.html('<img src="/icon/medal_4.png" alt="4" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_4.png" alt="4" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[4].data.toFixed(2),
       attributes: (cell) => {
@@ -361,7 +361,7 @@ const updateGrid = (data) => {
     },
     {
       id: '5',
-      name: gridjs.html('<img src="/icon/medal_5.png" alt="5" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_5.png" alt="5" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[5].data.toFixed(2),
       attributes: (cell) => {
@@ -375,7 +375,7 @@ const updateGrid = (data) => {
     },
     {
       id: '6',
-      name: gridjs.html('<img src="/icon/medal_6.png" alt="6" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_6.png" alt="6" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[6].data.toFixed(2),
       attributes: (cell) => {
@@ -389,7 +389,7 @@ const updateGrid = (data) => {
     },
     {
       id: '7',
-      name: gridjs.html('<img src="/icon/medal_7.png" alt="7" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_7.png" alt="7" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[7].data.toFixed(2),
       attributes: (cell) => {
@@ -403,7 +403,7 @@ const updateGrid = (data) => {
     },
     {
       id: '8',
-      name: gridjs.html('<img src="/icon/medal_8.png" alt="8" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_8.png" alt="8" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[8].data.toFixed(2),
       attributes: (cell) => {
@@ -417,7 +417,7 @@ const updateGrid = (data) => {
     },
     {
       id: '9',
-      name: gridjs.html('<img src="/icon/medal_9.png" alt="9" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_9.png" alt="9" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[9].data.toFixed(2),
       attributes: (cell) => {
@@ -431,7 +431,7 @@ const updateGrid = (data) => {
     },
     {
       id: '10',
-      name: gridjs.html('<img src="/icon/medal_10.png" alt="10" width="18" height="18" />'),
+      name: gridjs.html('<img src="/icon/medal_10.png" alt="10" width="18" height="18" class="suppress-long-press">'),
       width: '6ch',
       formatter: (_, row) => row.cells[10].data.toFixed(2),
       attributes: (cell) => {

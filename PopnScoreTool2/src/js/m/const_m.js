@@ -122,13 +122,13 @@ export const VERSION_DATA_R = [
 ];
 
 export const TARGET_MEDAL_DATA = [
-  '<img src="/icon/medal_4.png" alt="4" width="18" height="18">',
-  '<img src="/icon/medal_5.png" alt="5" width="18" height="18">',
-  '<img src="/icon/medal_6.png" alt="6" width="18" height="18">',
-  '<img src="/icon/medal_7.png" alt="7" width="18" height="18">',
-  '<img src="/icon/medal_8.png" alt="8" width="18" height="18">',
-  '<img src="/icon/medal_9.png" alt="9" width="18" height="18">',
-  '<img src="/icon/medal_10.png" alt="10" width="18" height="18">',
+  '<img src="/icon/medal_4.png" alt="4" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_5.png" alt="5" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_6.png" alt="6" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_7.png" alt="7" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_8.png" alt="8" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_9.png" alt="9" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_10.png" alt="10" width="18" height="18" class="suppress-long-press">',
   'NEXT',
 ];
 export const TARGET_MEDAL_DATA_R = [
@@ -166,30 +166,30 @@ export const TARGET_SCORE_CLASS_DATA = [
 
 export const MEDAL_DATA = [
   'NO PLAY',
-  '<img src="/icon/medal_0.png" alt="0" width="18" height="18">',
-  '<img src="/icon/medal_1.png" alt="1" width="18" height="18">',
-  '<img src="/icon/medal_2.png" alt="2" width="18" height="18">',
-  '<img src="/icon/medal_3.png" alt="3" width="18" height="18">',
-  '<img src="/icon/medal_4.png" alt="4" width="18" height="18">',
-  '<img src="/icon/medal_5.png" alt="5" width="18" height="18">',
-  '<img src="/icon/medal_6.png" alt="6" width="18" height="18">',
-  '<img src="/icon/medal_7.png" alt="7" width="18" height="18">',
-  '<img src="/icon/medal_8.png" alt="8" width="18" height="18">',
-  '<img src="/icon/medal_9.png" alt="9" width="18" height="18">',
-  '<img src="/icon/medal_10.png" alt="10" width="18" height="18">',
+  '<img src="/icon/medal_0.png" alt="0" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_1.png" alt="1" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_2.png" alt="2" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_3.png" alt="3" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_4.png" alt="4" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_5.png" alt="5" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_6.png" alt="6" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_7.png" alt="7" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_8.png" alt="8" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_9.png" alt="9" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/medal_10.png" alt="10" width="18" height="18" class="suppress-long-press">',
 ];
 export const MEDAL_DATA_R = [-2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const RANK_DATA = [
   'NO PLAY',
   'NO RANK',
-  '<img src="/icon/rank_3.png" alt="3" width="18" height="18">',
-  '<img src="/icon/rank_4.png" alt="4" width="18" height="18">',
-  '<img src="/icon/rank_5.png" alt="5" width="18" height="18">',
-  '<img src="/icon/rank_6.png" alt="6" width="18" height="18">',
-  '<img src="/icon/rank_7.png" alt="7" width="18" height="18">',
-  '<img src="/icon/rank_8.png" alt="8" width="18" height="18">',
-  '<img src="/icon/rank_9.png" alt="9" width="18" height="18">',
-  '<img src="/icon/rank_10.png" alt="10" width="18" height="18">',
+  '<img src="/icon/rank_3.png" alt="3" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_4.png" alt="4" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_5.png" alt="5" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_6.png" alt="6" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_7.png" alt="7" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_8.png" alt="8" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_9.png" alt="9" width="18" height="18" class="suppress-long-press">',
+  '<img src="/icon/rank_10.png" alt="10" width="18" height="18" class="suppress-long-press">',
 ];
 export const RANK_DATA_R = [-2, -1, 3, 4, 5, 6, 7, 8, 9, 10];
 export const SCORE_DATA = [
