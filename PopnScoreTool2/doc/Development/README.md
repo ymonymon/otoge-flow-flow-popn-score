@@ -65,3 +65,34 @@ UserSecret の設定方法は検索。JSON形式であることに注意。
 - "Authentication:MSSQL:UserPST2Password": "<MyStrong!Passw0rd1>"
 
 環境変数を設定していなければ docker-compose.yml ファイルに指定してあるデフォルトの値が使用されます。
+
+## テスト用DBへのマイグレーション適用 
+
+"DebugConnectionString": "Server=localhost,1433;Database=PopnScoreTool3;User Id=sa;TrustServerCertificate=true;MultipleActiveResultSets=true;Password=<YourStrong!Passw0rd>;"
+
+### PMCでマイグレーション操作を行う前の準備
+
+- スタートアッププロジェクトをdocker-compose->PopnScoreTool2に設定する。
+
+
+### よくPMCでつかうコマンド（何か問題発生時は-Verboseをつける。）
+
+1. Add-Migration {MigrationName}: 新しいマイグレーションを作成します。{MigrationName}は作成するマイグレーションの名前です。
+
+2. Remove-Migration: 最後に追加されたマイグレーションを削除します。
+
+3. Update-Database: 最新のマイグレーションをデータベースに適用します。
+
+4. Script-Migration: マイグレーションからSQLスクリプトを生成します。
+
+5. Drop-Database: 現在のデータベースを削除します。
+
+### DBの変更を本番に適用する際
+
+- Script-Migrationで作ったSQLを理解し手動で適用する。
+
+### 既知の問題
+
+<https://stackoverflow.com/questions/59366069/identity-migration-changes-aspnetusertokens-aspnetuserlogins-for-no-reason>
+<https://github.com/dotnet/efcore/issues/28106>
+

@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\nouislider\" />
   </ItemGroup>
