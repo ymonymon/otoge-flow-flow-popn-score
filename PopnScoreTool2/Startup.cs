@@ -60,8 +60,8 @@ namespace PopnScoreTool2
             _ = services.AddRazorPages();
 
             var builder = services.AddAuthentication();
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>());         
-            builder.AddRemoteScheme<TwitterOptions, CustomTwitterHandler>(TwitterDefaults.AuthenticationScheme, TwitterDefaults.DisplayName, twitterOptions =>
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>());
+            _ = builder.AddRemoteScheme<TwitterOptions, CustomTwitterHandler>(TwitterDefaults.AuthenticationScheme, TwitterDefaults.DisplayName, twitterOptions =>
                 {
                     twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerAPIKey"];
                     twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];

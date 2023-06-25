@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Twitter;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using System;
 
 namespace PopnScoreTool2.Authentication.Twitter
 {
