@@ -44,7 +44,7 @@ namespace PopnScoreTool2.Controllers
             return await _context.Profiles
                 .Where(a => a.UserIntId == userIntId)
                 .Select(a => new object[]{ a.PlayerName, a.PopnFriendId, a.UseCharacterName,
-                    a.NormalModeCreditCount, a.BattleModeCreditCount, a.LocalModeCreditCount, a.Comment, a.LastUpdateTime.ToString("yyyy/MM/dd HH:mm:ssZ") })
+                    a.NormalModeCreditCount, a.BattleModeCreditCount, a.LocalModeCreditCount, a.Comment, a.LastUpdateTime.ToString("s") })
                 .ToArrayAsync();
         }
     }
