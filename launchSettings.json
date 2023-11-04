@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "None",
+      "composeLaunchServiceName": "web.pst2",
+      "serviceActions": {
+        "proxy.pst2": "StartWithoutDebugging",
+        "web.pst2": "StartDebugging"
+      }
+    }
+  }
+}
