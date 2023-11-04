@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PopnScoreTool2.Authentication.Twitter;
 using PopnScoreTool2.Data;
+using System;
 
 namespace PopnScoreTool2
 {
@@ -50,13 +51,27 @@ namespace PopnScoreTool2
             });
 
             _ = services.AddDataProtection()
-                .PersistKeysToDbContext<AppDbContext>();
+                .PersistKeysToDbContext<AppDbContext>()
+                .SetApplicationName("PopnScoreTool2");
 
             _ = services.AddHealthChecks()
                 .AddDbContextCheck<AppDbContext>("database");
 
             _ = services.AddDefaultIdentity<IdentityUser>(/* options => options.SignIn.RequireConfirmedAccount = true */)
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            _ = services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+
+                options.Cookie.IsEssential = true;
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+            });
+
+
             _ = services.AddRazorPages();
 
             var builder = services.AddAuthentication();

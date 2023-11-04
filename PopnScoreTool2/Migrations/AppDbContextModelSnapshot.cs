@@ -38,7 +38,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -260,7 +260,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasIndex("FumenId");
 
-                    b.ToTable("MusicScores");
+                    b.ToTable("MusicScores", (string)null);
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.MusicScoreBasis", b =>
@@ -305,7 +305,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Musics");
+                    b.ToTable("Musics", (string)null);
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.NotFoundMusic", b =>
@@ -334,7 +334,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasIndex("UserIntId");
 
-                    b.ToTable("NotFoundMusics");
+                    b.ToTable("NotFoundMusics", (string)null);
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.OldStats", b =>
@@ -380,7 +380,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("FumenId");
 
-                    b.ToTable("OldStatses");
+                    b.ToTable("OldStatses", (string)null);
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.PercentileScore", b =>
@@ -456,7 +456,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("UserIntId");
 
-                    b.ToTable("Profiles");
+                    b.ToTable("Profiles", (string)null);
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.UserInt", b =>
@@ -476,7 +476,7 @@ namespace PopnScoreTool2.Migrations
                     b.HasIndex("AspNetUsersFK")
                         .IsUnique();
 
-                    b.ToTable("UserInts");
+                    b.ToTable("UserInts", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
