@@ -13,21 +13,21 @@
 方針：なるべく最新。日本語版があれば利用しているが言語の設定は問わない。
 
 - Windows 10 (21H1)
-- Microsoft Visual Studio Community 2022 Version 17.6.4
-  - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0 -> .NET 7.0）
+- Microsoft Visual Studio Community 2022 Version 17.8.0
+  - ASP.NET と Web 開発（.NET 5.0 -> .NET 6.0 -> .NET 7.0 -> .NET 8.0?）
   - Node.js 開発
   - .NET デスクトップ開発
-- Microsoft Visual Studio Code 1.79.2
+- Microsoft Visual Studio Code 1.84.2
   - markdown書き。
   - js書き。
-- Docker Desktop 4.20.1 (110738)
+- Docker Desktop 4.25.1 (128006)
   - [Linux カーネル更新プログラム パッケージ](https://docs.microsoft.com/ja-jp/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package)
-- [SQL Server Management Studio](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)  19.0.20209.0 [日本語版](https://go.microsoft.com/fwlink/?linkid=2168063&clcid=0x411)
+- [SQL Server Management Studio](https://learn.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16) 19.2.56.2 [日本語版](https://learn.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16#available-languages)
 - WSL2(Ubuntu)
 - Google Chrome
 - git version 2.41.0.windows.1 64bit
 - TortoiseGit 2.14.0.0 (Hotfix 2.14.0.1) 64bit
-- PowerShell 7.3.4
+- PowerShell 7.3.9
 - Hosts File Manager 2.0.327.0
 - Discord WebHook
 - Node.js LTS 64bit 18.16.0 (同梱 npm 9.5.1)
