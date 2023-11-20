@@ -38,7 +38,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys", (string)null);
+                    b.ToTable("DataProtectionKeys");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -260,7 +260,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasIndex("FumenId");
 
-                    b.ToTable("MusicScores", (string)null);
+                    b.ToTable("MusicScores");
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.MusicScoreBasis", b =>
@@ -268,11 +268,29 @@ namespace PopnScoreTool2.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("AddDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("AddVersion")
                         .HasColumnType("int");
 
+                    b.Property<string>("ArtistsName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DetailedBPM")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayedBPM")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Genre")
                         .IsRequired()
@@ -281,10 +299,19 @@ namespace PopnScoreTool2.Migrations
                     b.Property<int>("GenreIndexCompareForPosition")
                         .HasColumnType("int");
 
+                    b.Property<bool>("LPFlag")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
                     b.Property<int>("LevelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxBPM")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinBPM")
                         .HasColumnType("int");
 
                     b.Property<int>("MusicId")
@@ -305,7 +332,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Musics", (string)null);
+                    b.ToTable("Musics");
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.NotFoundMusic", b =>
@@ -334,7 +361,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasIndex("UserIntId");
 
-                    b.ToTable("NotFoundMusics", (string)null);
+                    b.ToTable("NotFoundMusics");
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.OldStats", b =>
@@ -380,7 +407,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("FumenId");
 
-                    b.ToTable("OldStatses", (string)null);
+                    b.ToTable("OldStatses");
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.PercentileScore", b =>
@@ -456,7 +483,7 @@ namespace PopnScoreTool2.Migrations
 
                     b.HasKey("UserIntId");
 
-                    b.ToTable("Profiles", (string)null);
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("PopnScoreTool2.Models.UserInt", b =>
@@ -476,7 +503,7 @@ namespace PopnScoreTool2.Migrations
                     b.HasIndex("AspNetUsersFK")
                         .IsUnique();
 
-                    b.ToTable("UserInts", (string)null);
+                    b.ToTable("UserInts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

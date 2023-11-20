@@ -12,8 +12,8 @@ using PopnScoreTool2.Data;
 namespace PopnScoreTool2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230625130219_Now")]
-    partial class Now
+    [Migration("20231118180522_NowModels")]
+    partial class NowModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -189,12 +189,10 @@ namespace PopnScoreTool2.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -231,12 +229,10 @@ namespace PopnScoreTool2.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -426,7 +422,7 @@ namespace PopnScoreTool2.Migrations
                     b.Property<int>("BrowsingSettingProfileActivitiyTime")
                         .HasColumnType("int");
 
-                    b.Property<int>("BrowsingSettingProfilePopnFrendId")
+                    b.Property<int>("BrowsingSettingProfilePopnFriendId")
                         .HasColumnType("int");
 
                     b.Property<int>("BrowsingSettingScore")
@@ -453,7 +449,7 @@ namespace PopnScoreTool2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PopnFrendId")
+                    b.Property<string>("PopnFriendId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
