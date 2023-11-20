@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PopnScoreTool2.Models
@@ -14,18 +15,20 @@ namespace PopnScoreTool2.Models
         public int MusicId { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
-        public string Genre { get; set; }
+        public string Genre { get; set; } = string.Empty;
 
         [Required]
-        public int Position { get; set; }
+        public int Position { get; set; } = 0;
 
-        // TODO : [Required]
-        public int TitleIndexCompareForPosition { get; set; }
-        // TODO : [Required]
-        public int GenreIndexCompareForPosition { get; set; }
+        [Required]
+
+        public int TitleIndexCompareForPosition { get; set; } = 0;
+
+        [Required]
+        public int GenreIndexCompareForPosition { get; set; } = 0;
 
         [Required]
         public int Level { get; set; }
@@ -36,17 +39,37 @@ namespace PopnScoreTool2.Models
         [Required]
         public int LevelId { get; set; }
 
-        // version?
         [Required]
         public int Version { get; set; }
 
         [Required]
         public int AddVersion { get; set; }
+        [Required]
+        public DateTime AddDate { get; set; } = DateTime.MinValue;
 
-        // TODO : [Required]
-        public bool Deleted { get; set; }
+        [Required]
+        public bool Deleted { get; set; } = false;
 
-        // [Required]
-        // public int Deleted { get; set; }
+        [Required]
+        public DateTime DeletedDate { get; set; } = DateTime.MinValue;
+
+        [Required]
+        public int MinBPM { get; set; } = 0;
+
+        [Required]
+        public int MaxBPM { get; set; } = 0;
+
+        [Required]
+        public string DisplayedBPM { get; set; } = string.Empty;
+        [Required]
+        public string DetailedBPM { get; set; } = string.Empty;
+
+
+        [Required]
+        public bool LPFlag { get; set; } = false;
+
+        [Required]
+        public string ArtistsName { get; set; } = string.Empty;
+
     }
 }
