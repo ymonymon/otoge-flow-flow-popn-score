@@ -37,27 +37,27 @@ namespace PopnScoreTool2.Models
 
         // 手動設定系
         [Required]
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
 
         // スコアツール上のプレイヤー名
         // twitter等のSNSアカウント名
         // 推しキャラ名
 
         [Required]
-        public DateTime LastUpdateTime { get; set; }
+        public DateTime LastUpdateTime { get; set; } = DateTime.Now;
 
         // 閲覧設定系
         [Required]
-        public int BrowsingSettingProfile { get; set; }
+        public int BrowsingSettingProfile { get; set; } = 0;
 
         [Required]
-        public int BrowsingSettingProfilePopnFriendId { get; set; }
+        public int BrowsingSettingProfilePopnFriendId { get; set; } = 0;
 
         [Required]
-        public int BrowsingSettingProfileActivitiyTime { get; set; }
+        public int BrowsingSettingProfileActivityTime { get; set; } = 0;
 
         [Required]
-        public int BrowsingSettingScore { get; set; }
+        public int BrowsingSettingScore { get; set; } = 0;
 
         // 有効無効系
         // ここではなくUserIntテーブルが望ましい。
@@ -69,12 +69,6 @@ namespace PopnScoreTool2.Models
         public Profile(int userIntId)
         {
             UserIntId = userIntId;
-            Comment = string.Empty;
-            LastUpdateTime = DateTime.Now;
-            BrowsingSettingProfile = 0;
-            BrowsingSettingProfilePopnFriendId = 0;
-            BrowsingSettingProfileActivitiyTime = 0;
-            BrowsingSettingScore = 0;
         }
 
         public bool VerifyUploadedData(List<string> profile)
