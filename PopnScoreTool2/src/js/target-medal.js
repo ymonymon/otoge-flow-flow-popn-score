@@ -20,6 +20,7 @@ const fumenFilter = (
   medal,
   rank,
   version,
+  addVersion,
   lv,
   lvType,
   targetPercent,
@@ -42,7 +43,8 @@ TBL2.[4] AS [8], -- count
 TBL2.[5] AS [9], (TBL2.[5] - TBL2.[3]) AS [10], -- avg/diff
 TBL2.[6] AS [11], TBL2.[7] AS [12], TBL2.[8] AS [13], TBL2.[9] AS [14], TBL2.[10] AS [15], TBL2.[11] AS [16], TBL2.[12] AS [17],
 TBL2.[13] AS [18], -- count now
-TBL1.[6] AS [19] -- upper 
+TBL1.[6] AS [19], -- upper 
+TBL1.[7] AS [20] -- add version
 FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, medalRateDataRaw]);
 
   const data = res.map((a) => [a[0], a[1],
@@ -50,7 +52,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     a[4],
     a[11], a[12], a[13], a[14], a[15], a[16], a[17],
     a[8],
-    a[18], a[7], a[5], a[19],
+    a[18], a[7], a[5], a[19], a[20],
   ]);
 
   let sql = 'MATRIX OF SELECT * FROM ?';
@@ -59,6 +61,12 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [14] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
+  }
+  if (addVersion[0] !== 0 || addVersion[1] !== otoge.ADD_VERSION_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [17] AND [17] <= ?';
+    arg = arg.concat([otoge.ADD_VERSION_DATA_R[addVersion[0]],
+      otoge.ADD_VERSION_DATA_R[addVersion[1]]]);
   }
   if (medal[0] !== 0 || medal[1] !== otoge.MEDAL_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -586,6 +594,7 @@ function saveFilterAndSort() {
   const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
   const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
@@ -601,6 +610,7 @@ function saveFilterAndSort() {
     medal: [keyMedal1, keyMedal2],
     rank: [keyRank1, keyRank2],
     version: keyVersion,
+    add_version: [keyAddVersion1, keyAddVersion2],
     lv: [keyLv1, keyLv2],
     lv_type: [keyLvType1, keyLvType2],
     target_percent: keyTargetPercent,
@@ -613,6 +623,7 @@ function saveFilterAndSort() {
 
 function updateGrid2() {
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const keyTarget = site.getKeyNames('skipstep-target', otoge.TARGET_MEDAL_DATA);
   const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
@@ -632,6 +643,7 @@ function updateGrid2() {
     [keyMedal1, keyMedal2].map(Number),
     [keyRank1, keyRank2].map(Number),
     [keyVersion].map(Number),
+    [keyAddVersion1, keyAddVersion2].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
     keyTargetPercent.map(Number),
@@ -812,6 +824,7 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet, 0, otoge.MEDAL_DATA[otoge.MEDAL_DATA.length - 2]); // default without perfect
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
+    site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.add_version, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1);

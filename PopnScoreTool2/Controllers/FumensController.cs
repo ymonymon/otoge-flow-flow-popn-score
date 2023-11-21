@@ -23,7 +23,7 @@ namespace PopnScoreTool2.Controllers
         {
             return await _context.Musics.Where(w => w.Deleted == false)
                 .Select(a => new object[]{ a.Id, a.Name, a.Genre, a.LevelId, a.Level,
-                    a.Version, a.Position == 1 ? "UPPER": "" })
+                    a.Version, a.Position == 1 ? "UPPER": "", a.AddVersion })
                 .ToArrayAsync();
         }
     }

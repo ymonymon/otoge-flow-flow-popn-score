@@ -68,7 +68,7 @@ UserSecret の設定方法は検索。JSON形式であることに注意。
 
 ## テスト用DBへのマイグレーション適用 
 
-"DebugConnectionString": "Server=localhost,1433;Database=PopnScoreTool3;User Id=sa;TrustServerCertificate=true;MultipleActiveResultSets=true;Password=<YourStrong!Passw0rd>;"
+"DebugConnectionString": "Server=localhost,1433;Database=PopnScoreTool2;User Id=sa;TrustServerCertificate=true;MultipleActiveResultSets=true;Password=<YourStrong!Passw0rd>;"
 
 ### PMCでマイグレーション操作を行う前の準備
 
@@ -95,4 +95,16 @@ UserSecret の設定方法は検索。JSON形式であることに注意。
 
 <https://stackoverflow.com/questions/59366069/identity-migration-changes-aspnetusertokens-aspnetuserlogins-for-no-reason>
 <https://github.com/dotnet/efcore/issues/28106>
+
+
+## Contextを複数用意して本番用と開発用でDBのmigrationを分ける手法
+
+
+## Code First from Existing Database
+
+1. DBのテーブルから先に作りコードに落とし込む。
+
+PM> Scaffold-DbContext "Server=localhost,1433;Database=PopnScoreTool2;User Id=sa;TrustServerCertificate=true;MultipleActiveResultSets=true;Password=<YourStrong!Passw0rd>;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context "ApplicationDbContext" -ContextDir Data -DataAnnotations
+
+
 

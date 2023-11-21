@@ -24,6 +24,7 @@ const fumenFilter = (
   rank,
   score,
   version,
+  addVersion,
   lv,
   lvType,
   targetPercent,
@@ -53,7 +54,8 @@ TBL2.[5] AS [12],
 TBL2.[6] AS [13], 
 TBL2.[7] AS [14],
 TBL2.[9] AS [15], -- count
-TBL1.[6] AS [16] -- upper
+TBL1.[6] AS [16], -- upper
+TBL1.[7] AS [17] -- add version
 FROM ? AS TBL1
 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]
 INNER JOIN ? AS TBL3 ON TBL3.[0] = TBL1.[0]`, [fumensDataRaw, scoreRateDataRaw, myMusicDataRaw]);
@@ -91,7 +93,8 @@ WHEN TBL1.[6] < 100000 THEN 10
 ELSE 11 END AS [9], -- target score class
 TBL1.[15] AS [10],
 TBL1.[7] AS [11], -- version
-TBL1.[16] AS [12] -- upper
+TBL1.[16] AS [12], -- upper
+TBL1.[17] AS [13] -- add version
 FROM ? AS TBL1`, [res]);
   } else {
     // ${otoge.TARGET_SCORE_DATA_R[target[0]] + 4} is column number
@@ -110,7 +113,8 @@ ELSE TBL1.[${otoge.TARGET_SCORE_DATA_R[6] + 4}] END AS [8],
 ${otoge.TARGET_SCORE_DATA_R[target[0]]} AS [9], -- target score 
 TBL1.[15] AS [10],
 TBL1.[7] AS [11], -- version
-TBL1.[16] AS [12] -- upper
+TBL1.[16] AS [12], -- upper
+TBL1.[17] AS [13] -- add version
 FROM ? AS TBL1`;
     res2 = alasql(test, [res]);
   }
@@ -139,7 +143,8 @@ WHEN 9 THEN 99400
 ELSE 100000 END AS [10], -- diff
 TBL1.[10] AS [11],
 TBL1.[11] AS [12], -- version
-TBL1.[12] AS [13] -- upper
+TBL1.[12] AS [13], -- upper
+TBL1.[13] AS [14] -- add version
 FROM ? AS TBL1`, [res2]);
 
   let sql = 'MATRIX OF SELECT * FROM ?';
@@ -181,6 +186,12 @@ FROM ? AS TBL1`, [res2]);
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [12] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
+  }
+  if (addVersion[0] !== 0 || addVersion[1] !== otoge.ADD_VERSION_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [14] AND [14] <= ?';
+    arg = arg.concat([otoge.ADD_VERSION_DATA_R[addVersion[0]],
+      otoge.ADD_VERSION_DATA_R[addVersion[1]]]);
   }
   if (lv[0] !== 0 || lv[1] !== otoge.LV_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -742,6 +753,7 @@ function saveFilterAndSort() {
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
   const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
@@ -758,6 +770,7 @@ function saveFilterAndSort() {
     rank: [keyRank1, keyRank2],
     score: [keyScore1, keyScore2],
     version: keyVersion,
+    add_version: [keyAddVersion1, keyAddVersion2],
     lv: [keyLv1, keyLv2],
     lv_type: [keyLvType1, keyLvType2],
     target_percent: keyTargetPercent,
@@ -775,6 +788,7 @@ function updateGrid2() {
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
   const keyTargetPercent = site.getKeyNames('skipstep-target-percent', otoge.TARGET_PERCENT_DATA);
@@ -793,6 +807,7 @@ function updateGrid2() {
     [keyRank1, keyRank2].map(Number),
     [keyScore1, keyScore2].map(Number),
     [keyVersion].map(Number),
+    [keyAddVersion1, keyAddVersion2].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
     keyTargetPercent.map(Number),
@@ -1014,6 +1029,7 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, '100k', onFilterScoreSliderUpdate);
     site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
+    site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.add_version, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1);

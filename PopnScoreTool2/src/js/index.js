@@ -17,17 +17,23 @@ let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (data, version, medal, rank, score, lv, lvType, order, upper) => {
+const fumenFilter = (data, version, addVersion, medal, rank, score, lv, lvType, order, upper) => {
   const column0 = (upper === '0' || upper === '2') ? 'CONCAT([0], [8])' : '[0]';
   const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT([1], [8])' : '[1]';
 
   const columnOrder = order === '1' ? `${column1}, ${column0}` : `${column0}, ${column1}`;
-  let sql = `MATRIX OF SELECT ${columnOrder}, [2], [3], [4], [5], [6], [7], [8] FROM ?`;
+  let sql = `MATRIX OF SELECT ${columnOrder}, [2], [3], [4], [5], [6], [7], [8], [9] FROM ?`;
   let arg = [data];
   if (version[0] !== 0) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [7] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
+  }
+  if (addVersion[0] !== 0 || addVersion[1] !== otoge.ADD_VERSION_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [9] AND [9] <= ?';
+    arg = arg.concat([otoge.ADD_VERSION_DATA_R[addVersion[0]],
+      otoge.ADD_VERSION_DATA_R[addVersion[1]]]);
   }
   if (medal[0] !== 0 || medal[1] !== otoge.MEDAL_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -465,6 +471,7 @@ const updateGrid = (data) => {
 
 function saveFilterAndSort() {
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
@@ -477,6 +484,7 @@ function saveFilterAndSort() {
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
     version: keyVersion,
+    add_version: [keyAddVersion1, keyAddVersion2],
     medal: [keyMedal1, keyMedal2],
     rank: [keyRank1, keyRank2],
     score: [keyScore1, keyScore2],
@@ -490,6 +498,7 @@ function saveFilterAndSort() {
 
 function updateGrid2() {
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyMedal1, keyMedal2] = site.getKeyNames('skipstep-medal', otoge.MEDAL_DATA);
   const [keyRank1, keyRank2] = site.getKeyNames('skipstep-rank', otoge.RANK_DATA);
   const [keyScore1, keyScore2] = site.getKeyNames('skipstep-score', otoge.SCORE_DATA);
@@ -502,6 +511,7 @@ function updateGrid2() {
   filteredData = fumenFilter(
     allData,
     [keyVersion].map(Number),
+    [keyAddVersion1, keyAddVersion2].map(Number),
     [keyMedal1, keyMedal2].map(Number),
     [keyRank1, keyRank2].map(Number),
     [keyScore1, keyScore2].map(Number),
@@ -954,7 +964,7 @@ if (document.querySelector('h1.nologin') !== null) {
     document.getElementById('creditsCount').innerHTML = `${c1} / ${c2} / ${c3}`;
     document.getElementById('comment').innerHTML = comment;
 
-    dayjs.extend(dayjs_plugin_utc);
+    dayjs.extend(window.dayjs_plugin_utc);
     const localTime = dayjs.utc(lastUpdate).local();
 
     document.getElementById('lastUpdate').innerHTML = localTime.format('YYYY/MM/DD HH:mm:ss');
@@ -1034,6 +1044,7 @@ if (document.querySelector('h1.nologin') !== null) {
 
     // filter
     site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
+    site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.add_version, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('medal', otoge.MEDAL_DATA, prevFilter?.medal, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('rank', otoge.RANK_DATA, prevFilter?.rank, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('score', otoge.SCORE_DATA, prevFilter?.score, onSliderStart, onFilterSliderSet, 1, undefined, onFilterScoreSliderUpdate);

@@ -121,6 +121,41 @@ export const VERSION_DATA_R = [
   16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 30, 23, 24, 25,
 ];
 
+export const ADD_VERSION_DATA = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12 いろは',
+  '13 カーニバル',
+  '14 FEVER!',
+  '15 ADVENTURE',
+  '16 PARTY♪',
+  '17 THE MOVIE',
+  '18 せんごく列伝',
+  '19 TUNE STREET',
+  '20 fantasia',
+  'Sunny Park',
+  'ラピストリア',
+  'éclale',
+  'うさぎと猫と少年の夢',
+  'peace',
+  '解明リドルズ',
+  'UniLab',
+];
+
+export const ADD_VERSION_DATA_R = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16, 17, 18, 19, 20, 21, 22, 26, 27, 28, 29, 30,
+];
+
 export const TARGET_MEDAL_DATA = [
   '<img src="/icon/medal_4.png" alt="4" width="18" height="18" class="suppress-long-press">',
   '<img src="/icon/medal_5.png" alt="5" width="18" height="18" class="suppress-long-press">',

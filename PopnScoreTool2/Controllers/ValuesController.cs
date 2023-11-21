@@ -53,12 +53,13 @@ namespace PopnScoreTool2.Controllers
                     MedalOrdinalScale = d == null ? -2 : d.MedalOrdinalScale,
                     RankOrdinalScale = d == null ? -2 : d.RankOrdinalScale,
                     Score = d == null ? -2 : d.Score,
-                    c.a.Version
+                    c.a.Version,
+                    c.a.AddVersion,
                 })
                 // .Select(a => new object[]{ a.Name, a.Genre + (a.Position == 1 ? "UPPER": ""), a.LevelId, a.Level,
                 //     a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version })
                 .Select(a => new object[]{ a.Name, a.Genre, a.LevelId, a.Level,
-                    a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version, a.Position == 1 ? "UPPER": "" })
+                    a.MedalOrdinalScale, a.RankOrdinalScale, a.Score, a.Version, a.Position == 1 ? "UPPER": "", a.AddVersion })
                 .ToArrayAsync();
         }
     }

@@ -7,6 +7,7 @@
         "AspNet": "readonly",        
         "alasql": "readonly",
         "gridjs": "readonly",
-        "noUiSlider": "readonly"
+        "noUiSlider": "readonly",
+        "dayjs": "readonly"
     }
 }

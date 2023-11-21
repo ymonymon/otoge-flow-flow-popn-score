@@ -14,7 +14,14 @@ let sortTarget;
 
 let initializing = true;
 
-const fumenFilter = (version, lv, lvType, order, upper) => {
+const fumenFilter = (
+  version,
+  addVersion,
+  lv,
+  lvType,
+  order,
+  upper,
+) => {
   const column0 = (upper === '0' || upper === '2') ? 'CONCAT(TBL1.[1], TBL1.[6]) AS [0]' : 'TBL1.[1] AS [0]';
   const column1 = (upper === '1' || upper === '2' || upper === undefined) ? 'CONCAT(TBL1.[2], TBL1.[6]) AS [1]' : 'TBL1.[2] AS [1]';
 
@@ -30,7 +37,8 @@ TBL2.[1] AS [5], -- count
 TBL2.[2] AS [6], -- avg
 TBL2.[3] AS [7], TBL2.[4] AS [8], TBL2.[5] AS [9], TBL2.[6] AS [10], TBL2.[7] AS [11], TBL2.[8] AS [12], TBL2.[9] AS [13],
 TBL2.[10] AS [14], -- count now
-TBL1.[6] AS [15] -- upper
+TBL1.[6] AS [15], -- upper
+TBL1.[7] AS [16] -- add version
 FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, medalRateDataRaw]);
 
   // avg 除去,count位置調整
@@ -40,6 +48,7 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     a[5],
     a[14],
     a[15],
+    a[16],
   ]);
 
   // filter
@@ -49,6 +58,12 @@ FROM ? AS TBL1 INNER JOIN ? AS TBL2 ON TBL2.[0] = TBL1.[0]`, [fumensDataRaw, med
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' [4] = ?';
     arg = arg.concat([otoge.VERSION_DATA_R[version[0]]]);
+  }
+  if (addVersion[0] !== 0 || addVersion[1] !== otoge.ADD_VERSION_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+    sql += ' ? <= [15] AND [15] <= ?';
+    arg = arg.concat([otoge.ADD_VERSION_DATA_R[addVersion[0]],
+      otoge.ADD_VERSION_DATA_R[addVersion[1]]]);
   }
   if (lv[0] !== 0 || lv[1] !== otoge.LV_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
@@ -534,6 +549,7 @@ const updateGrid = (data) => {
 
 function saveFilterAndSort() {
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
@@ -543,6 +559,7 @@ function saveFilterAndSort() {
   const prevFilters = JSON.parse(window.localStorage.getItem(`${PAGE_NAME}.filters`)) ?? {};
   prevFilters[selectedFilter] = {
     version: keyVersion,
+    add_version: [keyAddVersion1, keyAddVersion2],
     lv: [keyLv1, keyLv2],
     lv_type: [keyLvType1, keyLvType2],
     sort: sortStatus,
@@ -553,6 +570,7 @@ function saveFilterAndSort() {
 
 function updateGrid2() {
   const keyVersion = site.getKeyNames('skipstep-version', otoge.VERSION_DATA);
+  const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
 
@@ -561,6 +579,7 @@ function updateGrid2() {
 
   const filteredData = fumenFilter(
     [keyVersion].map(Number),
+    [keyAddVersion1, keyAddVersion2].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
     order,
@@ -734,6 +753,7 @@ btns.forEach((btn) => {
 
   // filter
   site.CreateSkipSlider1('version', otoge.VERSION_DATA, prevFilter?.version, onSliderStart, onFilterSliderSet, 0);
+  site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.addVersion, onSliderStart, onFilterSliderSet);
   site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
   site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lvType, onSliderStart, onFilterSliderSet);
 }
