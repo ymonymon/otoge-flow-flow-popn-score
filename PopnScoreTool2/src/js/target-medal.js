@@ -149,7 +149,7 @@ FROM ? AS TBL1`;
   if (targetPercent[0] !== 0
     || targetPercent[1] !== otoge.TARGET_PERCENT_DATA.length - 1) {
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
-    sql += ' ? <= [5] AND [5] <= ?';
+    sql += ' ? <= [5] AND [5] < ?';
     arg = arg.concat([otoge.TARGET_PERCENT_DATA_R[targetPercent[0]],
       otoge.TARGET_PERCENT_DATA_R[targetPercent[1]]]);
   }
@@ -710,6 +710,45 @@ function onFilterSliderSet(values, handle, unencoded, tap, positions, slider, ca
   }, 1000);
 }
 
+function onFilterTargetPercentSliderUpdate(values, handle) {
+  const skipValues = [
+    document.getElementById('target-percent-lower'),
+    document.getElementById('target-percent-upper'),
+    document.getElementById('target-percent-hyphen'),
+    document.getElementById('target-percent-same'),
+  ];
+
+  const dataObject = otoge.TARGET_PERCENT_DATA;
+  const dataDisplayObject = otoge.TARGET_PERCENT_DATA_DISPLAY;
+  const firstDataValue = dataObject[0];
+  const lastDataValue = dataObject[dataObject.length - 1];
+
+  const keyScore = Object.keys(dataObject).filter(
+    (key) => dataObject[key] === values[handle],
+  )[0];
+
+  skipValues[handle].innerHTML = dataDisplayObject[keyScore];
+
+  if (values[0] === firstDataValue
+              && values[1] === lastDataValue) {
+    skipValues[3].innerHTML = 'ALL';
+    skipValues[0].style.display = 'none';
+    skipValues[1].style.display = 'none';
+    skipValues[2].style.display = 'none';
+    skipValues[3].style.display = 'inline';
+  } else {
+    skipValues[0].style.display = 'inline';
+    skipValues[1].style.display = 'inline';
+    skipValues[2].style.display = 'inline';
+    if (values[1] === lastDataValue) {
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed" width="20" height="10" class="suppress-long-press">';
+    } else {
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed" width="20" height="10" class="suppress-long-press">';
+    }
+    skipValues[3].style.display = 'none';
+  }
+}
+
 if (document.querySelector('h1.nologin') !== null) {
   // no login
 } else {
@@ -827,7 +866,7 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.add_version, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
-    site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1);
+    site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1, '=100', onFilterTargetPercentSliderUpdate);
     site.CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, onSliderStart, onFilterSliderSet, 1);
   }
 

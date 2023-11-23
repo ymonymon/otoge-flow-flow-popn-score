@@ -326,6 +326,27 @@ export const TARGET_PERCENT_DATA = [
   '80',
   '90',
   '100',
+  '=100',
+];
+
+export const TARGET_PERCENT_DATA_DISPLAY = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '10',
+  '20',
+  '30',
+  '40',
+  '50',
+  '60',
+  '70',
+  '80',
+  '90',
+  '100',
+  '100',
 ];
 
 export const TARGET_PERCENT_DATA_R = [
@@ -345,6 +366,7 @@ export const TARGET_PERCENT_DATA_R = [
   80,
   90,
   100,
+  200,
 ];
 
 export const COUNT_DATA = [
