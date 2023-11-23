@@ -219,7 +219,7 @@ FROM ? AS TBL1`, [res2]);
       sql += ' ? <= [11]';
       arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
     } else {
-      sql += ' ? <= [11] AND [11] <= ?';
+      sql += ' ? <= [11] AND [11] < ?';
       arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
         otoge.COUNT_DATA_R[count[1]]]);
     }
@@ -952,6 +952,45 @@ function onFilterTargetPercentSliderUpdate(values, handle) {
   }
 }
 
+function onFilterCountSliderUpdate(values, handle) {
+  const skipValues = [
+    document.getElementById('count-lower'),
+    document.getElementById('count-upper'),
+    document.getElementById('count-hyphen'),
+    document.getElementById('count-same'),
+  ];
+
+  const dataObject = otoge.COUNT_DATA;
+  const dataDisplayObject = otoge.COUNT_DATA_DISPLAY;
+  const firstDataValue = dataObject[0];
+  const lastDataValue = dataObject[dataObject.length - 1];
+
+  const keyScore = Object.keys(dataObject).filter(
+    (key) => dataObject[key] === values[handle],
+  )[0];
+
+  skipValues[handle].innerHTML = dataDisplayObject[keyScore];
+
+  if (values[0] === firstDataValue
+              && values[1] === lastDataValue) {
+    skipValues[3].innerHTML = 'ALL';
+    skipValues[0].style.display = 'none';
+    skipValues[1].style.display = 'none';
+    skipValues[2].style.display = 'none';
+    skipValues[3].style.display = 'inline';
+  } else {
+    skipValues[0].style.display = 'inline';
+    skipValues[1].style.display = 'inline';
+    skipValues[2].style.display = 'inline';
+    if (values[1] === lastDataValue) {
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed" width="20" height="10" class="suppress-long-press">';
+    } else {
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed" width="20" height="10" class="suppress-long-press">';
+    }
+    skipValues[3].style.display = 'none';
+  }
+}
+
 if (document.querySelector('h1.nologin') !== null) {
   // no login
 } else {
@@ -1072,7 +1111,7 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('target-percent', otoge.TARGET_PERCENT_DATA, prevFilter?.target_percent, onSliderStart, onFilterSliderSet, 1, '=100', onFilterTargetPercentSliderUpdate);
-    site.CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, onSliderStart, onFilterSliderSet, 1);
+    site.CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, onSliderStart, onFilterSliderSet, 1, '∞', onFilterCountSliderUpdate);
   }
 
   $.getJSON('/api/mymusic', (myMusicData) => {
