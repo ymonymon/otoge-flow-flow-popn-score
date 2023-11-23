@@ -27,6 +27,7 @@ const fumenFilter = (
   addVersion,
   lv,
   lvType,
+  count,
   order,
   upper,
 ) => {
@@ -143,6 +144,20 @@ INNER JOIN ? AS TBL4 ON TBL4.[0] = TBL1.[0]`;
     sql += (arg.length === 1) ? ' WHERE' : ' AND';
     sql += ' ? <= [2] AND [2] <= ?';
     arg = arg.concat([lvType[0] + 1, lvType[1] + 1]); // +1 == to lv type
+  }
+  if (count[0] !== 0
+    || count[1] !== otoge.COUNT_DATA.length - 1) {
+    sql += (arg.length === 1) ? ' WHERE' : ' AND';
+
+    if (count[1] === otoge.COUNT_DATA.length - 1) {
+      // ～∞
+      sql += ' ? <= [9]';
+      arg = arg.concat(otoge.COUNT_DATA_R[[count[0]]]);
+    } else {
+      sql += ' ? <= [9] AND [9] < ?';
+      arg = arg.concat([otoge.COUNT_DATA_R[count[0]],
+        otoge.COUNT_DATA_R[count[1]]]);
+    }
   }
 
   const res2 = alasql(sql, arg);
@@ -596,6 +611,7 @@ function saveFilterAndSort() {
   const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   // save filter & sort
   const sortStatus = site.getCurrentSortStatus();
@@ -612,6 +628,7 @@ function saveFilterAndSort() {
     add_version: [keyAddVersion1, keyAddVersion2],
     lv: [keyLv1, keyLv2],
     lv_type: [keyLvType1, keyLvType2],
+    count: keyCount,
     sort: sortStatus,
   };
 
@@ -628,6 +645,7 @@ function updateGrid2() {
   const [keyAddVersion1, keyAddVersion2] = site.getKeyNames('skipstep-add-version', otoge.ADD_VERSION_DATA);
   const [keyLv1, keyLv2] = site.getKeyNames('skipstep-lv', otoge.LV_DATA);
   const [keyLvType1, keyLvType2] = site.getKeyNames('skipstep-lv-type', otoge.LV_TYPE_DATA);
+  const keyCount = site.getKeyNames('skipstep-count', otoge.COUNT_DATA);
 
   const order = JSON.parse(window.localStorage.getItem('view'))?.order;
   const upper = JSON.parse(window.localStorage.getItem('view'))?.upper;
@@ -642,6 +660,7 @@ function updateGrid2() {
     [keyAddVersion1, keyAddVersion2].map(Number),
     [keyLv1, keyLv2].map(Number),
     [keyLvType1, keyLvType2].map(Number),
+    keyCount.map(Number),
     order,
     upper,
   );
@@ -714,6 +733,45 @@ function onFilterScoreSliderUpdate(values, handle) {
 
   const dataObject = otoge.SCORE_DATA;
   const dataDisplayObject = otoge.SCORE_DATA_DISPLAY;
+  const firstDataValue = dataObject[0];
+  const lastDataValue = dataObject[dataObject.length - 1];
+
+  const keyScore = Object.keys(dataObject).filter(
+    (key) => dataObject[key] === values[handle],
+  )[0];
+
+  skipValues[handle].innerHTML = dataDisplayObject[keyScore];
+
+  if (values[0] === firstDataValue
+              && values[1] === lastDataValue) {
+    skipValues[3].innerHTML = 'ALL';
+    skipValues[0].style.display = 'none';
+    skipValues[1].style.display = 'none';
+    skipValues[2].style.display = 'none';
+    skipValues[3].style.display = 'inline';
+  } else {
+    skipValues[0].style.display = 'inline';
+    skipValues[1].style.display = 'inline';
+    skipValues[2].style.display = 'inline';
+    if (values[1] === lastDataValue) {
+      skipValues[2].innerHTML = '<img src="/icon/closed.png" alt="closed" width="20" height="10" class="suppress-long-press">';
+    } else {
+      skipValues[2].innerHTML = '<img src="/icon/leftclosed.png" alt="leftclosed" width="20" height="10" class="suppress-long-press">';
+    }
+    skipValues[3].style.display = 'none';
+  }
+}
+
+function onFilterCountSliderUpdate(values, handle) {
+  const skipValues = [
+    document.getElementById('count-lower'),
+    document.getElementById('count-upper'),
+    document.getElementById('count-hyphen'),
+    document.getElementById('count-same'),
+  ];
+
+  const dataObject = otoge.COUNT_DATA;
+  const dataDisplayObject = otoge.COUNT_DATA_DISPLAY;
   const firstDataValue = dataObject[0];
   const lastDataValue = dataObject[dataObject.length - 1];
 
@@ -863,6 +921,7 @@ if (document.querySelector('h1.nologin') !== null) {
     site.CreateSkipSlider2('add-version', otoge.ADD_VERSION_DATA, prevFilter?.add_version, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv', otoge.LV_DATA, prevFilter?.lv, onSliderStart, onFilterSliderSet);
     site.CreateSkipSlider2('lv-type', otoge.LV_TYPE_DATA, prevFilter?.lv_type, onSliderStart, onFilterSliderSet);
+    site.CreateSkipSlider2('count', otoge.COUNT_DATA, prevFilter?.count, onSliderStart, onFilterSliderSet, 1, '∞', onFilterCountSliderUpdate);
   }
 
   $.getJSON('/api/mymusic', (myMusicData) => {
