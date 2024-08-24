@@ -75,5 +75,8 @@ GO
 GRANT EXECUTE ON [dbo].[MergeMusic] TO [PopnScoreTool2_User]
 GO
 
+GRANT EXECUTE ON [dbo].[MergeMusic2] TO [PopnScoreTool2_User]
+GO
+
 RAISERROR('End of db-init.sql', 0, 1) WITH NOWAIT;
 GO
